@@ -1,5 +1,5 @@
 <script>
-import { useAuthStore } from '../store/auth.js'
+import { useAuthStore } from '../store/auth'
 import { useRouter } from 'vue-router'
 
 export default {
