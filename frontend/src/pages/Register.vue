@@ -1,11 +1,11 @@
 <template>
-  <div class="flex items-center justify-center min-h-screen bg-gray-50">
+  <div class="flex items-center justify-center min-h-screen">
     <Card class="w-full max-w-sm">
       <CardHeader>
-        <CardTitle class="text-2xl text-center">
+        <CardTitle class="text-2xl">
           Register
         </CardTitle>
-        <CardDescription class="text-center">
+        <CardDescription>
           Create an account by entering your email and password below.
         </CardDescription>
       </CardHeader>

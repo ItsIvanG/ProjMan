@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+  <div class="flex items-center justify-center min-h-screen">
     <Card class="w-full max-w-sm">
       <CardHeader>
         <CardTitle class="text-2xl">
@@ -38,7 +38,7 @@
       </CardContent>
       <CardFooter>
         <Button class="w-full" @click="login">
-          Sign in
+         Log in
         </Button>
       </CardFooter>
     </Card>

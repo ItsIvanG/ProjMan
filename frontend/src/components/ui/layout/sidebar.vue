@@ -1,211 +1,313 @@
-<template>
-  <button
-    data-drawer-target="default-sidebar"
-    data-drawer-toggle="default-sidebar"
-    aria-controls="default-sidebar"
-    type="button"
-    class="inline-flex items-center p-2 mt-2 ml-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-    @click="toggleSidebar"
-  >
-    <span class="sr-only">Open sidebar</span>
-    <svg
-      class="w-6 h-6"
-      aria-hidden="true"
-      fill="currentColor"
-      viewBox="0 0 20 20"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        clip-rule="evenodd"
-        fill-rule="evenodd"
-        d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
-      ></path>
-    </svg>
-  </button>
+<script setup lang=ts>
+import { useAuthStore } from '@/store/auth'
+import { useRouter } from 'vue-router'
 
-  <aside
-    class="fixed top-0 left-0 z-40 w-64 h-screen pt-14 transition-transform -translate-x-full bg-white-800 border-r border-gray-200 md:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
-    aria-label="Sidenav"
-    id="drawer-navigation"
-    :class="{
-      'translate-x-0': isSidebarOpen,
-      '-translate-x-full': !isSidebarOpen,
-    }"
-  >
-    <div class="overflow-y-auto py-5 px-3 h-full bg-white dark:bg-gray-800">
-      <ul class="space-y-2">
-        <li>
-          <router-link
-            to="/dashboard"
-            class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white group"
-            :class="{
-              'bg-gray-100 dark:bg-gray-700': $route.path === '/dashboard',
-            }"
-          >
-            <svg
-              aria-hidden="true"
-              class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
-              <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
-            </svg>
-            <span class="ml-3">Dashboard</span>
-          </router-link>
-        </li>
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@/components/ui/avatar'
 
-        <li>
-          <button
-            type="button"
-            class="flex items-center p-2 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-            @click="toggleDropdown('projectManagement')"
-          >
-            <svg
-              aria-hidden="true"
-              class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M4 4a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm3 3a1 1 0 100 2h6a1 1 0 100-2H7z"
-                clip-rule="evenodd"
-              ></path>
-            </svg>
-            <span class="flex-1 ml-3 text-left whitespace-nowrap"
-              >Project Management</span
-            >
-            <svg
-              aria-hidden="true"
-              class="w-6 h-6"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                clip-rule="evenodd"
-              ></path>
-            </svg>
-          </button>
-          <ul
-            v-show="dropdownStates['projectManagement']"
-            class="py-2 space-y-2"
-          >
-            <li>
-              <router-link
-                to="/task"
-                class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                :class="{
-              'bg-gray-100 dark:bg-gray-700': $route.path === '/task',
-            }"
-            >All Tasks</router-link
-              >
-            </li>
-            <li>
-              <router-link
-                to="/kanban"
-                class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                :class="{
-              'bg-gray-100 dark:bg-gray-700': $route.path === '/kanban',
-            }"
-            >Kanban Board</router-link
-              >
-            </li>
-            <li>
-              <router-link
-                to="/gantt"
-                class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                :class="{
-              'bg-gray-100 dark:bg-gray-700': $route.path === '/gantt',
-            }"
-            >Gantt Chart</router-link
-              >
-            </li>
-          </ul>
-        </li>
-      </ul>
-      <ul
-        class="pt-5 mt-5 space-y-2 border-t border-gray-200 dark:border-gray-700"
-      >
-        <li>
-          <router-link
-            to="/report"
-            class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white group"
-            :class="{
-              'bg-gray-100 dark:bg-gray-700': $route.path === '/report',
-            }"
-          >
-            <svg
-              aria-hidden="true"
-              class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-              <path
-                fill-rule="evenodd"
-                d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
-                clip-rule="evenodd"
-              ></path>
-            </svg>
-            <span class="ml-3">Report</span>
-          </router-link>
-        </li>
-        <li>
-          <router-link
-            to="/member"
-            class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white group"
-            :class="{
-              'bg-gray-100 dark:bg-gray-700': $route.path === '/member',
-            }"
-          >
-            <svg
-              aria-hidden="true"
-              class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-              <path
-                fill-rule="evenodd"
-                d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
-                clip-rule="evenodd"
-              ></path>
-            </svg>
-            <span class="ml-3">Member</span>
-          </router-link>
-        </li>
-      </ul>
-    </div>
-  </aside>
-</template>
 
-<script>
-export default {
-  data() {
-    return {
-      isSidebarOpen: false,
-      dropdownStates: {},
-    };
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Separator } from '@/components/ui/separator'
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  SidebarProvider,
+  SidebarRail,
+} from '@/components/ui/sidebar'
+import {
+  BadgeCheck,
+  Bell,
+  Bot,
+  ChevronRight,
+  ChevronsUpDown,
+  GalleryVerticalEnd,
+  LogOut,
+  PieChart,
+  Plus,
+  SquareTerminal,
+} from 'lucide-vue-next'
+import { ref } from 'vue'
+
+
+const authStore = useAuthStore()
+const router = useRouter()
+
+// Function to handle logout
+async function logout() {
+  try {
+    await authStore.logout()
+    router.push('/login')  // Redirect to login page after logout
+  } catch (error) {
+    console.error('Logout failed:', error)
+  }
+}
+
+// This is sample data.
+const data = {
+  user: {
+    name: 'Kean',
+    email: 'kean@example.com',
+    avatar: '/avatars/shadcn.jpg',
   },
-  methods: {
-    toggleSidebar() {
-      this.isSidebarOpen = !this.isSidebarOpen;
+  teams: [
+    {
+      name: 'gawa bata',
+      logo: GalleryVerticalEnd,
     },
-    toggleDropdown(dropdownId) {
-      if (this.dropdownStates[dropdownId] === undefined) {
-        this.dropdownStates[dropdownId] = false;
-      }
+  ],
 
-      this.dropdownStates[dropdownId] = !this.dropdownStates[dropdownId];
+  overview: [
+    {
+      name: 'Dashboard',
+      url: '/dashboard',
+      icon: PieChart,
     },
-  },
-};
+  ],
+
+  navMain: [
+    {
+      title: 'Project',
+      url: '#',
+      icon: SquareTerminal,
+      isActive: true,
+      items: [
+        {
+          title: 'All task',
+          url: '/task',
+        },
+        {
+          title: 'Kanban Board',
+          url: '/kanban',
+        },
+        {
+          title: 'Gantt Chart',
+          url: '/gantt',
+        },
+      ],
+    },
+    {
+      title: 'Reports',
+      url: '#',
+      icon: Bot,
+      items: [
+        {
+          title: 'Genarate Report',
+          url: '/report',
+        },
+      ],
+    },
+  
+  ],
+  
+}
+
+const activeTeam = ref(data.teams[0])
+
+function setActiveTeam(team: typeof data.teams[number]) {
+  activeTeam.value = team
+}
 </script>
+
+<template>
+  <SidebarProvider>
+    <Sidebar collapsible="icon">
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <SidebarMenuButton
+                  size="lg"
+                  class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                >
+                  <div class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                    <component :is="activeTeam.logo" class="size-4" />
+                  </div>
+                  <div class="grid flex-1 text-left text-sm leading-tight">
+                    <span class="truncate font-semibold">{{ activeTeam.name }}</span>
+                  
+                  </div>
+                  <ChevronsUpDown class="ml-auto" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                class="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                align="start"
+                side="bottom"
+                :side-offset="4"
+              >
+                <DropdownMenuLabel class="text-xs text-muted-foreground">
+                  Teams
+                </DropdownMenuLabel>
+                <DropdownMenuItem
+                  v-for="(team, index) in data.teams"
+                  :key="team.name"
+                  class="gap-2 p-2"
+                  @click="setActiveTeam(team)"
+                >
+                  <div class="flex size-6 items-center justify-center rounded-sm border">
+                    <component :is="team.logo" class="size-4 shrink-0" />
+                  </div>
+                  {{ team.name }}
+                  <DropdownMenuShortcut>⌘{{ index + 1 }}</DropdownMenuShortcut>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem class="gap-2 p-2">
+                  <div class="flex size-6 items-center justify-center rounded-md border bg-background">
+                    <Plus class="size-4" />
+                  </div>
+                  <div class="font-medium text-muted-foreground">
+                    Add team
+                  </div>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup class="group-data-[collapsible=icon]:hidden">
+          <SidebarGroupLabel>Overview</SidebarGroupLabel>
+          <SidebarMenu>
+            <SidebarMenuItem
+              v-for="item in data.overview"
+              :key="item.name"
+            >
+              <SidebarMenuButton as-child>
+                <a :href="item.url">
+                  <component :is="item.icon" />
+                  <span>{{ item.name }}</span>
+                </a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Project Management</SidebarGroupLabel>
+          <SidebarMenu>
+            <Collapsible
+              v-for="item in data.navMain"
+              :key="item.title"
+              as-child
+              :default-open="item.isActive"
+              class="group/collapsible"
+            >
+              <SidebarMenuItem>
+                <CollapsibleTrigger as-child>
+                  <SidebarMenuButton :tooltip="item.title">
+                    <component :is="item.icon" />
+                    <span>{{ item.title }}</span>
+                    <ChevronRight class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <SidebarMenuSub>
+                    <SidebarMenuSubItem
+                      v-for="subItem in item.items"
+                      :key="subItem.title"
+                    >
+                      <SidebarMenuSubButton as-child>
+                        <a :href="subItem.url">
+                          <span>{{ subItem.title }}</span>
+                        </a>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              </SidebarMenuItem>
+            </Collapsible>
+          </SidebarMenu>
+        </SidebarGroup>
+
+      </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <SidebarMenuButton
+                  size="lg"
+                  class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                >
+                  <Avatar class="h-8 w-8 rounded-lg">
+                    <AvatarImage :src="data.user.avatar" :alt="data.user.name" />
+                    <AvatarFallback class="rounded-lg">
+                      CN
+                    </AvatarFallback>
+                  </Avatar>
+                  <div class="grid flex-1 text-left text-sm leading-tight">
+                    <span class="truncate font-semibold">{{ data.user.name }}</span>
+                    <span class="truncate text-xs">{{ data.user.email }}</span>
+                  </div>
+                  <ChevronsUpDown class="ml-auto size-4" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent class="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg" side="bottom" align="end" :side-offset="4">
+                <DropdownMenuLabel class="p-0 font-normal">
+                  <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                    <Avatar class="h-8 w-8 rounded-lg">
+                      <AvatarImage :src="data.user.avatar" :alt="data.user.name" />
+                      <AvatarFallback class="rounded-lg">
+                        CN
+                      </AvatarFallback>
+                    </Avatar>
+                    <div class="grid flex-1 text-left text-sm leading-tight">
+                      <span class="truncate font-semibold">{{ data.user.name }}</span>
+                      <span class="truncate text-xs">{{ data.user.email }}</span>
+                    </div>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    <BadgeCheck />
+                    Account
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Bell />
+                    Notifications
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem @click="logout">
+                  <LogOut />
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+      <SidebarRail />
+    </Sidebar>
+  </SidebarProvider>
+  
+</template>
