@@ -137,8 +137,10 @@ function setActiveTeam(team: typeof data.teams[number]) {
 
 <template>
   <SidebarProvider>
+    
     <Sidebar collapsible="icon">
       <SidebarHeader>
+
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
