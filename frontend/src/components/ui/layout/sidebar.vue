@@ -86,7 +86,7 @@ const data = {
   overview: [
     {
       name: 'Dashboard',
-      url: '/dashboard',
+      url: '/',
       icon: PieChart,
     },
   ],
