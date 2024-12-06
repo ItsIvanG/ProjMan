@@ -27,14 +27,20 @@
     class="fixed top-0 left-0 z-40 w-64 h-screen pt-14 transition-transform -translate-x-full bg-white border-r border-gray-200 md:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
     aria-label="Sidenav"
     id="drawer-navigation"
-    :class="{'translate-x-0': isSidebarOpen, '-translate-x-full': !isSidebarOpen}"
+    :class="{
+      'translate-x-0': isSidebarOpen,
+      '-translate-x-full': !isSidebarOpen,
+    }"
   >
     <div class="overflow-y-auto py-5 px-3 h-full bg-white dark:bg-gray-800">
       <ul class="space-y-2">
         <li>
-          <a
-            href="#"
-            class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+          <router-link
+            to="/dashboard"
+            class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white group"
+            :class="{
+              'bg-gray-100 dark:bg-gray-700': $route.path === '/dashboard',
+            }"
           >
             <svg
               aria-hidden="true"
@@ -47,8 +53,9 @@
               <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
             </svg>
             <span class="ml-3">Dashboard</span>
-          </a>
+          </router-link>
         </li>
+
         <li>
           <button
             type="button"
@@ -68,7 +75,9 @@
                 clip-rule="evenodd"
               ></path>
             </svg>
-            <span class="flex-1 ml-3 text-left whitespace-nowrap">Project Management</span>
+            <span class="flex-1 ml-3 text-left whitespace-nowrap"
+              >Project Management</span
+            >
             <svg
               aria-hidden="true"
               class="w-6 h-6"
@@ -87,35 +96,49 @@
             v-show="dropdownStates['projectManagement']"
             class="py-2 space-y-2"
           >
-          <li>
-              <a
-                href="#"
+            <li>
+              <router-link
+                to="/task"
                 class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                >All Tasks</a
+                :class="{
+              'bg-gray-100 dark:bg-gray-700': $route.path === '/task',
+            }"
+            >All Tasks</router-link
               >
             </li>
             <li>
-              <a
-                href="#"
+              <router-link
+                to="/kanban"
                 class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                >Kanban</a
+                :class="{
+              'bg-gray-100 dark:bg-gray-700': $route.path === '/kanban',
+            }"
+            >Kanban Board</router-link
               >
             </li>
             <li>
-              <a
-                href="#"
+              <router-link
+                to="/gantt"
                 class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                >Gantt Chart</a
+                :class="{
+              'bg-gray-100 dark:bg-gray-700': $route.path === '/gantt',
+            }"
+            >Gantt Chart</router-link
               >
             </li>
           </ul>
         </li>
       </ul>
-      <ul class="pt-5 mt-5 space-y-2 border-t border-gray-200 dark:border-gray-700">
+      <ul
+        class="pt-5 mt-5 space-y-2 border-t border-gray-200 dark:border-gray-700"
+      >
         <li>
-          <a
-            href="#"
-            class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg transition duration-75 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white group"
+          <router-link
+            to="/report"
+            class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white group"
+            :class="{
+              'bg-gray-100 dark:bg-gray-700': $route.path === '/report',
+            }"
           >
             <svg
               aria-hidden="true"
@@ -132,12 +155,15 @@
               ></path>
             </svg>
             <span class="ml-3">Report</span>
-          </a>
+          </router-link>
         </li>
         <li>
-          <a
-            href="#"
-            class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg transition duration-75 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white group"
+          <router-link
+            to="/member"
+            class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white group"
+            :class="{
+              'bg-gray-100 dark:bg-gray-700': $route.path === '/member',
+            }"
           >
             <svg
               aria-hidden="true"
@@ -154,7 +180,7 @@
               ></path>
             </svg>
             <span class="ml-3">Member</span>
-          </a>
+          </router-link>
         </li>
       </ul>
     </div>
