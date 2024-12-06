@@ -10,7 +10,7 @@ import Kanban from "./pages/Project Management/Kanban.vue";
 
 const routes = [
     {
-        path: '/dashboard',
+        path: '/',
         name: 'dashboard',
         component: Dashboard
     },
