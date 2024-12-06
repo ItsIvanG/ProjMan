@@ -1,7 +1,8 @@
 <template>
   <div class="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-    <h2 class="text-2xl font-bold text-gray-800 mb-6">Register</h2>
+    
     <form @submit.prevent="register" class="bg-white p-8 shadow-lg rounded-lg w-96">
+      <h2 class="text-2xl font-bold text-gray-800 mb-6 flex flex-col items-center justify-center ">Register</h2>
       <div class="mb-4">
         <label for="email" class="block text-gray-700 font-medium mb-2">Email:</label>
         <input
@@ -22,12 +23,12 @@
           class="w-full px-4 py-2 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       </div>
-      <button
+      <Button
         type="submit"
-        class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition"
+        class="w-full"
       >
         Register
-      </button>
+      </Button>
     </form>
     <p v-if="error" class="text-red-500 mt-4">{{ error }}</p>
     <p v-if="success" class="text-green-500 mt-4">{{ success }}</p>
@@ -37,6 +38,7 @@
 
 <script>
 import { getCSRFToken } from '../store/auth'
+import { Button } from '@/components/ui/button'
 
 export default {
   data() {
@@ -75,6 +77,9 @@ export default {
         this.error = 'An error occurred during registration: ' + err
       }
     }
+  },
+  components:  {
+    Button
   }
 }
 </script>
