@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-    <h1>Login</h1>
+    <h1>Login.</h1>
     <form @submit.prevent="login">
       <div>
         <label for="email">Email:</label>
@@ -12,7 +12,7 @@
         <input v-model="password" id="password" type="password" required
                @input="resetError">
       </div>
-      <button type="submit">Login</button>
+      <Button type="submit">Login</Button>
     </form>
     <p v-if="error" class="error">{{ error }}</p>
   </div>
@@ -20,8 +20,11 @@
 
 <script>
 import { useAuthStore } from '../store/auth'
+import { Button } from '@/components/ui/button'
+// import {Button} from "../../@/components/ui/button/index.js";
 
 export default {
+  components: {Button},
   setup() {
     const authStore = useAuthStore()
     return {
