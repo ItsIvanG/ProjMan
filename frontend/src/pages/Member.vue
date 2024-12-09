@@ -31,6 +31,8 @@ import {
   PlusCircle,
 } from 'lucide-vue-next'
 import { computed, ref } from "vue";
+import  Usermodal  from '@/components/reusable/modals/usermodal.vue'
+import  Useredit  from '@/components/reusable/modals/editusermodal.vue'
 
 // Sample users data
 const allUsers = ref([
@@ -137,12 +139,7 @@ const totalPages = computed(() =>
             <DropdownMenuItem>Member</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Button size="sm" class="h-7 gap-1">
-          <PlusCircle class="h-3.5 w-3.5" />
-          <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
-            Add User
-          </span>
-        </Button>
+        <Usermodal />
       </div>
     </div>
     <TabsContent value="all">
@@ -187,10 +184,7 @@ const totalPages = computed(() =>
                           <span class="sr-only">Toggle menu</span>
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                      </DropdownMenuContent>
+                      <Useredit />
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>

@@ -31,6 +31,9 @@ import {
   PlusCircle,
 } from 'lucide-vue-next'
 import { computed, ref } from "vue";
+import  AddTask  from '@/components/reusable/modals/taskmodal.vue'
+import  EditTask  from '@/components/reusable/modals/edittaskmodal.vue'
+
 
 // Sample tasks data
 const allTasks = ref([
@@ -40,6 +43,7 @@ const allTasks = ref([
     status: "Not Started",
     priority: "High",
     assign: "Kean Lucas",
+    sprint: "Sprint 1",
   },
   {
     name: "Task-02",
@@ -47,6 +51,7 @@ const allTasks = ref([
     status: "In progress",
     priority: "Medium",
     assign: "Kean Lucas",
+    sprint: "Sprint 1"
   },
   {
     name: "Task-03",
@@ -54,6 +59,7 @@ const allTasks = ref([
     status: "Completed",
     priority: "Low",
     assign: "Kean Lucas",
+    sprint: "Sprint 2"
   },
   {
     name: "Task-04",
@@ -61,6 +67,7 @@ const allTasks = ref([
     status: "Cancelled",
     priority: "Very High",
     assign: "Kean Lucas",
+    sprint: "Sprint 2"
   },
   {
     name: "Task-05",
@@ -68,6 +75,7 @@ const allTasks = ref([
     status: "In progress",
     priority: "Medium",
     assign: "Kean Lucas",
+    sprint: "Sprint 3"
   },
   {
     name: "Task-06",
@@ -75,6 +83,7 @@ const allTasks = ref([
     status: "Not Started",
     priority: "High",
     assign: "Kean Lucas",
+    sprint: "Sprint 3"
   },
 ]);
 
@@ -104,6 +113,43 @@ const getStatusVariant = (status: string) => {
       return 'completed';
     case 'cancelled':
       return 'cancelled';
+    default:
+      return 'default';
+  }
+};
+
+const getSprintVariant = (sprint: string) => {
+  switch (sprint.toLowerCase()) {
+    case 'sprint 1':
+      return 'sprint1';
+    case 'sprint 2':
+      return 'sprint2';
+    case 'sprint 3':
+      return 'sprint3';
+    case 'sprint 4':
+      return 'sprint4';
+    case 'sprint 5':
+      return 'sprint5';
+    case 'sprint 6':
+      return 'sprint6';
+    case 'sprint 7':
+      return 'sprint7';
+    case 'sprint 8':
+      return 'sprint8';
+    case 'sprint 9':
+      return 'sprint9';
+    case 'sprint 10':
+      return 'sprint10';
+    case 'sprint 11':
+      return 'sprint11';
+    case 'sprint 12':
+      return 'sprint12';
+    case 'sprint 13':
+      return 'sprint13';
+    case 'sprint 14':
+      return 'sprint14';
+    case 'sprint 15':
+      return 'sprint15';
     default:
       return 'default';
   }
@@ -148,12 +194,7 @@ const getPriorityVariant = (priority: string) => {
             <DropdownMenuItem>Cancelled</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Button size="sm" class="h-7 gap-1">
-          <PlusCircle class="h-3.5 w-3.5" />
-          <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
-            Add Task
-          </span>
-        </Button>
+<AddTask />
       </div>
     </div>
     <TabsContent value="all">
@@ -166,6 +207,7 @@ const getPriorityVariant = (priority: string) => {
                 <TableHead>Features</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead class="hidden md:table-cell">Assigned</TableHead>
+                <TableHead class="hidden md:table-cell">Sprint</TableHead>
                 <TableHead class="hidden md:table-cell">Priority</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -184,6 +226,12 @@ const getPriorityVariant = (priority: string) => {
                     {{ task.assign }}
                   </TableCell>
                   <TableCell class="hidden md:table-cell">
+  <Badge :variant="getSprintVariant(task.sprint)">
+    {{ task.sprint }}
+  </Badge>
+</TableCell>
+
+                  <TableCell class="hidden md:table-cell">
                     <Badge :variant="getPriorityVariant(task.priority)">
                       {{ task.priority }}
                     </Badge>
@@ -200,11 +248,7 @@ const getPriorityVariant = (priority: string) => {
                           <span class="sr-only">Toggle menu</span>
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>Cancel Task</DropdownMenuItem>
-                      </DropdownMenuContent>
+                      <EditTask />
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>

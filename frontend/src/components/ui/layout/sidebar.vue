@@ -44,16 +44,8 @@
       
       <!-- Create New Project Button -->
       <DropdownMenuSeparator class="my-2 border-t border-gray-100" />
-      <DropdownMenuItem class="px-4 py-2 hover:bg-gray-100 text-gray-700 cursor-pointer transition">
-        <div 
-        class="w-full text-left  font-medium flex items-center justify-center space-x-2 cursor-pointer"
-          @click="createNewProject"
-        >
-        <PlusCircle class="h-5 w-5" />
-          <span> Create New</span>
-        </div>
-      </DropdownMenuItem>
-
+      
+ <ProjectModal/>
     </DropdownMenuContent>
   </DropdownMenu>
 </div>
@@ -201,9 +193,5 @@ const selectProject = (project) => {
   console.log('Selected project:', project)
 }
 
-const createNewProject = () => {
-  // Add your logic to create a new project here
-  // This could involve opening a modal, navigating to a new route, or making an API call.
-  alert('Create New Project clicked!')
-}
+
 </script>
