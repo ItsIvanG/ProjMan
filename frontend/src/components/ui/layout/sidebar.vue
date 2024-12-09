@@ -1,9 +1,67 @@
 <template>
   <div class="flex h-screen">
     <ScrollArea class="h-full">
-      
       <div class="space-y-4 py-4">
-        <div class="px-3">
+        <div class="px-3 mb-8">
+          <h2 class="mb-2 px-4 text-sm font-semibold tracking-tight text-muted-foreground">
+            Project
+          </h2>
+          <div class="space-y-4">
+  <DropdownMenu>
+    <!-- Dropdown Trigger -->
+    <DropdownMenuTrigger asChild>
+      <Button 
+        variant="outline" 
+        class="w-full flex items-center justify-between px-4 py-2 rounded-lg border border-gray-300 hover:border-gray-400 shadow-sm focus:outline-none focus:ring focus:ring-gray-200 transition">
+        <Folder class="mr-2 h-5 w-5" />
+        <span>{{ selectedProject || 'Select Project' }}</span>
+        <ChevronDown class="ml-auto h-5 w-5" />
+      </Button>
+    </DropdownMenuTrigger>
+
+    <!-- Dropdown Content -->
+    <DropdownMenuContent 
+      class="mt-2 rounded-lg border border-gray-200 bg-white shadow-md"
+      style="width: 100%">
+      
+      <!-- Dropdown Header -->
+      <DropdownMenuLabel class="px-4 py-2 text-sm font-medium text-gray-500">
+        Select Project
+      </DropdownMenuLabel>
+      <DropdownMenuSeparator class="my-2 border-t border-gray-100" />
+      
+      <!-- Dropdown Items -->
+      <div class="max-h-60 overflow-auto">
+        <DropdownMenuItem 
+          v-for="(project, index) in projects" 
+          :key="index" 
+          class="px-4 py-2 hover:bg-gray-100 text-gray-700 cursor-pointer transition">
+          <a href="#" @click="selectProject(project)">
+            {{ project }}
+          </a>
+        </DropdownMenuItem>
+      </div>
+      
+      <!-- Create New Project Button -->
+      <DropdownMenuSeparator class="my-2 border-t border-gray-100" />
+      <DropdownMenuItem class="px-4 py-2 hover:bg-gray-100 rounded-lg transition">
+        <div 
+          class="w-full text-left text-black font-medium flex items-center space-x-2 cursor-pointer hover:text-gray-700"
+          @click="createNewProject"
+        >
+          <PlusCircle class="h-5 w-5" />
+          <span>Create New</span>
+        </div>
+      </DropdownMenuItem>
+
+    </DropdownMenuContent>
+  </DropdownMenu>
+</div>
+
+
+        </div>
+
+        <div class="px-3 mb-8">
           <h2 class="mb-2 px-4 text-sm font-semibold tracking-tight text-muted-foreground">
             Overview
           </h2>
@@ -32,7 +90,7 @@
                   class="h-4 w-4 shrink-0 transition-transform duration-200 ease-in-out group-data-[state=open]:rotate-180" 
                 />
               </CollapsibleTrigger>
-              <CollapsibleContent class="space-y-1 px-2 py-2">
+              <CollapsibleContent class="space-y-1 px-5 py-2">
                 <Button
                   variant="ghost"
                   :class="{ 'bg-accent text-accent-foreground': isActive('/task') }"
@@ -110,10 +168,22 @@ import { useRouter, useRoute } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
-import { ChevronDown, File, FileText, HelpCircle, LayoutDashboard, Users } from 'lucide-vue-next'
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
+import { 
+  ChevronDown, 
+  File, 
+  FileText, 
+  Folder,
+  HelpCircle, 
+  LayoutDashboard, 
+  Users 
+} from 'lucide-vue-next'
 
 const router = useRouter()
 const route = useRoute()
+
+const projects = ref(['Project 1 (Placeholder)', 'Project 2 (Placeholder)', 'Project 3 (Placeholder)'])
+const selectedProject = ref(null)
 
 // Function for navigation
 const navigateTo = (path) => {
@@ -122,4 +192,16 @@ const navigateTo = (path) => {
 
 // Check if a route is active
 const isActive = (path) => route.path === path
+
+const selectProject = (project) => {
+  selectedProject.value = project
+  // Add logic here to handle project selection, e.g., routing or state update
+  console.log('Selected project:', project)
+}
+
+const createNewProject = () => {
+  // Add your logic to create a new project here
+  // This could involve opening a modal, navigating to a new route, or making an API call.
+  alert('Create New Project clicked!')
+}
 </script>

@@ -4,7 +4,7 @@
       <!-- Logo Section -->
       <div class="flex items-center space-x-2">
         <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
-          <span class="text-lg font-bold text-primary-foreground">cn</span>
+          <span class="text-lg font-bold text-primary-foreground">PM</span>
         </div>
         <span class="hidden text-xl font-semibold sm:inline-block">Projman</span>
       </div>
@@ -61,7 +61,7 @@
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" class="relative h-8 w-8 rounded-full">
               <Avatar class="h-8 w-8">
-                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                <AvatarImage src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/340px-Default_pfp.svg.png" alt="@shadcn" />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
             </Button>
