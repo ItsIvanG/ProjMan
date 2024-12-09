@@ -1,87 +1,125 @@
 <template>
-    <nav class="bg-background px-4 py-2.5 dark:bg-gray-800 fixed left-0 right-0 top-0 z-50">
-
-      <div class="flex flex-wrap justify-between items-center">
-        <div class="flex justify-start items-center">
-          <button
-            data-drawer-target="drawer-navigation"
-            data-drawer-toggle="drawer-navigation"
-            aria-controls="drawer-navigation"
-            class="p-2 mr-2 text-gray-600 rounded-lg cursor-pointer md:hidden hover:text-gray-900 hover:bg-gray-100 focus:bg-gray-100 dark:focus:bg-gray-700 focus:ring-2 focus:ring-gray-100 dark:focus:ring-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-          >
-            <svg
-              aria-hidden="true"
-              class="w-6 h-6"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-                clip-rule="evenodd"
-              ></path>
-            </svg>
-            <svg
-              aria-hidden="true"
-              class="hidden w-6 h-6"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                clip-rule="evenodd"
-              ></path>
-            </svg>
-            <span class="sr-only">Toggle sidebar</span>
-          </button>
-          <a href="https://flowbite.com" class="flex items-center justify-between mr-4">
-            <img
-              src="https://flowbite.s3.amazonaws.com/logo.svg"
-              class="mr-3 h-8"
-              alt="Flowbite Logo"
-            />
-            <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Projman</span>
-          </a>
+  <header class="fixed top-0 left-0 right-0 z-40 w-full border-b bg-background">
+    <div class="flex h-16 items-center justify-between px-4 md:px-6">
+      <!-- Logo Section -->
+      <div class="flex items-center space-x-2">
+        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
+          <span class="text-lg font-bold text-primary-foreground">cn</span>
         </div>
-
+        <span class="hidden text-xl font-semibold sm:inline-block">Projman</span>
       </div>
-    </nav>
-  </template>
-  
-  <script>
-  import { useAuthStore } from '@/store/auth'
-  import { useRouter } from 'vue-router'
 
-  
-  export default {
-    setup() {
-      const authStore = useAuthStore()
-      const router = useRouter()
-  
-      return {
-        authStore, router
-      }
-    },
-    methods: {
-      async logout() {
-        try {
-          await this.authStore.logout(this.$router)
-        } catch (error) {
-          console.error("Logout failed:", error)
-        }
-      },
-      toggleDropdown() {
-        this.isDropdownOpen = !this.isDropdownOpen;
-      }
-    },
-    data() {
-      return {
-        isDropdownOpen: false
-      };
-    }
+      <!-- Right Section for Larger Screens -->
+      <div class="hidden md:flex md:flex-1 md:items-center md:justify-end md:space-x-4">
+        <!-- Search Bar -->
+        <form class="hidden md:block">
+          <div class="relative">
+            <Search class="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Search..."
+              class="w-[220px] pl-10 md:w-[300px]"
+            />
+          </div>
+        </form>
+
+        <!-- Notifications Dropdown -->
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Bell class="h-5 w-5" />
+              <span class="sr-only">Notifications</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" class="w-[280px] md:w-[300px]">
+            <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <ScrollArea class="h-[300px]">
+              <div class="space-y-3 p-4">
+                <div v-for="i in 5" :key="i" class="flex items-start gap-3 rounded-lg p-2 hover:bg-accent">
+                  <Avatar>
+                    <AvatarImage :src="`https://i.pravatar.cc/40?img=${i}`" />
+                    <AvatarFallback>U{{ i }}</AvatarFallback>
+                  </Avatar>
+                  <div class="space-y-1">
+                    <p class="text-sm font-medium">New message from User {{ i }}</p>
+                    <p class="text-sm text-muted-foreground">Hey, what's up? All set for the presentation?</p>
+                    <p class="text-xs text-muted-foreground">2 hours ago</p>
+                  </div>
+                </div>
+              </div>
+            </ScrollArea>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem class="cursor-pointer justify-center">
+              View all notifications
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <!-- User Account Dropdown -->
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" class="relative h-8 w-8 rounded-full">
+              <Avatar class="h-8 w-8">
+                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem @click="navigateTo('/profile')">Profile</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem @click="logout">Log out</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  </header>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/store/auth'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { 
+  DropdownMenu, 
+  DropdownMenuTrigger, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator 
+} from '@/components/ui/dropdown-menu'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Bell, LayoutGrid, Menu, Search, ShoppingCart, Users, Inbox, Settings, CreditCard, HelpCircle } from 'lucide-vue-next'
+
+const router = useRouter()
+const authStore = useAuthStore()
+
+const apps = [
+  { name: 'Sales', icon: ShoppingCart },
+  { name: 'Users', icon: Users },
+  { name: 'Inbox', icon: Inbox },
+  { name: 'Settings', icon: Settings },
+  { name: 'Billing', icon: CreditCard },
+  { name: 'Help', icon: HelpCircle },
+]
+
+const navigateTo = (path) => {
+  router.push(path)
+}
+
+const logout = async () => {
+  try {
+    await authStore.logout()
+    router.push('/login')
+  } catch (error) {
+    console.error("Logout failed:", error)
   }
-  </script>
-  
+}
+</script>
