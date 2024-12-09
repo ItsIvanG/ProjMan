@@ -56,6 +56,12 @@
           </DropdownMenuContent>
         </DropdownMenu>
 
+                <!-- Dark Mode Toggle Button -->
+                <Button @click="toggleDarkMode" variant="ghost" size="icon">
+  <span class="sr-only">Toggle Dark Mode</span>
+  <component :is="darkMode ? Moon : Sun" class="h-5 w-5" />
+</Button>
+
         <!-- User Account Dropdown -->
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -64,7 +70,6 @@
                 <AvatarImage src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/340px-Default_pfp.svg.png" alt="@shadcn" />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
-              
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -75,6 +80,7 @@
             <DropdownMenuItem @click="logout">Log out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+
       </div>
     </div>
   </header>
@@ -97,19 +103,12 @@ import {
   DropdownMenuSeparator 
 } from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { Bell, LayoutGrid, Menu, Search, ShoppingCart, Users, Inbox, Settings, CreditCard, HelpCircle } from 'lucide-vue-next'
+import { Bell, LayoutGrid, Menu, Search, ShoppingCart, Users, Inbox, Settings, CreditCard, HelpCircle, Sun, Moon } from 'lucide-vue-next'
 
 const router = useRouter()
 const authStore = useAuthStore()
 
-const apps = [
-  { name: 'Sales', icon: ShoppingCart },
-  { name: 'Users', icon: Users },
-  { name: 'Inbox', icon: Inbox },
-  { name: 'Settings', icon: Settings },
-  { name: 'Billing', icon: CreditCard },
-  { name: 'Help', icon: HelpCircle },
-]
+const darkMode = ref(false)
 
 const navigateTo = (path) => {
   router.push(path)
@@ -123,4 +122,17 @@ const logout = async () => {
     console.error("Logout failed:", error)
   }
 }
+
+const toggleDarkMode = () => {
+  darkMode.value = !darkMode.value
+  if (darkMode.value) {
+    document.documentElement.classList.add('dark')
+  } else {
+    document.documentElement.classList.remove('dark')
+  }
+}
 </script>
+
+<style scoped>
+/* Add any custom styling for the button or header */
+</style>
