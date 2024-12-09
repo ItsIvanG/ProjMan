@@ -80,7 +80,7 @@ const allTasks = ref([
 
 // Pagination settings
 const currentPage = ref(1);
-const itemsPerPage = 5;
+const itemsPerPage = 7;
 
 // Paginated tasks
 const paginatedTasks = computed(() => {
