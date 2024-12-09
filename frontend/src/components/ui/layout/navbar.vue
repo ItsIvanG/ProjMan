@@ -64,6 +64,7 @@
                 <AvatarImage src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/340px-Default_pfp.svg.png" alt="@shadcn" />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
+              
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">

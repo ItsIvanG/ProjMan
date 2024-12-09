@@ -44,9 +44,9 @@
       
       <!-- Create New Project Button -->
       <DropdownMenuSeparator class="my-2 border-t border-gray-100" />
-      <DropdownMenuItem class="px-4 py-2 hover:bg-gray-100 rounded-lg transition">
+      <DropdownMenuItem class="px-4 py-2 rounded-lg transition">
         <div 
-          class="w-full text-left text-black font-medium flex items-center space-x-2 cursor-pointer hover:text-gray-700"
+          class="w-full text-left text-black font-medium flex items-center space-x-2 cursor-pointer hover:text-white"
           @click="createNewProject"
         >
           <PlusCircle class="h-5 w-5" />

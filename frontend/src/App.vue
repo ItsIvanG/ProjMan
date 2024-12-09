@@ -13,7 +13,7 @@ const route = useRoute();
     <!-- Sidebar -->
     <aside 
       :class="[
-        'fixed inset-y-0 left-0 z-50 w-64 bg-background pt-20',
+        'fixed inset-y-0 left-0 z-50 w-64 bg-background pt-16',
         'transform transition-transform duration-300 ease-in-out',
         { '-translate-x-full': !isSidebarOpen },
         'lg:translate-x-0',
