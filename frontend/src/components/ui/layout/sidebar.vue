@@ -1,315 +1,207 @@
-<script setup lang=ts>
-import { useAuthStore } from '@/store/auth'
-import { useRouter } from 'vue-router'
+<template>
+  <div class="flex h-screen">
+    <ScrollArea class="h-full">
+      <div class="space-y-4 py-4">
+        <div class="px-3 mb-8">
+          <h2 class="mb-2 px-4 text-sm font-semibold tracking-tight text-muted-foreground">
+            Project
+          </h2>
+          <div class="space-y-4">
+  <DropdownMenu>
+    <!-- Dropdown Trigger -->
+    <DropdownMenuTrigger asChild>
+      <Button 
+        variant="outline" 
+        class="w-full flex items-center justify-between px-4 py-2 rounded-lg border border-gray-300 hover:border-gray-400 shadow-sm focus:outline-none focus:ring focus:ring-gray-200 transition">
+        <Folder class="mr-2 h-5 w-5" />
+        <span>{{ selectedProject || 'Select Project' }}</span>
+        <ChevronDown class="ml-auto h-5 w-5" />
+      </Button>
+    </DropdownMenuTrigger>
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/components/ui/avatar'
+    <!-- Dropdown Content -->
+    <DropdownMenuContent 
+      class="mt-2 rounded-lg border border-gray-200 bg-white shadow-md"
+      style="width: 100%">
+      
+      <!-- Dropdown Header -->
+      <DropdownMenuLabel class="px-4 py-2 text-sm font-medium text-gray-500">
+        Select Project
+      </DropdownMenuLabel>
+      <DropdownMenuSeparator class="my-2 border-t border-gray-100" />
+      
+      <!-- Dropdown Items -->
+      <div class="max-h-60 overflow-auto">
+        <DropdownMenuItem 
+          v-for="(project, index) in projects" 
+          :key="index" 
+          class="px-4 py-2 hover:bg-gray-100 text-gray-700 cursor-pointer transition">
+          <a href="#" @click="selectProject(project)">
+            {{ project }}
+          </a>
+        </DropdownMenuItem>
+      </div>
+      
+      <!-- Create New Project Button -->
+      <DropdownMenuSeparator class="my-2 border-t border-gray-100" />
+      <DropdownMenuItem class="px-4 py-2 rounded-lg transition">
+        <div 
+          class="w-full text-left text-black font-medium flex items-center space-x-2 cursor-pointer hover:text-white"
+          @click="createNewProject"
+        >
+          <PlusCircle class="h-5 w-5" />
+          <span>Create New</span>
+        </div>
+      </DropdownMenuItem>
+
+    </DropdownMenuContent>
+  </DropdownMenu>
+</div>
 
 
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Separator } from '@/components/ui/separator'
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-  SidebarProvider,
-  SidebarRail,
-} from '@/components/ui/sidebar'
-import {
-  BadgeCheck,
-  Bell,
-  Bot,
-  ChevronRight,
-  ChevronsUpDown,
-  GalleryVerticalEnd,
-  LogOut,
-  PieChart,
-  Plus,
-  SquareTerminal,
-} from 'lucide-vue-next'
+        </div>
+
+        <div class="px-3 mb-8">
+          <h2 class="mb-2 px-4 text-sm font-semibold tracking-tight text-muted-foreground">
+            Overview
+          </h2>
+          <div class="space-y-1">
+            <!-- Dashboard Button -->
+            <Button
+              variant="ghost"
+              :class="{ 'bg-accent text-accent-foreground': isActive('/') }"
+              class="w-full justify-start"
+              @click="navigateTo('/')"
+            >
+              <LayoutDashboard class="mr-2 h-4 w-4" />
+              Dashboard
+            </Button>
+
+            <!-- Project Management Collapsible -->
+            <Collapsible>
+              <CollapsibleTrigger 
+                class="flex w-full items-center justify-between rounded-md px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+              >
+                <div class="flex items-center">
+                  <File class="mr-4 h-4 w-4" />
+                  Project Management
+                </div>
+                <ChevronDown 
+                  class="h-4 w-4 shrink-0 transition-transform duration-200 ease-in-out group-data-[state=open]:rotate-180" 
+                />
+              </CollapsibleTrigger>
+              <CollapsibleContent class="space-y-1 px-5 py-2">
+                <Button
+                  variant="ghost"
+                  :class="{ 'bg-accent text-accent-foreground': isActive('/task') }"
+                  class="w-full justify-start pl-8 text-sm"
+                  @click="navigateTo('/task')"
+                >
+                  All Tasks
+                </Button>
+                <Button
+                  variant="ghost"
+                  :class="{ 'bg-accent text-accent-foreground': isActive('/kanban') }"
+                  class="w-full justify-start pl-8 text-sm"
+                  @click="navigateTo('/kanban')"
+                >
+                  Kanban Board
+                </Button>
+                <Button
+                  variant="ghost"
+                  :class="{ 'bg-accent text-accent-foreground': isActive('/gantt') }"
+                  class="w-full justify-start pl-8 text-sm"
+                  @click="navigateTo('/gantt')"
+                >
+                  Gantt Chart
+                </Button>
+              </CollapsibleContent>
+            </Collapsible>
+
+            <!-- Member Management -->
+            <Button
+              variant="ghost"
+              :class="{ 'bg-accent text-accent-foreground': isActive('/member') }"
+              class="w-full justify-start"
+              @click="navigateTo('/member')"
+            >
+              <Users class="mr-2 h-4 w-4" />
+              Member Management
+            </Button>
+          </div>
+        </div>
+
+        <!-- Resources Section -->
+        <div class="px-3">
+          <h2 class="mb-2 px-4 text-sm font-semibold tracking-tight text-muted-foreground">
+            Resources
+          </h2>
+          <div class="space-y-1">
+            <Button
+              variant="ghost"
+              :class="{ 'bg-accent text-accent-foreground': isActive('/report') }"
+              class="w-full justify-start"
+              @click="navigateTo('/report')"
+            >
+              <FileText class="mr-2 h-4 w-4" />
+              Generate Report
+            </Button>
+            <Button
+              variant="ghost"
+              :class="{ 'bg-accent text-accent-foreground': isActive('/help') }"
+              class="w-full justify-start"
+              @click="navigateTo('/help')"
+            >
+              <HelpCircle class="mr-2 h-4 w-4" />
+              Placeholder
+            </Button>
+          </div>
+        </div>
+      </div>
+    </ScrollArea>
+  </div>
+</template>
+
+<script setup>
 import { ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { Button } from '@/components/ui/button'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
+import { 
+  ChevronDown, 
+  File, 
+  FileText, 
+  Folder,
+  HelpCircle, 
+  LayoutDashboard, 
+  Users 
+} from 'lucide-vue-next'
 
-
-const authStore = useAuthStore()
 const router = useRouter()
+const route = useRoute()
 
-// Function to handle logout
-async function logout() {
-  try {
-    await authStore.logout()
-    router.push('/login')  // Redirect to login page after logout
-  } catch (error) {
-    console.error('Logout failed:', error)
-  }
+const projects = ref(['Project 1 (Placeholder)', 'Project 2 (Placeholder)', 'Project 3 (Placeholder)'])
+const selectedProject = ref(null)
+
+// Function for navigation
+const navigateTo = (path) => {
+  router.push(path)
 }
 
-// This is sample data.
-const data = {
-  user: {
-    name: 'Kean',
-    email: 'kean@example.com',
-    avatar: '/avatars/shadcn.jpg',
-  },
-  teams: [
-    {
-      name: 'gawa bata',
-      logo: GalleryVerticalEnd,
-    },
-  ],
+// Check if a route is active
+const isActive = (path) => route.path === path
 
-  overview: [
-    {
-      name: 'Dashboard',
-      url: '/',
-      icon: PieChart,
-    },
-  ],
-
-  navMain: [
-    {
-      title: 'Project',
-      url: '#',
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: 'All task',
-          url: '/task',
-        },
-        {
-          title: 'Kanban Board',
-          url: '/kanban',
-        },
-        {
-          title: 'Gantt Chart',
-          url: '/gantt',
-        },
-      ],
-    },
-    {
-      title: 'Reports',
-      url: '#',
-      icon: Bot,
-      items: [
-        {
-          title: 'Genarate Report',
-          url: '/report',
-        },
-      ],
-    },
-  
-  ],
-  
+const selectProject = (project) => {
+  selectedProject.value = project
+  // Add logic here to handle project selection, e.g., routing or state update
+  console.log('Selected project:', project)
 }
 
-const activeTeam = ref(data.teams[0])
-
-function setActiveTeam(team: typeof data.teams[number]) {
-  activeTeam.value = team
+const createNewProject = () => {
+  // Add your logic to create a new project here
+  // This could involve opening a modal, navigating to a new route, or making an API call.
+  alert('Create New Project clicked!')
 }
 </script>
-
-<template>
-  <SidebarProvider>
-    
-    <Sidebar collapsible="icon">
-      <SidebarHeader>
-
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger as-child>
-                <SidebarMenuButton
-                  size="lg"
-                  class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                >
-                  <div class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                    <component :is="activeTeam.logo" class="size-4" />
-                  </div>
-                  <div class="grid flex-1 text-left text-sm leading-tight">
-                    <span class="truncate font-semibold">{{ activeTeam.name }}</span>
-                  
-                  </div>
-                  <ChevronsUpDown class="ml-auto" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                class="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-                align="start"
-                side="bottom"
-                :side-offset="4"
-              >
-                <DropdownMenuLabel class="text-xs text-muted-foreground">
-                  Teams
-                </DropdownMenuLabel>
-                <DropdownMenuItem
-                  v-for="(team, index) in data.teams"
-                  :key="team.name"
-                  class="gap-2 p-2"
-                  @click="setActiveTeam(team)"
-                >
-                  <div class="flex size-6 items-center justify-center rounded-sm border">
-                    <component :is="team.logo" class="size-4 shrink-0" />
-                  </div>
-                  {{ team.name }}
-                  <DropdownMenuShortcut>⌘{{ index + 1 }}</DropdownMenuShortcut>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem class="gap-2 p-2">
-                  <div class="flex size-6 items-center justify-center rounded-md border bg-background">
-                    <Plus class="size-4" />
-                  </div>
-                  <div class="font-medium text-muted-foreground">
-                    Add team
-                  </div>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup class="group-data-[collapsible=icon]:hidden">
-          <SidebarGroupLabel>Overview</SidebarGroupLabel>
-          <SidebarMenu>
-            <SidebarMenuItem
-              v-for="item in data.overview"
-              :key="item.name"
-            >
-              <SidebarMenuButton as-child>
-                <a :href="item.url">
-                  <component :is="item.icon" />
-                  <span>{{ item.name }}</span>
-                </a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>Project Management</SidebarGroupLabel>
-          <SidebarMenu>
-            <Collapsible
-              v-for="item in data.navMain"
-              :key="item.title"
-              as-child
-              :default-open="item.isActive"
-              class="group/collapsible"
-            >
-              <SidebarMenuItem>
-                <CollapsibleTrigger as-child>
-                  <SidebarMenuButton :tooltip="item.title">
-                    <component :is="item.icon" />
-                    <span>{{ item.title }}</span>
-                    <ChevronRight class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                  </SidebarMenuButton>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <SidebarMenuSub>
-                    <SidebarMenuSubItem
-                      v-for="subItem in item.items"
-                      :key="subItem.title"
-                    >
-                      <SidebarMenuSubButton as-child>
-                        <a :href="subItem.url">
-                          <span>{{ subItem.title }}</span>
-                        </a>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  </SidebarMenuSub>
-                </CollapsibleContent>
-              </SidebarMenuItem>
-            </Collapsible>
-          </SidebarMenu>
-        </SidebarGroup>
-
-      </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger as-child>
-                <SidebarMenuButton
-                  size="lg"
-                  class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                >
-                  <Avatar class="h-8 w-8 rounded-lg">
-                    <AvatarImage :src="data.user.avatar" :alt="data.user.name" />
-                    <AvatarFallback class="rounded-lg">
-                      CN
-                    </AvatarFallback>
-                  </Avatar>
-                  <div class="grid flex-1 text-left text-sm leading-tight">
-                    <span class="truncate font-semibold">{{ data.user.name }}</span>
-                    <span class="truncate text-xs">{{ data.user.email }}</span>
-                  </div>
-                  <ChevronsUpDown class="ml-auto size-4" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent class="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg" side="bottom" align="end" :side-offset="4">
-                <DropdownMenuLabel class="p-0 font-normal">
-                  <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                    <Avatar class="h-8 w-8 rounded-lg">
-                      <AvatarImage :src="data.user.avatar" :alt="data.user.name" />
-                      <AvatarFallback class="rounded-lg">
-                        CN
-                      </AvatarFallback>
-                    </Avatar>
-                    <div class="grid flex-1 text-left text-sm leading-tight">
-                      <span class="truncate font-semibold">{{ data.user.name }}</span>
-                      <span class="truncate text-xs">{{ data.user.email }}</span>
-                    </div>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    <BadgeCheck />
-                    Account
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Bell />
-                    Notifications
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem @click="logout">
-                  <LogOut />
-                  Log out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>
-  </SidebarProvider>
-  
-</template>
