@@ -97,7 +97,7 @@ const totalPages = computed(() =>
 const getStatusVariant = (status: string) => {
   switch (status.toLowerCase()) {
     case 'not started':
-      return 'notStarted';
+      return 'destructive';
     case 'in progress':
       return 'inProgress';
     case 'completed':
@@ -113,7 +113,7 @@ const getStatusVariant = (status: string) => {
 const getPriorityVariant = (priority: string) => {
   switch (priority.toLowerCase()) {
     case 'high':
-      return 'high';
+      return 'destructive';
     case 'medium':
       return 'medium';
     case 'low':

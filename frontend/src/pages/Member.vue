@@ -39,42 +39,49 @@ const allUsers = ref([
     name: "Kean Lucas",
     project: " project",
     role: "Member",
+    status: "Active",
   },
   {
     email: "kean@gmail.com",
     name: "Kean Lucas",
     project: " project",
     role: "Member",
+    status: "Active",
   },
   {
     email: "kean@gmail.com",
     name: "Kean Lucas",
     project: " project",
     role: "Member",
+    status: "Deactivated",
   },
   {
     email: "kean@gmail.com",
     name: "Kean Lucas",
     project: " project",
     role: "Member",
+    status: "Active",
   },
   {
     email: "admin@example.com",
     name: "Admin User",
     project: "Admin Project",
     role: "Leader",
+    status: "Active",
   },
   {
     email: "cheska.lucas@example.com",
     name: "Cheska Lucas",
     project: "Marketing",
     role: "Member",
+    status: "Active",
   },
   {
     email: "john.doe@example.com",
     name: "John Doe",
     project: "Development",
     role: "Leader",
+    status: "Active",
   },
 ]);
 
@@ -84,6 +91,10 @@ const getStatusVariant = (status: string) => {
       return 'leader';
     case 'member':
       return 'member';
+    case 'active':
+      return 'active';
+    case 'deactivated':
+      return 'destructive';
     default:
       return 'default';
   }
@@ -144,6 +155,7 @@ const totalPages = computed(() =>
                 <TableHead>Name</TableHead>
                 <TableHead>Project</TableHead>
                 <TableHead class="hidden md:table-cell">Role</TableHead>
+                <TableHead class="hidden md:table-cell">Status</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -156,6 +168,11 @@ const totalPages = computed(() =>
                   <TableCell>
                     <Badge :variant="getStatusVariant( user.role )">
                       {{ user.role }}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge :variant="getStatusVariant( user.status )">
+                      {{ user.status }}
                     </Badge>
                   </TableCell>
                   <TableCell>
