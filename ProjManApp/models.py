@@ -1,15 +1,11 @@
-
-# Create your models here.
 from django.db import models
 from django.contrib.auth.models import UserManager, AbstractUser, PermissionsMixin
 
 
 class CustomUserManager(UserManager):
     def _create_user(self, username, email, password, **extra_fields):
-
         if not username:
             raise ValueError('The given username must be set')
-
         if not email:
             raise ValueError('The email must be set')
 
@@ -18,7 +14,6 @@ class CustomUserManager(UserManager):
         user = self.model(username=username, email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
-
         return user
 
     def create_user(self, username, email=None, password=None, **extra_fields):
@@ -31,10 +26,17 @@ class CustomUserManager(UserManager):
         extra_fields.setdefault('is_superuser', True)
         return self._create_user(username, email, password, **extra_fields)
 
+
 class User(AbstractUser, PermissionsMixin):
+    ROLE_CHOICES = (
+        ('Member', 'Member'),
+        ('Manager', 'Manager'),
+    )
+
     email = models.EmailField(blank=False, max_length=255, unique=True)
     name = models.CharField(blank=False, max_length=255)
     username = models.CharField(blank=False, max_length=255, unique=True)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='Member')  # Add role field
 
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -59,9 +61,9 @@ class User(AbstractUser, PermissionsMixin):
 
     objects = CustomUserManager()
 
-    USERNAME_FIELD = 'username'
+    USERNAME_FIELD = 'username'  # 'username' is automatically required
     EMAIL_FIELD = 'email'
-    REQUIRED_FIELDS = ['email', 'name', 'username']
+    REQUIRED_FIELDS = ['email', 'name']  # 'username' is removed from REQUIRED_FIELDS
 
     class Meta:
         verbose_name = 'User'
