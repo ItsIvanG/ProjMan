@@ -17,18 +17,10 @@ import {
 } from '@/components/ui/tabs'
 import {
   Pagination,
-  PaginationEllipsis,
-  PaginationFirst,
-  PaginationLast,
-  PaginationList,
-  PaginationListItem,
-  PaginationNext,
-  PaginationPrev,
 } from '@/components/ui/pagination'
 import {
   ListFilter,
   MoreHorizontal,
-  PlusCircle,
 } from 'lucide-vue-next'
 import { computed, ref } from "vue";
 import  AddTask  from '@/components/reusable/modals/taskmodal.vue'
