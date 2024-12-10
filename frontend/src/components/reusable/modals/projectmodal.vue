@@ -29,20 +29,31 @@
             <Label for="projectName" class="text-right text-lg font-medium">
               Project Name
             </Label>
-            <Input id="projectName" placeholder="Enter project name" class="col-span-3 text-base p-3" />
+            <Input
+  id="projectName"
+  v-model="projectName"
+  placeholder="Enter project name"
+  class="col-span-3 text-base p-3"
+/>
           </div>
           <div class="grid grid-cols-4 items-center gap-6">
             <Label for="projectDesc" class="text-right text-lg font-medium">
               Description
             </Label>
-            <Input id="projectDesc" placeholder="Enter project description" class="col-span-3 text-base p-3" />
+            <Input
+  id="projectDesc"
+  v-model="projectDescription"
+  placeholder="Enter project description"
+  class="col-span-3 text-base p-3"
+/>
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" class="w-full sm:w-auto">
-                <PlusCircle class="mr-2 h-4 w-4" />
-                Save Project
-              </Button>
+          <Button type="button" @click="saveProject" class="w-full sm:w-auto">
+  <PlusCircle class="mr-2 h-4 w-4" />
+  Save Project
+</Button>
+
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -50,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref,computed } from 'vue';
 import {
   Dialog,
   DialogContent,
@@ -63,6 +74,38 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-vue-next';
+import { getAPI } from '@/axios';
+import { useAuthStore } from '@/store/auth';
+
+const projectName = ref('');
+const projectDescription = ref('');
+// Access the authentication store
+const authStore = useAuthStore();
+
+// Use a computed property to get the user ID from the store
+const userId = computed(() => authStore.user?.id);
+
+const saveProject = async () => {
+  try {
+
+    if (!userId.value) {
+      console.error('User ID is not available.');
+      return;
+    }
+
+    const response = await getAPI.post('/api/projects/create', {
+      project_name: projectName.value,
+      project_description: projectDescription.value,
+      user: userId.value,
+    });
+    console.log('Project Created:', response.data);
+    closeDialog();
+  } catch (error) {
+    console.error('Error creating project:', error);
+  }
+};
+
+
 
 // State to manage dialog visibility
 const isDialogOpen = ref(false);

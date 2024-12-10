@@ -9,6 +9,12 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from .forms import CreateUserForm
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Project
+from .serializers import ProjectSerializer
+
 
 @ensure_csrf_cookie
 @require_http_methods(['GET'])
@@ -71,4 +77,12 @@ def register(request):
     else:
         errors = form.errors.as_json()
         return JsonResponse({'error': errors}, status=400)
+    
+class ProjectCreateView(APIView):
+    def post(self, request):
+        serializer = ProjectSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
