@@ -15,7 +15,7 @@
         class="w-full flex items-center justify-between px-4 py-2 rounded-lg border border-gray-300 hover:border-gray-400 shadow-sm focus:outline-none focus:ring focus:ring-gray-200 transition">
         <Folder class="mr-2 h-5 w-5" />
         <span>{{ selectedProject || 'Select Project' }}</span>
-        <ChevronDown class="ml-auto h-5 w-5" />
+        <ChevronsUpDown class="ml-auto h-5 w-5" />
       </Button>
     </DropdownMenuTrigger>
 
@@ -163,7 +163,8 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 import { 
-  ChevronDown, 
+  ChevronDown,
+  ChevronsUpDown, 
   File, 
   FileText, 
   Folder,

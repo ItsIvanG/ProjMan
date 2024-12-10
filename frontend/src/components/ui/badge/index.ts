@@ -19,7 +19,7 @@ export const badgeVariants = cva(
         low: 'border-transparent bg-blue-600 text-white hover:bg-blue-700',
         medium: 'border-transparent bg-yellow-600 text-white hover:bg-yellow-700',
         veryhigh: 'border-transparent bg-green-800 text-white hover:bg-green-900',  
-        leader: 'border-transparent bg-violet-800 text-white hover:bg-violet-900',  
+        manager: 'border-transparent bg-violet-800 text-white hover:bg-violet-900',  
         member: 'border-transparent bg-blue-800 text-white hover:bg-blue-900',
         active: 'border-transparent bg-green-800 text-white hover:bg-green-900', 
         deactivated: 'border-transparent bg-red-600 text-white hover:bg-red-700',

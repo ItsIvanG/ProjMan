@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
+import { Card, CardContent, CardFooter, CardHeader, CardDescription, CardTitle } from '@/components/ui/card'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import {
   Table,
@@ -89,7 +89,7 @@ const allTasks = ref([
 
 // Pagination settings
 const currentPage = ref(1);
-const itemsPerPage = 7;
+const itemsPerPage = 5;
 
 // Paginated tasks
 const paginatedTasks = computed(() => {
@@ -175,6 +175,12 @@ const getPriorityVariant = (priority: string) => {
 <template>
   <Tabs default-value="all">
     <div class="flex items-center">
+      <CardHeader>
+                <CardTitle>Project 1 (Placeholder) </CardTitle>
+                <CardDescription>
+                  Project descriptioooooooooooon.
+                </CardDescription>
+              </CardHeader>
       <div class="ml-auto flex items-center gap-2">
         <DropdownMenu>
           <DropdownMenuTrigger as-child>

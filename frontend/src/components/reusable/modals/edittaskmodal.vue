@@ -7,7 +7,7 @@
       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem @click="openDialog">Edit</DropdownMenuItem>
-                        <DropdownMenuItem>Cancel Task</DropdownMenuItem>
+                        <DropdownMenuItem @click="openCancelTaskDialog">Cancel Task</DropdownMenuItem>
                       </DropdownMenuContent>
       <!-- Dialog for Task Creation -->
       <Dialog v-model:open="isDialogOpen" @close="closeDialog">
@@ -102,6 +102,23 @@
           </form>
         </DialogContent>
       </Dialog>
+
+      <!-- Alert Dialog for Cancel Task -->
+      <AlertDialog v-model:open="isCancelTaskDialogOpen">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently cancel your task.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <Button variant="outline" @click="closeCancelTaskDialog">Cancel</Button>
+          <Button variant="destructive" @click="handleCancelTask">Yes, Cancel Task</Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
     </div>
   </template>
   
@@ -114,10 +131,22 @@
   import { Label } from '@/components/ui/label';
   import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
   import { PlusCircle, X } from 'lucide-vue-next';
+  import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
   
   // Dialog state
   const isDialogOpen = ref(false);
-  
+  const isCancelTaskDialogOpen = ref(false);
+
   // Form data
   const formData = reactive({
     name: '',
@@ -136,6 +165,23 @@
     isDialogOpen.value = false;
   };
   
+
+  const openCancelTaskDialog = () => {
+  isCancelTaskDialogOpen.value = true;
+};
+
+const closeCancelTaskDialog = () => {
+  isCancelTaskDialogOpen.value = false;
+};
+
+// Handle Cancel Task Action
+const handleCancelTask = () => {
+  // Add your logic to handle task cancellation here
+  console.log('Task has been cancelled');
+  closeCancelTaskDialog();
+};
+
+
   // Handle form submission
   const handleSubmit = () => {
     // Add your form submission logic here

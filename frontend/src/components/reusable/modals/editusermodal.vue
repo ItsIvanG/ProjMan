@@ -4,7 +4,7 @@
       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem @click="openDialog">Edit</DropdownMenuItem>
-                        <DropdownMenuItem>Deactivated</DropdownMenuItem>
+                        <DropdownMenuItem @click="openDeactivateDialog">Deactivated</DropdownMenuItem>
                       </DropdownMenuContent>
                       
       <!-- Dialog for Task Creation -->
@@ -67,6 +67,23 @@
           </form>
         </DialogContent>
       </Dialog>
+
+
+      <AlertDialog v-model:open="isDeactivateDialogOpen">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently deactivate this account.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <Button variant="outline" @click="closeDeactivateDialog">Cancel</Button>
+          <Button variant="destructive" @click="handleDeactivation">Yes, Deactivate</Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
     </div>
   </template>
   
@@ -78,10 +95,22 @@
   import { Input } from '@/components/ui/input';
   import { Label } from '@/components/ui/label';
   import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+  import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
   import { PlusCircle } from 'lucide-vue-next';
   
   // Dialog state
   const isDialogOpen = ref(false);
+  const isDeactivateDialogOpen = ref(false);
   
   // Form data
   const formData = reactive({
@@ -91,6 +120,21 @@
     assignee: '',
     priority: ''
   });
+
+  const openDeactivateDialog = () => {
+    isDeactivateDialogOpen.value = true;
+};
+
+const closeDeactivateDialog = () => {
+  isDeactivateDialogOpen.value = false;
+};
+
+// Handle Cancel Task Action
+const handleDeactivation = () => {
+  // Add your logic to handle task cancellation here
+  console.log('Task has been cancelled');
+  closeDeactivateDialog();
+};
   
   // Open and Close Dialog
   const openDialog = () => {

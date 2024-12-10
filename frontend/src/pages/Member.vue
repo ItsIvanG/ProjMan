@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
+import { Card, CardContent, CardFooter, CardHeader, CardDescription, CardTitle } from '@/components/ui/card'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import {
   Table,
@@ -68,7 +68,7 @@ const allUsers = ref([
     email: "admin@example.com",
     name: "Admin User",
     project: "Admin Project",
-    role: "Leader",
+    role: "Manager",
     status: "Active",
   },
   {
@@ -82,15 +82,15 @@ const allUsers = ref([
     email: "john.doe@example.com",
     name: "John Doe",
     project: "Development",
-    role: "Leader",
+    role: "Manager",
     status: "Active",
   },
 ]);
 
 const getStatusVariant = (status: string) => {
   switch (status.toLowerCase()) {
-    case 'leader':
-      return 'leader';
+    case 'manager':
+      return 'manager';
     case 'member':
       return 'member';
     case 'active':
@@ -104,7 +104,7 @@ const getStatusVariant = (status: string) => {
 
 // Pagination settings
 const currentPage = ref(1);
-const itemsPerPage = 7;
+const itemsPerPage = 5;
 
 // Paginated users
 const paginatedUsers = computed(() => {
@@ -122,7 +122,14 @@ const totalPages = computed(() =>
 <template>
   <Tabs default-value="all">
     <div class="flex items-center">
+      <CardHeader>
+                <CardTitle>Member Management </CardTitle>
+                <CardDescription>
+                  List of manager and member.
+                </CardDescription>
+              </CardHeader>
       <div class="ml-auto flex items-center gap-2">
+        
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
             <Button variant="outline" size="sm" class="h-7 gap-1">
@@ -135,23 +142,24 @@ const totalPages = computed(() =>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Filter by</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Leader</DropdownMenuItem>
+            <DropdownMenuItem>Manager</DropdownMenuItem>
             <DropdownMenuItem>Member</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <Usermodal />
       </div>
     </div>
+    
     <TabsContent value="all">
       <Card>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Email</TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>Project</TableHead>
                 <TableHead class="hidden md:table-cell">Role</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Project</TableHead>
                 <TableHead class="hidden md:table-cell">Status</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -159,14 +167,14 @@ const totalPages = computed(() =>
             <TableBody>
               <template v-if="paginatedUsers.length">
                 <TableRow v-for="(user, index) in paginatedUsers" :key="index">
-                  <TableCell>{{ user.email }}</TableCell>
                   <TableCell>{{ user.name }}</TableCell>
-                  <TableCell>{{ user.project }}</TableCell>
                   <TableCell>
                     <Badge :variant="getStatusVariant( user.role )">
                       {{ user.role }}
                     </Badge>
                   </TableCell>
+                  <TableCell>{{ user.email }}</TableCell>
+                  <TableCell>{{ user.project }}</TableCell>
                   <TableCell>
                     <Badge :variant="getStatusVariant( user.status )">
                       {{ user.status }}
