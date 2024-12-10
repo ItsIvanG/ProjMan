@@ -10,4 +10,5 @@ urlpatterns = [
     path('api/user', views.user, name='user'),
     path('api/register', views.register, name='register'),
     path('api/projects/create', ProjectCreateView.as_view(), name='create_project'),
+    path('projects/<int:user_id>/', ProjectCreateView.as_view(), name='project-by-user'), 
 ]

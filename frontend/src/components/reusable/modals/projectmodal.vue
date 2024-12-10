@@ -87,7 +87,6 @@ const userId = computed(() => authStore.user?.id);
 
 const saveProject = async () => {
   try {
-
     if (!userId.value) {
       console.error('User ID is not available.');
       return;
@@ -99,11 +98,17 @@ const saveProject = async () => {
       user: userId.value,
     });
     console.log('Project Created:', response.data);
+
+    // Close the dialog
     closeDialog();
+
+    // Reload the window
+    window.location.reload();
   } catch (error) {
     console.error('Error creating project:', error);
   }
 };
+
 
 
 

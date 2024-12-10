@@ -79,6 +79,18 @@ def register(request):
         return JsonResponse({'error': errors}, status=400)
     
 class ProjectCreateView(APIView):
+    def get(self, request, user_id=None):
+        if user_id:
+            # Filter projects by the user_id
+            projects = Project.objects.filter(user__id=user_id)
+        else:
+            # If no user_id is provided, return all projects
+            projects = Project.objects.all()
+
+        # Serialize the projects and return them
+        serializer = ProjectSerializer(projects, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def post(self, request):
         serializer = ProjectSerializer(data=request.data)
         if serializer.is_valid():

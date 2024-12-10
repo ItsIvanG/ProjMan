@@ -25,6 +25,13 @@ import {
 import { computed, ref } from "vue";
 import  AddTask  from '@/components/reusable/modals/taskmodal.vue'
 import  EditTask  from '@/components/reusable/modals/edittaskmodal.vue'
+import { useProjectStore } from '@/store/useProjectStore';
+
+// Access the project store
+const projectStore = useProjectStore();
+
+// Create a computed reference for selectedProject
+const selectedProject = computed(() => projectStore.selectedProject);
 
 
 // Sample tasks data
@@ -168,9 +175,9 @@ const getPriorityVariant = (priority: string) => {
   <Tabs default-value="all">
     <div class="flex items-center">
       <CardHeader>
-                <CardTitle>Project 1 (Placeholder) </CardTitle>
+                <CardTitle>{{selectedProject.project_name}} </CardTitle>
                 <CardDescription>
-                  Project descriptioooooooooooon.
+                  {{selectedProject.project_description}}
                 </CardDescription>
               </CardHeader>
       <div class="ml-auto flex items-center gap-2">
