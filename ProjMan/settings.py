@@ -59,6 +59,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'ProjMan.urls'
 
+AUTH_USER_MODEL = 'ProjManApp.User'
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
