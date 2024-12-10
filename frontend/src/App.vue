@@ -17,7 +17,7 @@ const route = useRoute();
         'transform transition-transform duration-300 ease-in-out',
         { '-translate-x-full': !isSidebarOpen },
         'lg:translate-x-0',
-        'border-r border-gray-300 dark:border-gray-600'
+        'shadow-sm border-r'
       ]"
     >
       <Sidebar />
