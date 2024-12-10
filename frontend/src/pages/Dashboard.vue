@@ -1,31 +1,41 @@
-<script setup>
-// No script changes needed.
+<script>
+import { useAuthStore } from '../store/auth'
+
+export default {
+  setup() {
+    const authStore = useAuthStore()
+
+    return {
+      authStore,
+    }
+  },
+  async mounted() {
+    await this.authStore.fetchUser()
+  },
+}
 </script>
 
+
 <template>
-  <!-- Grid for the first set of cards -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-    <div class="border-2 border-gray-300 rounded-lg dark:border-gray-600 h-32 md:h-64"></div>
-    <div class="border-2 border-gray-300 dark:border-gray-600 rounded-lg h-32 md:h-64"></div>
-    <div class="border-2 border-gray-300 dark:border-gray-600 rounded-lg h-32 md:h-64"></div>
-    <div class="border-2 border-gray-300 dark:border-gray-600 rounded-lg h-32 md:h-64"></div>
-  </div>
+  <div class="p-6">
 
-  <div class="border-2 border-gray-300 dark:border-gray-600 rounded-lg h-96 mb-4"></div>
+    <!-- Authenticated User Details -->
+    <div v-if="authStore.isAuthenticated" class="max-w-md mx-auto border p-4 rounded">
+      <h2 class="mb-4 text-lg font-medium">User Information</h2>
+      <ul class="space-y-2">
+        <!-- Loop Through All User Data -->
+        <li v-for="(value, key) in authStore.user" :key="key" class="flex justify-between">
+          <span class="capitalize">{{ key }}</span>
+          <span>{{ value }}</span>
+        </li>
+      </ul>
+    </div>
 
-  <div class="grid grid-cols-2 gap-4 mb-4">
-    <div class="border-2 border-gray-300 dark:border-gray-600 rounded-lg h-48 md:h-72"></div>
-    <div class="border-2 border-gray-300 dark:border-gray-600 rounded-lg h-48 md:h-72"></div>
-    <div class="border-2 border-gray-300 dark:border-gray-600 rounded-lg h-48 md:h-72"></div>
-    <div class="border-2 border-gray-300 dark:border-gray-600 rounded-lg h-48 md:h-72"></div>
-  </div>
-
-  <div class="border-2 border-gray-300 dark:border-gray-600 rounded-lg h-96 mb-4"></div>
-
-  <div class="grid grid-cols-2 gap-4">
-    <div class="border-2 border-gray-300 dark:border-gray-600 rounded-lg h-48 md:h-72"></div>
-    <div class="border-2 border-gray-300 dark:border-gray-600 rounded-lg h-48 md:h-72"></div>
-    <div class="border-2 border-gray-300 dark:border-gray-600 rounded-lg h-48 md:h-72"></div>
-    <div class="border-2 border-gray-300 dark:border-gray-600 rounded-lg h-48 md:h-72"></div>
+    <!-- Guest View -->
+    <p v-else>
+      You are not logged in. 
+      <router-link to="/login">Login</router-link>
+    </p>
   </div>
 </template>
+

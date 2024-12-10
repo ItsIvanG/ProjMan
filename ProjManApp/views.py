@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 import json
+from django.http import JsonResponse
 
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
@@ -47,9 +48,14 @@ def logout_view(request):
 @require_http_methods(['GET'])
 def user(request):
     if request.user.is_authenticated:
-        return JsonResponse(
-            {'username': request.user.username, 'email': request.user.email}
-        )
+        user_data = {
+            'id': request.user.id,
+            'email': request.user.email,
+            'name': request.user.name,
+            'role': request.user.role, 
+            'is_active': request.user.is_active,
+        }
+        return JsonResponse(user_data)
     return JsonResponse(
         {'message': 'Not logged in'}, status=401
     )

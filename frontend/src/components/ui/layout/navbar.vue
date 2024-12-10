@@ -101,7 +101,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/store/auth'
 import { Button } from '@/components/ui/button'
@@ -126,6 +126,22 @@ const mode = useColorMode()
 const router = useRouter()
 const authStore = useAuthStore()
 
+const user = ref(null);
+
+onMounted(async () => {
+  await authStore.fetchUser();
+  user.value = authStore.user;
+});
+
+const logout = async () => {
+  try {
+    await authStore.logout();
+    router.push('/login');
+  } catch (error) {
+    console.error('Logout failed:', error);
+  }
+};
+
 const apps = [
   { name: 'Sales', icon: ShoppingCart },
   { name: 'Users', icon: Users },
@@ -139,12 +155,4 @@ const navigateTo = (path) => {
   router.push(path)
 }
 
-const logout = async () => {
-  try {
-    await authStore.logout()
-    router.push('/login')
-  } catch (error) {
-    console.error("Logout failed:", error)
-  }
-}
 </script>
