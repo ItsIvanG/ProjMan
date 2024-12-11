@@ -7,48 +7,49 @@
             Project
           </h2>
           <div class="space-y-4">
-  <DropdownMenu>
-    <!-- Dropdown Trigger -->
-    <DropdownMenuTrigger asChild>
-      <Button 
-        variant="outline" 
-        class="w-full flex items-center justify-between px-4 py-2 rounded-lg border border-gray-300 hover:border-gray-400 shadow-sm focus:outline-none focus:ring focus:ring-gray-200 transition">
-        <Folder class="mr-2 h-5 w-5" />
-        <span>{{ selectedProject || 'Select Project' }}</span>
-        <ChevronsUpDown class="ml-auto h-5 w-5" />
-      </Button>
-    </DropdownMenuTrigger>
+            <DropdownMenu>
+              <!-- Dropdown Trigger -->
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  class="w-full flex items-center justify-between px-4 py-2 rounded-lg border border-gray-300 hover:border-gray-400 shadow-sm focus:outline-none focus:ring focus:ring-gray-200 transition"
+                >
+                  <Folder class="mr-2 h-5 w-5" />
+                  <span>{{ selectedProject?.project_name || 'Select Project' }}</span>
+                  <ChevronsUpDown class="ml-auto h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
 
-    <!-- Dropdown Content -->
-    <DropdownMenuContent 
-      class="mt-2 rounded-lg border border-gray-200 bg-white shadow-md"
-      style="width: 100%">
-      
-      <!-- Dropdown Header -->
-      <DropdownMenuLabel class="px-4 py-2 text-sm font-medium text-gray-500">
-        Select Project
-      </DropdownMenuLabel>
-      <DropdownMenuSeparator class="my-2 border-t border-gray-100" />
-      
-      <!-- Dropdown Items -->
-      <div class="max-h-60 overflow-auto">
-        <DropdownMenuItem 
-          v-for="(project, index) in projects" 
-          :key="index" 
-          class="px-4 py-2 hover:bg-gray-100 text-gray-700 cursor-pointer transition">
-          <a href="#" @click="selectProject(project)">
-            {{ project }}
-          </a>
-        </DropdownMenuItem>
-      </div>
-      
-      <!-- Create New Project Button -->
-      <DropdownMenuSeparator class="my-2 border-t border-gray-100" />
-      
- <ProjectModal/>
-    </DropdownMenuContent>
-  </DropdownMenu>
-</div>
+              <!-- Dropdown Content -->
+              <DropdownMenuContent
+                class="mt-2 rounded-lg border border-gray-200 bg-white shadow-md"
+                style="width: 100%"
+              >
+                <!-- Dropdown Header -->
+                <DropdownMenuLabel class="px-4 py-2 text-sm font-medium text-gray-500">
+                  Select Project
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator class="my-2 border-t border-gray-100" />
+
+                <!-- Dropdown Items -->
+                <div class="max-h-60 overflow-auto">
+                  <DropdownMenuItem
+                    v-for="(project, index) in projects"
+                    :key="index"
+                    class="px-4 py-2 hover:bg-gray-100 text-gray-700 cursor-pointer transition"
+                    @click="selectProject(project)"
+                  >
+                    {{ project.project_name }}
+                  </DropdownMenuItem>
+                </div>
+
+                <!-- Create New Project Button -->
+                <DropdownMenuSeparator class="my-2 border-t border-gray-100" />
+                <ProjectModal />
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
 
 
         </div>
@@ -155,44 +156,88 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { Button } from '@/components/ui/button'
-import  ProjectModal  from '@/components/reusable/modals/projectmodal.vue'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
-import { 
+import { ref, computed, watchEffect } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { getAPI } from '@/axios';
+import { useAuthStore } from '@/store/auth';
+import { useProjectStore } from '@/store/project';
+import { Button } from '@/components/ui/button';
+import ProjectModal from '@/components/reusable/modals/projectmodal.vue';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
+import {
   ChevronDown,
-  ChevronsUpDown, 
-  File, 
-  FileText, 
+  ChevronsUpDown,
+  File,
+  FileText,
   Folder,
-  HelpCircle, 
-  LayoutDashboard, 
-  PlusCircle,
-  Users 
-} from 'lucide-vue-next'
+  HelpCircle,
+  LayoutDashboard,
+  Users,
+} from 'lucide-vue-next';
 
-const router = useRouter()
-const route = useRoute()
+const router = useRouter();
+const route = useRoute();
+const selectedProject = ref(null);
+const projects = ref([]);
 
-const projects = ref(['Project 1 (Placeholder)', 'Project 2 (Placeholder)', 'Project 3 (Placeholder)'])
-const selectedProject = ref(null)
+// Access the authentication store
+const authStore = useAuthStore();
+const projectStore = useProjectStore();
+
+// Computed user ID
+const userId = computed(() => authStore.user?.id);
+
+const fetchProjects = async () => {
+  try {
+    if (userId.value) {
+      const response = await getAPI.get(`/projects/${userId.value}`);
+      projects.value = response.data;
+
+      // Set the first project as the default selected
+      if (projects.value.length > 0) {
+        selectProject(response.data[0]); // Automatically select the first project
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching projects:', error);
+  }
+};
+
+// Watch the login state (authStore.user) and fetch projects when logged in
+watchEffect(() => {
+  if (authStore.user) {
+    fetchProjects();
+  }
+});
+
+// Select project and update the global store
+const selectProject = (project) => {
+  selectedProject.value = project; // Store the full project object
+  projectStore.setProject(project); // Update the global project store
+  console.log('Selected project:', project);
+};
 
 // Function for navigation
 const navigateTo = (path) => {
-  router.push(path)
-}
+  router.push(path);
+};
 
 // Check if a route is active
-const isActive = (path) => route.path === path
-
-const selectProject = (project) => {
-  selectedProject.value = project
-  // Add logic here to handle project selection, e.g., routing or state update
-  console.log('Selected project:', project)
-}
-
-
+const isActive = (path) => route.path === path;
 </script>
+
+
+

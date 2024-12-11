@@ -22,77 +22,48 @@ import {
   ListFilter,
   MoreHorizontal,
 } from 'lucide-vue-next'
-import { computed, ref } from "vue";
+import { computed, ref, watchEffect } from "vue";
 import  AddTask  from '@/components/reusable/modals/taskmodal.vue'
 import  EditTask  from '@/components/reusable/modals/edittaskmodal.vue'
 
 
-// Sample tasks data
-const allTasks = ref([
-  {
-    name: "Task-01",
-    features: "UI/UX enhancements",
-    status: "Not Started",
-    priority: "High",
-    assign: "Kean Lucas",
-    sprint: "Sprint 1",
-  },
-  {
-    name: "Task-02",
-    features: "Auth system",
-    status: "In progress",
-    priority: "Medium",
-    assign: "Kean Lucas",
-    sprint: "Sprint 1"
-  },
-  {
-    name: "Task-03",
-    features: "Monthly summary",
-    status: "Completed",
-    priority: "Low",
-    assign: "Kean Lucas",
-    sprint: "Sprint 2"
-  },
-  {
-    name: "Task-04",
-    features: "Monthly summary",
-    status: "Cancelled",
-    priority: "Very High",
-    assign: "Kean Lucas",
-    sprint: "Sprint 2"
-  },
-  {
-    name: "Task-05",
-    features: "Performance optimization",
-    status: "In progress",
-    priority: "Medium",
-    assign: "Kean Lucas",
-    sprint: "Sprint 3"
-  },
-  {
-    name: "Task-06",
-    features: "Bug fixing",
-    status: "Not Started",
-    priority: "High",
-    assign: "Kean Lucas",
-    sprint: "Sprint 3"
-  },
-]);
+import { getAPI } from '@/axios';
+import { useProjectStore } from '@/store/project';
 
-// Pagination settings
-const currentPage = ref(1);
-const itemsPerPage = 5;
+// Reference for tasks
+const allTasks = ref<any[]>([]); // Task data from API
 
-// Paginated tasks
-const paginatedTasks = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  return allTasks.value.slice(start, start + itemsPerPage);
+// API URL (replace this with the actual backend URL)
+const apiUrl = '/tasks/';
+
+// Fetch tasks based on the project ID
+const fetchTasks = async (projectId: number) => {
+  try {
+    if (!projectId) {
+      throw new Error("Invalid project ID.");
+    }
+    // Send GET request to fetch tasks for the specific project_id
+    const response = await getAPI.get(`${apiUrl}${projectId}/`);
+    allTasks.value = response.data; // Store tasks in the allTasks ref
+    
+    // Log the fetched task data to the console
+    console.log('Fetched tasks:', response.data);
+  } catch (error) {
+    console.error("Failed to fetch tasks:", error);
+  }
+};
+
+// Reactive store for project ID
+const projectStore = useProjectStore();
+const projectId = computed(() => projectStore.project_id);
+
+// Automatically fetch tasks when projectId changes
+watchEffect(() => {
+  const id = projectId.value;
+  if (id) {
+    fetchTasks(id);
+  }
 });
-
-// Total number of pages
-const totalPages = computed(() =>
-  Math.ceil(allTasks.value.length / itemsPerPage)
-);
 
 // Helper function to get the variant for status
 const getStatusVariant = (status: string) => {
@@ -164,6 +135,7 @@ const getPriorityVariant = (priority: string) => {
 };
 </script>
 
+
 <template>
   <Tabs default-value="all">
     <div class="flex items-center">
@@ -207,13 +179,14 @@ const getPriorityVariant = (priority: string) => {
                 <TableHead class="hidden md:table-cell">Assigned</TableHead>
                 <TableHead class="hidden md:table-cell">Sprint</TableHead>
                 <TableHead class="hidden md:table-cell">Priority</TableHead>
+                <TableHead class="hidden md:table-cell">Deadline</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              <template v-if="paginatedTasks.length">
-                <TableRow v-for="(task, index) in paginatedTasks" :key="index">
-                  <TableCell>{{ task.name }}</TableCell>
+
+              <TableRow v-for="task in allTasks" :key="task.task_id">
+                  <TableCell>{{task.task_code}}</TableCell>
                   <TableCell>{{ task.features }}</TableCell>
                   <TableCell>
                     <Badge :variant="getStatusVariant(task.status)">
@@ -221,18 +194,22 @@ const getPriorityVariant = (priority: string) => {
                     </Badge>
                   </TableCell>
                   <TableCell class="hidden md:table-cell">
-                    {{ task.assign }}
+                    {{ task.assignee }}
                   </TableCell>
                   <TableCell class="hidden md:table-cell">
-  <Badge :variant="getSprintVariant(task.sprint)">
-    {{ task.sprint }}
+  <Badge :variant="getSprintVariant('Sprint ' + task.sprint)">
+    Sprint {{ task.sprint }}
   </Badge>
 </TableCell>
+
 
                   <TableCell class="hidden md:table-cell">
                     <Badge :variant="getPriorityVariant(task.priority)">
                       {{ task.priority }}
                     </Badge>
+                  </TableCell>
+                  <TableCell class="hidden md:table-cell">
+                    {{ task.deadline }}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
@@ -250,20 +227,10 @@ const getPriorityVariant = (priority: string) => {
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
-              </template>
-              <template v-else>
-                <TableRow>
-                  <TableCell colspan="6" class="text-center">
-                    <p class="text-sm text-muted-foreground">
-                      No tasks available. Add a new task to get started.
-                    </p>
-                  </TableCell>
-                </TableRow>
-              </template>
             </TableBody>
           </Table>
         </CardContent>
-        <CardFooter class="flex justify-between items-center">
+        <!-- <CardFooter class="flex justify-between items-center">
           <div class="text-xs text-muted-foreground">
             Showing <strong>{{ (currentPage - 1) * itemsPerPage + 1 }}</strong> to
             <strong>{{ Math.min(currentPage * itemsPerPage, allTasks.length) }}</strong>
@@ -274,7 +241,7 @@ const getPriorityVariant = (priority: string) => {
             :total-pages="totalPages"
             @page-change="currentPage = $event"
           />
-        </CardFooter>
+        </CardFooter> -->
       </Card>
     </TabsContent>
   </Tabs>
