@@ -97,4 +97,21 @@ class ProjectCreateView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
+
+from rest_framework import generics
+from .models import Task
+from .serializers import TaskSerializer
+
+class TaskCreateView(generics.CreateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+
+class TaskListView(generics.ListAPIView):
+    serializer_class = TaskSerializer
+
+    # Overriding the get_queryset method to filter tasks by project_id
+    def get_queryset(self):
+        project_id = self.kwargs['project_id']  # Get project_id from URL parameters
+        return Task.objects.filter(project_id=project_id)  # Filter tasks by project_id
