@@ -115,3 +115,12 @@ class TaskListView(generics.ListAPIView):
     def get_queryset(self):
         project_id = self.kwargs['project_id']  # Get project_id from URL parameters
         return Task.objects.filter(project_id=project_id)  # Filter tasks by project_id
+    
+class TaskEditView(generics.UpdateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+
+    # Overriding the get_object method to fetch the task by ID
+    def get_object(self):
+        task_id = self.kwargs['task_id']  # Get task_id from URL parameters
+        return Task.objects.get(task_id=task_id)  # Fetch the task by ID

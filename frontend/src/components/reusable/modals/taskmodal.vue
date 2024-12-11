@@ -104,7 +104,7 @@
 
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive, computed } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -112,7 +112,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PlusCircle } from 'lucide-vue-next';
 import { getAPI } from '@/axios';
+import { useProjectStore } from '@/store/project';
 
+const projectStore = useProjectStore();
+const projectId = computed(() => projectStore.project_id);
 // Form data for the task
 const formData = reactive({
   features: '',
@@ -139,12 +142,11 @@ const handleSubmit = async () => {
   try {
     // Sending the task data to the backend API
     const response = await getAPI.post('/tasks/create/', {
-      project_id: 1,
       features: formData.features,
       sprint: formData.sprint,
       status: formData.status,
       assignee: null,
-      project: 1,
+      project: projectId.value,
       priority: formData.priority,
       deadline: formData.deadline,
 
@@ -154,7 +156,7 @@ const handleSubmit = async () => {
 
 
     closeDialog();
-    window.location.reload();
+ window.location.reload();
     // Optionally, reset form data
     formData.features = '';
     formData.sprint = '';

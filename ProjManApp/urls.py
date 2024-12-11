@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from .views import ProjectCreateView
-from .views import TaskCreateView, TaskListView
+from .views import TaskCreateView, TaskListView, TaskEditView
 
 
 urlpatterns = [
@@ -14,4 +14,5 @@ urlpatterns = [
     path('projects/<int:user_id>/', ProjectCreateView.as_view(), name='project-by-user'), 
     path('tasks/<int:project_id>/', TaskListView.as_view(), name='task-list'),  # GET: List tasks by project_id
     path('tasks/create/', TaskCreateView.as_view(), name='task-create'),  # POST: Create a task
+    path('tasks/edit/<int:task_id>/', TaskEditView.as_view(), name='task-edit'),
 ]

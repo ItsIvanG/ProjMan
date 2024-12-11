@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import UserManager, AbstractUser, PermissionsMixin
 from django.conf import settings
 
-
 class CustomUserManager(UserManager):
     def _create_user(self, username, email, password, **extra_fields):
         if not username:
@@ -45,6 +44,16 @@ class User(AbstractUser, PermissionsMixin):
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(blank=True, null=True)
 
+    # Managers have a reference to their managed members
+    manager = models.ForeignKey(
+        'self',  # Points back to the User model
+        on_delete=models.SET_NULL,
+        related_name='members',
+        null=True,
+        blank=True,
+        limit_choices_to={'role': 'Manager'},  # Ensures only Managers can be assigned as a manager
+    )
+
     groups = models.ManyToManyField(
         'auth.Group',
         related_name='custom_user_groups',
@@ -76,6 +85,7 @@ class User(AbstractUser, PermissionsMixin):
     def get_short_name(self):
         return self.name or self.username
 
+
 class Project(models.Model):
     project_id = models.AutoField(primary_key=True)  # Auto-increment ID
     project_name = models.CharField(max_length=255, blank=False)  # Required
@@ -90,24 +100,24 @@ class Project(models.Model):
         return self.project_name
     
 class Task(models.Model):
-    task_id = models.AutoField(primary_key=True)  # Auto-increment ID
-    task_code = models.CharField(max_length=20, unique=True)  # Auto-increment-like task code, e.g. "Task-01"
-    features = models.TextField(blank=False)  # Required
-    status = models.CharField(max_length=50, blank=True, null=True)  # Nullable field for status
+    task_id = models.AutoField(primary_key=True)  
+    task_code = models.CharField(max_length=20, unique=True)  
+    features = models.TextField(blank=False)  
+    status = models.CharField(max_length=50, blank=True, null=True)
     assignee = models.ForeignKey(
-        settings.AUTH_USER_MODEL,  # Reference the custom User model
-        on_delete=models.SET_NULL,  # Set to null if user is deleted
-        related_name='tasks',  # Allows reverse access: user.tasks.all()
-        null=True,  # Nullable
-        blank=True,  # Blank allowed for assignee
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.SET_NULL,  
+        related_name='tasks',  
+        null=True,  
+        blank=True,  
     )
-    sprint = models.IntegerField(blank=True, null=True)  # Integer field for sprint
-    priority = models.CharField(max_length=50, blank=False)  # Required
-    deadline = models.DateField(blank=False)  # Date field (only date, no time)
+    sprint = models.IntegerField(blank=True, null=True)  
+    priority = models.CharField(max_length=50, blank=False)  
+    deadline = models.DateField(blank=False)  
     project = models.ForeignKey(
-        'Project',  # Reference to the Project model
-        on_delete=models.CASCADE,  # Delete tasks when the project is deleted
-        related_name='tasks',  # Allows reverse access: project.tasks.all()
+        'Project',  
+        on_delete=models.CASCADE,  
+        related_name='tasks',  
     )
 
     def save(self, *args, **kwargs):

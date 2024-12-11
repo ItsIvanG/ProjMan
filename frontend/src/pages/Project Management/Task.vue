@@ -29,6 +29,9 @@ import  EditTask  from '@/components/reusable/modals/edittaskmodal.vue'
 
 import { getAPI } from '@/axios';
 import { useProjectStore } from '@/store/project';
+import { useTaskStore } from '@/store/taskStore';
+
+const taskStore = useTaskStore();
 
 // Reference for tasks
 const allTasks = ref<any[]>([]); // Task data from API
@@ -218,6 +221,7 @@ const getPriorityVariant = (priority: string) => {
                           aria-haspopup="true"
                           size="icon"
                           variant="ghost"
+                          @click="taskStore.setTask(task)"
                         >
                           <MoreHorizontal class="h-4 w-4" />
                           <span class="sr-only">Toggle menu</span>
