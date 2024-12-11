@@ -204,7 +204,7 @@ const getPriorityVariant = (priority: string) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-
+              <template v-if="allTasks.length">
               <TableRow v-for="task in allTasks" :key="task.task_id">
                   <TableCell>{{task.task_code}}</TableCell>
                   <TableCell>{{ task.features }}</TableCell>
@@ -248,6 +248,16 @@ const getPriorityVariant = (priority: string) => {
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
+              </template>
+              <template v-else>
+  <TableRow>
+    <TableCell colspan="8" class="text-center">  
+      <p class="text-sm text-muted-foreground">
+        No task available. Add a new task to get started.
+      </p>
+    </TableCell>
+  </TableRow>
+</template>
             </TableBody>
           </Table>
         </CardContent>
