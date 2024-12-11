@@ -35,18 +35,26 @@ const taskStore = useTaskStore();
 
 // Reference for tasks
 const allTasks = ref<any[]>([]); // Task data from API
+  const selectedStatus = ref<string | null>(null);
 
 // API URL (replace this with the actual backend URL)
 const apiUrl = '/tasks/';
 
 // Fetch tasks based on the project ID
-const fetchTasks = async (projectId: number) => {
+const fetchTasks = async (projectId: number, status: string | null) => {
   try {
     if (!projectId) {
       throw new Error("Invalid project ID.");
     }
-    // Send GET request to fetch tasks for the specific project_id
-    const response = await getAPI.get(`${apiUrl}${projectId}/`);
+    let url = `${apiUrl}${projectId}/`;
+    
+    // Include the status in the query string if provided
+    if (status) {
+      url += `?status=${status}`;
+    }
+
+    // Send GET request to fetch tasks for the specific project_id and status
+    const response = await getAPI.get(url);
     allTasks.value = response.data; // Store tasks in the allTasks ref
     
     // Log the fetched task data to the console
@@ -64,9 +72,17 @@ const projectId = computed(() => projectStore.project_id);
 watchEffect(() => {
   const id = projectId.value;
   if (id) {
-    fetchTasks(id);
+    fetchTasks(id, selectedStatus.value);
   }
 });
+
+const applyStatusFilter = (status: string) => {
+  selectedStatus.value = status;
+  const id = projectId.value;
+  if (id) {
+    fetchTasks(id, status); // Fetch tasks with the selected status filter
+  }
+};
 
 // Helper function to get the variant for status
 const getStatusVariant = (status: string) => {
@@ -161,10 +177,11 @@ const getPriorityVariant = (priority: string) => {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Filter by</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Not Started</DropdownMenuItem>
-            <DropdownMenuItem>In Progress</DropdownMenuItem>
-            <DropdownMenuItem>Completed</DropdownMenuItem>
-            <DropdownMenuItem>Cancelled</DropdownMenuItem>
+            <DropdownMenuItem @click="applyStatusFilter('')">All</DropdownMenuItem>
+            <DropdownMenuItem @click="applyStatusFilter('Not Started')">Not Started</DropdownMenuItem>
+            <DropdownMenuItem @click="applyStatusFilter('In Progress')">In Progress</DropdownMenuItem>
+            <DropdownMenuItem @click="applyStatusFilter('Completed')">Completed</DropdownMenuItem>
+            <DropdownMenuItem @click="applyStatusFilter('Cancelled')">Cancelled</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 <AddTask />
