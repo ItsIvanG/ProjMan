@@ -140,9 +140,9 @@ const getPriorityVariant = (priority: string) => {
   <Tabs default-value="all">
     <div class="flex items-center">
       <CardHeader>
-                <CardTitle>Project 1 (Placeholder) </CardTitle>
+                <CardTitle>{{ projectStore.project_name }} </CardTitle>
                 <CardDescription>
-                  Project descriptioooooooooooon.
+                  {{ projectStore.project_description }}
                 </CardDescription>
               </CardHeader>
       <div class="ml-auto flex items-center gap-2">
@@ -230,18 +230,6 @@ const getPriorityVariant = (priority: string) => {
             </TableBody>
           </Table>
         </CardContent>
-        <!-- <CardFooter class="flex justify-between items-center">
-          <div class="text-xs text-muted-foreground">
-            Showing <strong>{{ (currentPage - 1) * itemsPerPage + 1 }}</strong> to
-            <strong>{{ Math.min(currentPage * itemsPerPage, allTasks.length) }}</strong>
-            of <strong>{{ allTasks.length }}</strong> tasks
-          </div>
-          <Pagination
-            :current-page="currentPage"
-            :total-pages="totalPages"
-            @page-change="currentPage = $event"
-          />
-        </CardFooter> -->
       </Card>
     </TabsContent>
   </Tabs>
