@@ -118,13 +118,18 @@ class TaskListView(generics.ListAPIView):
         # Get the status from query parameters, if present
         status = self.request.query_params.get('status', None)
 
-        # Filter tasks by project_id and optionally by status
+        # Filter tasks by project_id
         queryset = Task.objects.filter(project_id=project_id)
 
+        # Optionally filter by status
         if status:
-            queryset = queryset.filter(status=status)  # Filter by status if provided
+            queryset = queryset.filter(status=status)
+
+        # Sort by sprint (ascending by default)
+        queryset = queryset.order_by('sprint')
 
         return queryset
+
         
     
 class TaskEditView(generics.UpdateAPIView):
@@ -135,6 +140,18 @@ class TaskEditView(generics.UpdateAPIView):
     def get_object(self):
         task_id = self.kwargs['task_id']  # Get task_id from URL parameters
         return Task.objects.get(task_id=task_id)  # Fetch the task by ID
+    
+from .serializers import AssignTaskSerializer
+    
+class TaskAssignEditView(generics.UpdateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = AssignTaskSerializer
+
+    # Overriding the get_object method to fetch the task by ID
+    def get_object(self):
+        task_id = self.kwargs['task_id']  # Get task_id from URL parameters
+        return Task.objects.get(task_id=task_id)  # Fetch the task by ID
+
 
 from .models import User
 from .serializers import UserSerializer
