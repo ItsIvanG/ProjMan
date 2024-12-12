@@ -60,6 +60,7 @@ def user(request):
             'name': request.user.name,
             'role': request.user.role, 
             'is_active': request.user.is_active,
+            'manager_id': request.user.manager_id,
         }
         return JsonResponse(user_data)
     return JsonResponse(
@@ -79,12 +80,12 @@ def register(request):
         return JsonResponse({'error': errors}, status=400)
     
 class ProjectCreateView(APIView):
-    def get(self, request, user_id=None):
-        if user_id:
-            # Filter projects by the user_id
-            projects = Project.objects.filter(user__id=user_id)
+    def get(self, request, manager_id=None):
+        if manager_id:
+            # Filter projects by the manager_id (plain IntegerField)
+            projects = Project.objects.filter(manager_id=manager_id)
         else:
-            # If no user_id is provided, return all projects
+            # If no manager_id is provided, return all projects
             projects = Project.objects.all()
 
         # Serialize the projects and return them
@@ -97,7 +98,7 @@ class ProjectCreateView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+   
 
 
 from rest_framework import generics

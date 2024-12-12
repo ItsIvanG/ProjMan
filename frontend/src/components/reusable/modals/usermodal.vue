@@ -125,7 +125,7 @@
   import { useAuthStore } from '@/store/auth';
   
   const authStore = useAuthStore();
-  const managerId = computed(() => authStore.user?.id);
+  const managerId = computed(() => authStore.user?.manager_id);
   
   // Dialog state
   const isDialogOpen = ref(false);

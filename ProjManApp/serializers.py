@@ -6,12 +6,12 @@ from .models import Project
 User = get_user_model()
 
 class ProjectSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=True)
+
     class Meta:
         model = Project
-        fields = ['project_id', 'project_name', 'project_description', 'user']
+        fields = ['project_id', 'project_name', 'project_description', 'user', 'manager_id']
 
-    # Use the dynamically fetched user model
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=True)
 
 
 

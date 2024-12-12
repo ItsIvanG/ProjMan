@@ -33,7 +33,7 @@ const userStore = useUserInfoStore();
 
 
 const authStore = useAuthStore();
-const managerId  = computed(() => authStore.user?.id);
+const managerId  = computed(() => authStore.user?.manager_id);
 
 const allUsers = ref<any[]>([]); // Users data from API
 const filterStatus = ref<string>('All'); // Track selected filter status

@@ -205,7 +205,7 @@ const authStore = useAuthStore();
 const projectStore = useProjectStore();
 
 // Computed user ID
-const userId = computed(() => authStore.user?.id);
+const userId = computed(() => authStore.user?.manager_id);
 
 const fetchProjects = async () => {
   try {
