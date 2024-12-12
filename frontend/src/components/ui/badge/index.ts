@@ -22,7 +22,7 @@ export const badgeVariants = cva(
         manager: 'border-transparent bg-violet-800 text-white hover:bg-violet-900',  
         member: 'border-transparent bg-blue-800 text-white hover:bg-blue-900',
         active: 'border-transparent bg-green-800 text-white hover:bg-green-900', 
-        deactivated: 'border-transparent bg-red-600 text-white hover:bg-red-700',
+        archived: 'border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80',
         sprint1: 'border-transparent bg-teal-800 text-white hover:bg-teal-900',
         sprint2: 'border-transparent bg-indigo-800 text-white hover:bg-indigo-900',
         sprint3: 'border-transparent bg-orange-800 text-white hover:bg-orange-900',
