@@ -79,6 +79,8 @@ class User(AbstractUser, PermissionsMixin):
         verbose_name = 'User'
         verbose_name_plural = 'Users'
 
+    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
+
     def get_full_name(self):
         return self.name
 
@@ -129,3 +131,7 @@ class Task(models.Model):
 
     def __str__(self):
         return self.task_code
+
+class Report(models.Model):
+    report_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

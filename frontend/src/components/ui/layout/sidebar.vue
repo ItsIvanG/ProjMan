@@ -33,6 +33,7 @@
 
                 <!-- Dropdown Items -->
                 <div class="max-h-60 overflow-auto">
+
                   <DropdownMenuItem
                     v-for="(project, index) in projects"
                     :key="index"
@@ -40,7 +41,9 @@
                     @click="selectProject(project)"
                   >
                     {{ project.project_name }}
-                  </DropdownMenuItem>
+
+                    </DropdownMenuItem>
+
                 </div>
 
                 <!-- Create New Project Button -->
@@ -156,7 +159,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watchEffect } from 'vue';
+import {ref, computed, watchEffect, defineComponent} from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { getAPI } from '@/axios';
 import { useAuthStore } from '@/store/auth';
@@ -176,6 +179,9 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+    DropdownMenuPortal,
+    DropdownMenuSubTrigger,
+    DropdownMenuSub
 } from '@/components/ui/dropdown-menu';
 import {
   ChevronDown,
@@ -187,6 +193,7 @@ import {
   LayoutDashboard,
   Users,
 } from 'lucide-vue-next';
+
 
 const router = useRouter();
 const route = useRoute();
@@ -237,6 +244,7 @@ const navigateTo = (path) => {
 
 // Check if a route is active
 const isActive = (path) => route.path === path;
+
 </script>
 
 
