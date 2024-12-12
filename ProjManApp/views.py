@@ -143,7 +143,15 @@ class UserListView(generics.ListAPIView):
 
     def get_queryset(self):
         manager_id = self.kwargs.get('manager_id')
-        return User.objects.filter(manager_id=manager_id)
+        is_active = self.request.query_params.get('is_active', None)  # Get the is_active filter from query parameters
+
+        queryset = User.objects.filter(manager_id=manager_id)
+
+        if is_active is not None:
+            is_active = bool(int(is_active))  # Convert the value to a boolean
+            queryset = queryset.filter(is_active=is_active)
+
+        return queryset
     
 
 from .serializers import UserCreateSerializer
@@ -151,3 +159,23 @@ from .serializers import UserCreateSerializer
 class UserCreateView(generics.CreateAPIView):
     serializer_class = UserCreateSerializer
     queryset = User.objects.all()
+
+
+from .serializers import UserUpdateSerializer 
+
+class UserUpdateView(generics.UpdateAPIView):
+    serializer_class = UserUpdateSerializer
+    queryset = User.objects.all()
+
+
+from rest_framework import generics
+from .serializers import UserIsActiveUpdateSerializer
+from .models import User
+
+class UserIsActiveUpdateView(generics.UpdateAPIView):
+    serializer_class = UserIsActiveUpdateSerializer
+    queryset = User.objects.all()
+
+    def get_object(self):
+        # Fetch the user object based on the ID in the URL
+        return self.get_queryset().get(id=self.kwargs['pk'])

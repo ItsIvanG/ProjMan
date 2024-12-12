@@ -51,4 +51,35 @@ class UserCreateSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+    
+class UserUpdateSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=False, style={'input_type': 'password'})
 
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'name', 'role', 'manager', 'is_active', 'password']
+
+    def update(self, instance, validated_data):
+        # If a new password is provided, hash it and update
+        password = validated_data.pop('password', None)
+        if password:
+            instance.set_password(password)
+        # Update other fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
+
+from rest_framework import serializers
+from .models import User
+
+class UserIsActiveUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'is_active']
+
+    def update(self, instance, validated_data):
+        # Only update the is_active field
+        instance.is_active = validated_data.get('is_active', instance.is_active)
+        instance.save()
+        return instance

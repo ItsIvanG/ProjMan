@@ -14,88 +14,104 @@
       <DialogContent class="max-w-2xl">
         <DialogHeader>
           <DialogTitle class="text-2xl font-bold">Add new user</DialogTitle>
-          <DialogDescription class="text-lg">
+          <DialogDescription class="text-lg text-gray-600">
             Fill out the form below to add a new user. Provide the necessary details and click "Add new user."
           </DialogDescription>
         </DialogHeader>
 
         <form @submit.prevent="handleSubmit">
-          <div class="grid gap-4 py-4 sm:grid-cols-1 md:grid-cols-2">
-            <!-- Name input -->
-            <div class="grid gap-2">
-              <Label for="Name">Name</Label>
-              <Input
-                id="Name"
-                v-model="formData.name"
-                placeholder="Enter full name"
-                required
-              />
-              <p v-if="errors.name" class="text-red-500 text-sm">{{ errors.name }}</p>
-            </div>
-            <!-- Email input -->
-            <div class="grid gap-2">
-              <Label for="email">Email</Label>
-              <Input
-                id="email"
-                v-model="formData.email"
-                placeholder="Enter a valid email address"
-                required
-              />
-              <p v-if="errors.email" class="text-red-500 text-sm">{{ errors.email }}</p>
-            </div>
+  <div class="grid gap-6 py-6 sm:grid-cols-1 md:grid-cols-2">
+    <!-- Name input -->
+    <div class="grid gap-2">
+      <Label for="name" class="font-semibold text-sm">Name</Label>
+      <Input
+        id="name"
+        v-model="formData.name"
+        placeholder="Enter full name"
+        class="border-gray-300 focus:ring-2 focus:ring-blue-500 py-2 px-3 rounded-md"
+        required
+      />
+      <p class="text-red-500 text-xs mt-1 min-h-[1.25rem]">
+        {{ errors.name || ' ' }}
+      </p>
+    </div>
 
-            <!-- Username input -->
-            <div class="grid gap-2">
-              <Label for="username">Username</Label>
-              <Input
-                id="username"
-                v-model="formData.username"
-                placeholder="Create a unique username"
-                required
-              />
-              <p v-if="errors.username" class="text-red-500 text-sm">{{ errors.username }}</p>
-            </div>
+    <!-- Email input -->
+    <div class="grid gap-2">
+      <Label for="email" class="font-semibold text-sm">Email</Label>
+      <Input
+        id="email"
+        v-model="formData.email"
+        placeholder="Enter a valid email address"
+        class="border-gray-300 focus:ring-2 focus:ring-blue-500 py-2 px-3 rounded-md"
+        required
+      />
+      <p class="text-red-500 text-xs mt-1 min-h-[1.25rem]">
+        {{ errors.email || ' ' }}
+      </p>
+    </div>
 
-            <!-- Password input -->
-            <div class="grid gap-2">
-              <Label for="password">Password</Label>
-              <div class="relative">
-                <Input
-                  :type="passwordVisible ? 'text' : 'password'"
-                  id="password"
-                  v-model="formData.password"
-                  placeholder="*********"
-                  required
-                  autocomplete="new-password"
-                />
-                <button
-                  type="button"
-                  @click="togglePasswordVisibility"
-                  class="absolute right-3 top-1/2 transform -translate-y-1/2"
-                >
-                  <span v-if="passwordVisible">
-                    <EyeOff class="h-5 w-5 text-gray-600" />
-                  </span>
-                  <span v-else>
-                    <Eye class="h-5 w-5 text-gray-600" />
-                  </span>
-                </button>
-              </div>
-              <p v-if="errors.password" class="text-red-500 text-sm">{{ errors.password }}</p>
-            </div>
-          </div>
+    <!-- Username input -->
+    <div class="grid gap-2">
+      <Label for="username" class="font-semibold text-sm">Username</Label>
+      <Input
+        id="username"
+        v-model="formData.username"
+        placeholder="Create a unique username"
+        class="border-gray-300 focus:ring-2 focus:ring-blue-500 py-2 px-3 rounded-md"
+        required
+      />
+      <p class="text-red-500 text-xs mt-1 min-h-[1.25rem]">
+        {{ errors.username || ' ' }}
+      </p>
+    </div>
 
-          <DialogFooter>
-            <Button type="submit" class="mt-6 w-full sm:w-auto">
-              <PlusCircle class="mr-2 h-4 w-4" />
-              Add new user
-            </Button>
-          </DialogFooter>
-        </form>
+    <!-- Password input -->
+    <div class="grid gap-2">
+      <Label for="password" class="font-semibold text-sm">Password</Label>
+      <div class="relative">
+        <Input
+          :type="passwordVisible ? 'text' : 'password'"
+          id="password"
+          v-model="formData.password"
+          placeholder="*********"
+          class="border-gray-300 focus:ring-2 focus:ring-blue-500 py-2 px-3 rounded-md"
+          required
+          autocomplete="new-password"
+        />
+        <button
+          type="button"
+          @click="togglePasswordVisibility"
+          class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 focus:outline-none"
+        >
+          <span v-if="passwordVisible">
+            <EyeOff class="h-5 w-5" />
+          </span>
+          <span v-else>
+            <Eye class="h-5 w-5" />
+          </span>
+        </button>
+      </div>
+      <p class="text-red-500 text-xs mt-1 min-h-[1.25rem]">
+        {{ errors.password || ' ' }}
+      </p>
+    </div>
+  </div>
+
+  <DialogFooter>
+    <Button type="submit" class="mt-4 w-full sm:w-auto bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500">
+      <PlusCircle class="mr-2 h-4 w-4" />
+      Add new user
+    </Button>
+  </DialogFooter>
+</form>
+
       </DialogContent>
     </Dialog>
   </div>
 </template>
+
+
 
   
   <script setup lang="ts">

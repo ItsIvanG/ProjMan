@@ -27,32 +27,37 @@ import  Usermodal  from '@/components/reusable/modals/usermodal.vue'
 import  Useredit  from '@/components/reusable/modals/editusermodal.vue'
 import { getAPI } from '@/axios';
 import { useAuthStore } from '@/store/auth'
+import { useUserInfoStore } from '@/store/userStore';
+
+const userStore = useUserInfoStore();
+
 
 const authStore = useAuthStore();
 const managerId  = computed(() => authStore.user?.id);
 
 const allUsers = ref<any[]>([]); // Users data from API
+const filterStatus = ref<string>('All'); // Track selected filter status
 
 // Fetch users from the API
-const fetchUsers = async (managerId: number) => {
+const fetchUsers = async (managerId: number, status: string) => {
   try {
-    const response = await getAPI.get(`/manager/${managerId}/`)
-    allUsers.value = response.data
+    let url = `/manager/${managerId}/`;
+    if (status !== 'All') {
+      url += `?is_active=${status === 'Active' ? 1 : 0}`;
+    }
+    const response = await getAPI.get(url);
+    allUsers.value = response.data;
   } catch (error) {
-    console.error('Error fetching users:', error)
+    console.error('Error fetching users:', error);
   }
 }
 
-// const projectStore = useProjectStore();
-// const projectId = computed(() => projectStore.project_id);
-
-// Use watchEffect to fetch users when projectId changes
+// Watch for changes in filterStatus and fetch users accordingly
 watchEffect(() => {
   if (managerId.value) {
-    fetchUsers(managerId.value);
+    fetchUsers(managerId.value, filterStatus.value);
   }
 });
-
 
 const getStatusVariant = (status: string) => {
   switch (status.toLowerCase()) {
@@ -62,8 +67,8 @@ const getStatusVariant = (status: string) => {
       return 'member';
     case 'active':
       return 'active';
-    case 'deleted':
-      return 'deleted';
+    case 'archived':
+      return 'archived';
     default:
       return 'default';
   }
@@ -96,8 +101,9 @@ const getStatusVariant = (status: string) => {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Filter by</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Manager</DropdownMenuItem>
-            <DropdownMenuItem>Member</DropdownMenuItem>
+            <DropdownMenuItem @click="filterStatus = 'All'">All</DropdownMenuItem> 
+            <DropdownMenuItem @click="filterStatus = 'Active'">Active</DropdownMenuItem>
+            <DropdownMenuItem @click="filterStatus = 'Archived'">Archived</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <Usermodal />
@@ -130,8 +136,8 @@ const getStatusVariant = (status: string) => {
                   </TableCell>
                   <TableCell>{{ user.email }}</TableCell>
                   <TableCell>
-  <Badge :variant="getStatusVariant(user.is_active ? 'Active' : 'Deleted')">
-    {{ user.is_active ? 'Active' : 'Deleted' }}
+  <Badge :variant="getStatusVariant(user.is_active ? 'Active' : 'Archived')">
+    {{ user.is_active ? 'Active' : 'Archived' }}
   </Badge>
 </TableCell>
 
@@ -143,6 +149,7 @@ const getStatusVariant = (status: string) => {
                           aria-haspopup="true"
                           size="icon"
                           variant="ghost"
+                          @click="userStore.setTask(user)"
                         >
                           <MoreHorizontal class="h-4 w-4" />
                           <span class="sr-only">Toggle menu</span>
