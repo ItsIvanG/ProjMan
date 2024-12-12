@@ -1,0 +1,120 @@
+<template>
+  <div class="flex items-center justify-center min-h-screen">
+    <Card class="max-w-[500px] w-full h-[650px] border border-white p-6 rounded-lg shadow-md overflow-auto ml-[665px]">
+      <CardHeader class="text-center">
+        <CardTitle class="text-2xl">Forgot Password</CardTitle>
+        <CardDescription>
+          Enter your email address to reset your password.
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent class="grid gap-4">
+        <div>
+          <Label for="email">Email Address</Label>
+          <Input
+            id="email"
+            v-model="email"
+            type="email"
+            required
+            placeholder="Enter your email"
+            :class="{ 'border-red-500': showError }"
+          />
+          <!-- Error Message -->
+          <span v-if="showError" class="text-red-500 text-sm mt-2 block">
+            Email is required.
+          </span>
+
+          <!-- Success Message -->
+          <span v-if="message && !showError" class="text-green-500 text-sm mt-2 block">
+            {{ message }}
+          </span>
+        </div>
+      </CardContent>
+
+      <CardFooter class="flex flex-col gap-4">
+        <Button class="w-full hover:bg-blue-300" @click="handleForgotPassword">
+          Reset Password
+        </Button>
+
+        <p class="text-center text-sm text-gray-500">
+          <router-link to="/login" class="text-blue-200 hover:underline">
+            Back to Login
+          </router-link>
+        </p>
+      </CardFooter>
+    </Card>
+  </div>
+</template>
+
+<script>
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {Input} from "@/components/ui/input";
+import {Label} from "@/components/ui/label";
+
+export default {
+  data() {
+    return {
+      email: '',
+      message: '',
+      showError: false, // Error state
+    };
+  },
+  methods: {
+    handleForgotPassword() {
+      // Validation: Check if email is empty
+      if (!this.email.trim()) {
+        this.showError = true; // Show error
+        this.message = ''; // Clear success message
+      } else {
+        this.showError = false; // Hide error
+        // Simulate API call
+        this.message = `Password reset link sent to ${this.email}.`;
+        this.email = ''; // Clear email field
+      }
+    },
+  },
+  components: {
+    Button,
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+    Input,
+    Label,
+  },
+};
+</script>
+
+<style scoped>
+/**** Match the style of login layout ****/
+input {
+  background-color: #1a1a1a;
+  color: white;
+  border: 1px solid #fff;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+}
+
+input:focus {
+  outline: none;
+  border-color: #4f46e5;
+}
+
+input.border-red-500 {
+  border-color: #f87171;
+}
+
+span {
+  cursor: pointer;
+}
+</style>
