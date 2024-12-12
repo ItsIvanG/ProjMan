@@ -1,9 +1,16 @@
 <template xmlns="http://www.w3.org/1999/html">
   <div class="flex items-center justify-end min-h-screen">
-        <!-- Border -->
-    <div class="max-w-[550px] w-full h-[780px] border border-white p-6 rounded-lg shadow-md overflow-auto mr-20">
+        <!-- Left Section: Web Image -->
+    <div class="w-1/2 flex items-center justify-center">
+      <img
+        src="https://aphrodite.gmanetwork.com/imagefiles/pepito_1424432146.jpg"
+        alt="Your Image"
+        class="max-w-full h-auto"
+      />
+    </div>
+    <div class="max-w-[600px] w-full h-[820px] border border-white p-6 rounded-lg shadow-md overflow-auto mr-20">
       <!-- Title and Description -->
-      <div class="text-center mb-5">
+      <div class="text-center mb-8">
         <h3 class="text-3xl font-bold mb-4">Register Your Account</h3>
       </div>
       <!-- Progress Tracker -->
@@ -36,188 +43,190 @@
           </div>
         </div>
       </div>
+      <!-- Form Content -->
+      <div v-if="currentStep === 1" class="grid grid-cols-1">
 
-<!-- Form Content -->
-<!-- First Name and Last Name Inputs Side by Side -->
-<div class="relative mb-2">
-  <div class="flex justify-between gap-2">
+<!-- Input Form with Consistent Spacing -->
+<div class="space-y-2">
+  <!-- First Name and Last Name Inputs Side by Side -->
+  <div class="flex justify-between gap-6">
     <!-- First Name Input -->
-    <div class="w-full">
-    <div class="relative mb-2">
-      <div class="flex items-center justify-between">
-        <label for="firstname" class="block mb-1 font-bold">First Name</label>
-        <div v-if="showErrors.firstName" class="text-red-500 text-sm">This field is required</div>
+    <div class="w-1/2">
+      <div class="relative">
+        <div class="flex items-center justify-between mb-2">
+          <label for="firstname" class="block font-bold text-white">First Name</label>
+          <div v-if="showErrors.firstName" class="text-red-500 text-sm">This field is required</div>
+        </div>
+        <div class="flex items-center border-2 border-white rounded p-2 bg-black">
+          <input
+            v-model="formData.firstName"
+            id="firstname"
+            type="text"
+            placeholder="Enter First Name"
+            class="w-full bg-transparent text-white outline-none"
+            required
+          />
+          <AkPerson class="text-white ml-2 cursor-pointer" />
+        </div>
       </div>
-      <div class="flex items-center border-2 border-white rounded p-2 bg-black">
-        <input
-          v-model="formData.firstName"
-          id="username"
-          type="text"
-          placeholder="Enter First Name"
-          class="w-full bg-transparent text-white outline-none"
-          required
-        />
-        <AkPerson class="text-white ml-2 cursor-pointer" />
-      </div>
-    </div>
     </div>
 
     <!-- Last Name Input -->
-    <div class="w-full">
-    <div class="relative mb-2">
-      <div class="flex items-center justify-between">
-        <label for="lastname" class="block mb-1 font-bold">Last Name</label>
-        <div v-if="showErrors.lastName" class="text-red-500 text-sm">This field is required</div>
-      </div>
-      <div class="flex items-center border-2 border-white rounded p-2 bg-black">
-        <input
-          v-model="formData.lastName"
-          id="username"
-          type="text"
-          placeholder="Enter Last Name"
-          class="w-full bg-transparent text-white outline-none"
-          required
-        />
-        <AkPerson class="text-white ml-2 cursor-pointer" />
+    <div class="w-1/2">
+      <div class="relative">
+        <div class="flex items-center justify-between mb-2">
+          <label for="lastname" class="block font-bold text-white">Last Name</label>
+          <div v-if="showErrors.lastName" class="text-red-500 text-sm">This field is required</div>
+        </div>
+        <div class="flex items-center border-2 border-white rounded p-2 bg-black">
+          <input
+            v-model="formData.lastName"
+            id="lastname"
+            type="text"
+            placeholder="Enter Last Name"
+            class="w-full bg-transparent text-white outline-none"
+            required
+          />
+          <AkPerson class="text-white ml-2 cursor-pointer" />
+        </div>
       </div>
     </div>
+  </div>
+
+  <!-- Email Input with Icon -->
+  <div class="relative">
+    <div class="flex items-center justify-between mb-2">
+      <label for="email" class="block font-bold text-white">Email</label>
+      <div v-if="showErrors.email" class="text-red-500 text-sm">This field is required</div>
+    </div>
+    <div class="flex items-center border-2 border-white rounded p-2 bg-black">
+      <input
+        v-model="formData.email"
+        id="email"
+        type="email"
+        placeholder="example@mail.com"
+        class="w-full bg-transparent text-white outline-none"
+        required
+      />
+      <IoOutlineMail class="text-white ml-2 cursor-pointer" />
     </div>
   </div>
-</div>
 
-<!-- Email Input with Icon on the Right -->
-<div class="relative mb-2">
-  <div class="flex items-center justify-between">
-    <label for="email" class="block mb-1 font-bold">Email</label>
-    <div v-if="showErrors.email" class="text-red-500 text-sm">This field is required</div>
-  </div>
-  <div class="flex items-center border-2 border-white rounded p-2 bg-black">
-    <input
-      v-model="formData.email"
-      id="email"
-      type="email"
-      placeholder="example@mail.com"
-      class="w-full bg-transparent text-white outline-none"
-      required
-    />
-    <IoOutlineMail class="text-white ml-2 cursor-pointer" />
-  </div>
-</div>
-
-<!-- Username Input with Icon -->
-<div class="relative mb-2">
-  <div class="flex items-center justify-between">
-    <label for="username" class="block mb-1 font-bold">Username</label>
-    <div v-if="showErrors.username" class="text-red-500 text-sm">This field is required</div>
-  </div>
-  <div class="flex items-center border-2 border-white rounded p-2 bg-black">
-    <input
-      v-model="formData.username"
-      id="username"
-      type="text"
-      placeholder="Enter Username"
-      class="w-full bg-transparent text-white outline-none"
-      required
-    />
-    <AkPerson class="text-white ml-2 cursor-pointer" />
-  </div>
-</div>
-
-<!-- Password Input with Icon -->
-<div class="relative mb-2">
-  <div class="flex items-center justify-between">
-    <label for="password" class="block mb-1 font-bold">Password</label>
-    <span v-if="showErrors.password" class="text-red-500 text-sm">This field is required</span>
-  </div>
+  <!-- Username Input -->
   <div class="relative">
-    <input
-      v-model="formData.password"
-      :type="showPassword ? 'text' : 'password'"
-      id="password"
-      placeholder="Enter Password"
+    <div class="flex items-center justify-between mb-2">
+      <label for="username" class="block font-bold text-white">Username</label>
+      <div v-if="showErrors.username" class="text-red-500 text-sm">This field is required</div>
+    </div>
+    <div class="flex items-center border-2 border-white rounded p-2 bg-black">
+      <input
+        v-model="formData.username"
+        id="username"
+        type="text"
+        placeholder="Your username"
+        class="w-full bg-transparent text-white outline-none"
+        required
+      />
+      <AkPerson class="text-white ml-2 cursor-pointer" />
+    </div>
+  </div>
+
+  <!-- Password Input -->
+  <div class="relative">
+    <div class="flex items-center justify-between mb-2">
+      <label for="password" class="block font-bold text-white">Password</label>
+      <span v-if="showErrors.password" class="text-red-500 text-sm">This field is required</span>
+    </div>
+    <div class="relative">
+      <input
+        v-model="formData.password"
+        :type="showPassword ? 'text' : 'password'"
+        id="password"
+        placeholder="Enter Password"
+        class="w-full border border-white rounded p-2 bg-black text-white"
+        required
+      />
+      <span
+        class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+        @click="togglePassword('password')"
+      >
+        <AkEyeClosed v-if="!showPassword" class="text-white" />
+        <AkEyeOpen v-if="showPassword" class="text-white" />
+      </span>
+    </div>
+    <div v-if="passwordInvalid" class="text-red-500 text-sm">
+      Password must be more than 8 characters, with at least one special character, one uppercase letter, and one number.
+    </div>
+  </div>
+
+  <!-- Confirm Password Input -->
+  <div class="relative">
+    <div class="flex items-center justify-between mb-2">
+      <label for="confirmPassword" class="block font-bold text-white">Confirm Password</label>
+      <div v-if="showErrors.confirmPassword" class="text-red-500 text-sm">This field is required</div>
+    </div>
+    <div class="relative">
+      <input
+        v-model="formData.confirmPassword"
+        :type="showConfirmPassword ? 'text' : 'password'"
+        id="confirmPassword"
+        placeholder="Re-type Password"
+        class="w-full border border-white rounded p-2 bg-black text-white"
+        required
+      />
+      <span
+        class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+        @click="togglePassword('confirmPassword')"
+      >
+        <AkEyeClosed v-if="!showConfirmPassword" class="text-white" />
+        <AkEyeOpen v-if="showConfirmPassword" class="text-white" />
+      </span>
+    </div>
+    <div v-if="passwordMismatch" class="text-red-500 text-sm">Passwords do not match</div>
+  </div>
+
+  <!-- Birthday Input -->
+  <div class="relative">
+    <div class="flex items-center justify-between mb-2">
+      <label for="birthday" class="block font-bold text-white">Birthday</label>
+      <div v-if="showErrors.birthday" class="text-red-500 text-sm">This field is required</div>
+    </div>
+    <div class="relative">
+      <input
+        v-model="formData.birthday"
+        id="birthday"
+        type="date"
+        class="w-full border border-white rounded p-2 bg-black text-white"
+        required
+        ref="birthdayInput"
+      />
+      <CiCalendarDate
+        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-white cursor-pointer"
+        @click="toggleDatePicker"
+      />
+    </div>
+  </div>
+
+  <!-- Gender Input -->
+  <div class="relative">
+    <div class="flex items-center justify-between mb-2">
+      <label for="gender" class="block font-bold text-white">Gender</label>
+      <div v-if="showErrors.gender" class="text-red-500 text-sm">This field is required</div>
+    </div>
+    <select
+      v-model="formData.gender"
+      id="gender"
       class="w-full border border-white rounded p-2 bg-black text-white"
       required
-    />
-    <span
-      class="absolute right-3 top-3 cursor-pointer"
-      @click="togglePassword('password')"
     >
-      <AkEyeClosed v-if="!showPassword" class="text-white" />
-      <AkEyeOpen v-if="showPassword" class="text-white" />
-    </span>
-  </div>
-  <div v-if="passwordInvalid" class="text-red-500 text-sm">
-    Password must be more than 8 characters, with at least one special character, one uppercase letter, and one number.
-  </div>
-</div>
-
-<!-- Confirm Password Input with Icon -->
-<div class="relative mb-2">
-  <div class="flex items-center justify-between">
-    <label for="confirmPassword" class="block mb-1 font-bold">Confirm Password</label>
-    <div v-if="showErrors.confirmPassword" class="text-red-500 text-sm">This field is required</div>
-  </div>
-  <div class="relative">
-    <input
-      v-model="formData.confirmPassword"
-      :type="showConfirmPassword ? 'text' : 'password'"
-      id="confirmPassword"
-      placeholder="Re-type Password"
-      class="w-full border border-white rounded p-2 bg-black text-white"
-      required
-    />
-    <span
-      class="absolute right-3 top-3 cursor-pointer"
-      @click="togglePassword('confirmPassword')"
-    >
-      <AkEyeClosed v-if="!showConfirmPassword" class="text-white" />
-      <AkEyeOpen v-if="showConfirmPassword" class="text-white" />
-    </span>
-  </div>
-  <div v-if="passwordMismatch" class="text-red-500 text-sm">Passwords do not match</div>
-</div>
-
-<!-- Birthday Input with Icon -->
-<div class="relative mb-2">
-  <div class="flex items-center justify-between">
-    <label for="birthday" class="block mb-1 font-bold">Birthday</label>
-    <div v-if="showErrors.birthday" class="text-red-500 text-sm">This field is required</div>
-  </div>
-  <div class="relative">
-    <input
-      v-model="formData.birthday"
-      id="birthday"
-      type="date"
-      class="w-full border border-white rounded p-1.5 pl-3 pr-10 bg-black text-white"
-      required
-      ref="birthdayInput"
-    />
-    <CiCalendarDate
-      class="absolute right-3 top-1/2 transform -translate-y-1/2 text-white cursor-pointer"
-      @click="toggleDatePicker"
-    />
+      <option value="">Select</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+      <option value="Other">Other</option>
+    </select>
   </div>
 </div>
-
-<!-- Gender Input with Icon -->
-<div class="relative mb-2">
-  <div class="flex items-center justify-between">
-    <label for="gender" class="block mb-1 font-bold">Gender</label>
-    <div v-if="showErrors.gender" class="text-red-500 text-sm">This field is required</div>
-  </div>
-  <select
-    v-model="formData.gender"
-    id="gender"
-    class="w-full border border-white rounded p-2 bg-black text-white"
-    required
-  >
-    <option value="">Select</option>
-    <option value="Male">Male</option>
-    <option value="Female">Female</option>
-    <option value="Other">Other</option>
-  </select>
-</div>
-
+      </div>
       <div v-if="currentStep === 2" class="space-y-4">
         <label class="block mb-1 font-bold">Terms and Conditions</label>
         <textarea style="resize: none;"
@@ -375,8 +384,8 @@ export default {
       currentStep: 1,
       steps: ["Account Setup", "Terms and Conditions", "Upload Image"],
       formData: {
-        firstName:  "",
-        lastName:  "",
+        firstName: '',
+        lastName: '',
         email: "",
         username: "",
         password: "",
@@ -434,19 +443,16 @@ export default {
     },
   },
   watch: {
-
     "formData.firstName"(value) {
       if (this.isFieldTouched.firstName) {
         this.showErrors.firstName = !value || value.trim().length === 0;
       }
     },
-
     "formData.lastName"(value) {
       if (this.isFieldTouched.lastName) {
         this.showErrors.lastName = !value || value.trim().length === 0;
       }
     },
-
     "formData.email"(value) {
       if (this.isFieldTouched.email) {
         this.showErrors.email = !value;
@@ -494,62 +500,39 @@ export default {
         this.showConfirmPassword = !this.showConfirmPassword;
       }
     },
-
-validateField(field) {
-  this.isFieldTouched[field] = true;
-
-  if (field === "firstName") {
-    // Validate the first name field explicitly
-    if (!this.formData.firstName || this.formData.firstName.trim().length === 0) {
-      this.showErrors.firstName = true;
-    } else {
-      this.showErrors.firstName = false;
-    }
-  } else if (field === "lastName") {
-    // Validate the last name field explicitly
-    if (!this.formData.lastName || this.formData.lastName.trim().length === 0) {
-      this.showErrors.lastName = true;
-    } else {
-      this.showErrors.lastName = false;
-    }
-  } else if (!this.formData[field]) {
-    // For other fields, handle the standard required validation
-    this.showErrors[field] = true;
-  } else {
-    this.showErrors[field] = false;
-
-    // Password validation
-    if (field === "password") {
-      this.passwordInvalid = !this.validatePassword(this.formData.password);
-    }
-
-    // Confirm password validation
-    if (field === "confirmPassword") {
-      this.passwordMismatch =
-        this.formData.password !== this.formData.confirmPassword;
-    }
-  }
-},
+    validateField(field) {
+      this.isFieldTouched[field] = true;
+      if (!this.formData[field]) {
+        this.showErrors[field] = true;
+      } else {
+        this.showErrors[field] = false;
+        if (field === "password") {
+          this.passwordInvalid = !this.validatePassword(this.formData.password);
+        }
+        if (field === "confirmPassword") {
+          this.passwordMismatch =
+            this.formData.password !== this.formData.confirmPassword;
+        }
+      }
+    },
     validatePassword(password) {
       const regex =
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
       return regex.test(password);
     },
-
-  handleFileUpload(event) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.formData.profilePicture = e.target.result;  // Set the image URL as the preview
-        this.showErrors.profilePicture = false;
-      };
-      reader.readAsDataURL(file);
-    } else {
-      this.showErrors.profilePicture = true;
-    }
-  },
-
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.formData.profilePicture = e.target.result; // Set the image URL as the preview
+          this.showErrors.profilePicture = false;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        this.showErrors.profilePicture = true;
+      }
+    },
     nextStep() {
       // Validate current step fields before proceeding
       let valid = true;
@@ -585,28 +568,66 @@ validateField(field) {
     toggleText() {
       this.isExpanded = !this.isExpanded;
     },
-register() {
-  // Validate all fields
-  this.validateField('firstName');
-  this.validateField('lastName');
-  this.validateField('email');
-  this.validateField('username');
-  this.validateField('password');
-  this.validateField('confirmPassword');
-  this.validateField('birthday');
-  this.validateField('gender');
-  if (this.formData.agreeTerms === false) {
-    this.showErrors.agreeTerms = true;
-  }
 
-  // Check if any errors exist before submitting
-  if (Object.values(this.showErrors).includes(true)) {
-    alert("Please fix the errors before submitting.");
-    return;
-  }
+    async register() {
+      try {
+        // Validate all fields before making the request
+        let valid = true;
+        Object.keys(this.formData).forEach((field) => {
+          // Skip profilePicture since it's handled differently
+          if (field !== 'profilePicture') {
+            const fieldValid = this.validateField(field);
+            if (!fieldValid || this.showErrors[field]) valid = false;
+          }
+        });
 
-  // Proceed with form submission (e.g., API call)
-  alert("Registration successful!");
+        // Also check if profilePicture is provided if it's required
+        if (!this.formData.profilePicture) {
+          this.showErrors.profilePicture = true;
+          valid = false;
+        }
+
+        if (!valid) {
+          alert("Please fill in all required fields correctly.");
+          return;
+        }
+
+    // Make the API request
+    const response = await fetch("http://localhost:8000/api/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        firstName: this.formData.firstName,
+        lastName: this.formData.lastName,
+        email: this.formData.email,
+        username: this.formData.username,
+        password: this.formData.password,
+        birthday: this.formData.birthday,
+        gender: this.formData.gender,
+        profilePicture: this.formData.profilePicture,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      console.error("Registration failed:", errorMessage);
+      alert("An error occurred during registration: " + errorMessage);
+      return;
+    }
+
+    const data = await response.json();
+    if (data.success) {
+      alert("Registration successful! Redirecting to dashboard...");
+      this.$router.push("/dashboard"); // Redirect to dashboard
+    } else {
+      alert("Registration failed: " + (data.error || "Unknown error"));
+    }
+  } catch (err) {
+    console.error("An error occurred during registration:", err);
+    alert("An error occurred during registration: " + err.message);
+  }
 },
     toggleDatePicker() {
       // Trigger the native date picker by clicking the input field programmatically
