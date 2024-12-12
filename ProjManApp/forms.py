@@ -15,7 +15,10 @@ class CreateUserForm(forms.ModelForm):
         user = super().save(commit=False)
         user.username = self.cleaned_data["email"]
         user.set_password(self.cleaned_data["password"]) 
-        
+
         if commit:
-            user.save()
+            user.save()  # Save the user first to generate an ID
+            user.manager = user  # Set the manager field to the user itself
+            user.save()  # Save the user again after setting the manager
+        
         return user

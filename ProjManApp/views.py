@@ -134,3 +134,20 @@ class TaskEditView(generics.UpdateAPIView):
     def get_object(self):
         task_id = self.kwargs['task_id']  # Get task_id from URL parameters
         return Task.objects.get(task_id=task_id)  # Fetch the task by ID
+
+from .models import User
+from .serializers import UserSerializer
+
+class UserListView(generics.ListAPIView):
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        manager_id = self.kwargs.get('manager_id')
+        return User.objects.filter(manager_id=manager_id)
+    
+
+from .serializers import UserCreateSerializer
+
+class UserCreateView(generics.CreateAPIView):
+    serializer_class = UserCreateSerializer
+    queryset = User.objects.all()

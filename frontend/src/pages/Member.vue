@@ -22,62 +22,37 @@ import {
   ListFilter,
   MoreHorizontal,
 } from 'lucide-vue-next'
-import { computed, ref } from "vue";
+import { computed, ref, watchEffect } from "vue";
 import  Usermodal  from '@/components/reusable/modals/usermodal.vue'
 import  Useredit  from '@/components/reusable/modals/editusermodal.vue'
+import { getAPI } from '@/axios';
+import { useAuthStore } from '@/store/auth'
 
-// Sample users data
-const allUsers = ref([
-  {
-    email: "kean@gmail.com",
-    name: "Kean Lucas",
-    project: " project",
-    role: "Member",
-    status: "Active",
-  },
-  {
-    email: "kean@gmail.com",
-    name: "Kean Lucas",
-    project: " project",
-    role: "Member",
-    status: "Active",
-  },
-  {
-    email: "kean@gmail.com",
-    name: "Kean Lucas",
-    project: " project",
-    role: "Member",
-    status: "Deactivated",
-  },
-  {
-    email: "kean@gmail.com",
-    name: "Kean Lucas",
-    project: " project",
-    role: "Member",
-    status: "Active",
-  },
-  {
-    email: "admin@example.com",
-    name: "Admin User",
-    project: "Admin Project",
-    role: "Manager",
-    status: "Active",
-  },
-  {
-    email: "cheska.lucas@example.com",
-    name: "Cheska Lucas",
-    project: "Marketing",
-    role: "Member",
-    status: "Active",
-  },
-  {
-    email: "john.doe@example.com",
-    name: "John Doe",
-    project: "Development",
-    role: "Manager",
-    status: "Active",
-  },
-]);
+const authStore = useAuthStore();
+const managerId  = computed(() => authStore.user?.id);
+
+const allUsers = ref<any[]>([]); // Users data from API
+
+// Fetch users from the API
+const fetchUsers = async (managerId: number) => {
+  try {
+    const response = await getAPI.get(`/manager/${managerId}/`)
+    allUsers.value = response.data
+  } catch (error) {
+    console.error('Error fetching users:', error)
+  }
+}
+
+// const projectStore = useProjectStore();
+// const projectId = computed(() => projectStore.project_id);
+
+// Use watchEffect to fetch users when projectId changes
+watchEffect(() => {
+  if (managerId.value) {
+    fetchUsers(managerId.value);
+  }
+});
+
 
 const getStatusVariant = (status: string) => {
   switch (status.toLowerCase()) {
@@ -87,27 +62,14 @@ const getStatusVariant = (status: string) => {
       return 'member';
     case 'active':
       return 'active';
-    case 'deactivated':
-      return 'destructive';
+    case 'deleted':
+      return 'deleted';
     default:
       return 'default';
   }
 };
 
-// Pagination settings
-const currentPage = ref(1);
-const itemsPerPage = 5;
 
-// Paginated users
-const paginatedUsers = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  return allUsers.value.slice(start, start + itemsPerPage);
-});
-
-// Total number of pages
-const totalPages = computed(() =>
-  Math.ceil(allUsers.value.length / itemsPerPage)
-);
 
 </script>
 
@@ -149,29 +111,31 @@ const totalPages = computed(() =>
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
+                <TableHead>Username</TableHead>
                 <TableHead class="hidden md:table-cell">Role</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Project</TableHead>
                 <TableHead class="hidden md:table-cell">Status</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              <template v-if="paginatedUsers.length">
-                <TableRow v-for="(user, index) in paginatedUsers" :key="index">
+              <template v-if="allUsers.length">
+                <TableRow v-for="(user, index) in allUsers" :key="index">
                   <TableCell>{{ user.name }}</TableCell>
+                  <TableCell>{{ user.username }}</TableCell>
                   <TableCell>
                     <Badge :variant="getStatusVariant( user.role )">
                       {{ user.role }}
                     </Badge>
                   </TableCell>
                   <TableCell>{{ user.email }}</TableCell>
-                  <TableCell>{{ user.project }}</TableCell>
                   <TableCell>
-                    <Badge :variant="getStatusVariant( user.status )">
-                      {{ user.status }}
-                    </Badge>
-                  </TableCell>
+  <Badge :variant="getStatusVariant(user.is_active ? 'Active' : 'Deleted')">
+    {{ user.is_active ? 'Active' : 'Deleted' }}
+  </Badge>
+</TableCell>
+
+
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger as-child>
@@ -201,7 +165,7 @@ const totalPages = computed(() =>
             </TableBody>
           </Table>
         </CardContent>
-        <CardFooter class="flex justify-between items-center">
+        <!-- <CardFooter class="flex justify-between items-center">
           <div class="text-xs text-muted-foreground">
             Showing <strong>{{ (currentPage - 1) * itemsPerPage + 1 }}</strong> to
             <strong>{{ Math.min(currentPage * itemsPerPage, allUsers.length) }}</strong>
@@ -212,7 +176,7 @@ const totalPages = computed(() =>
             :total-pages="totalPages"
             @page-change="currentPage = $event"
           />
-        </CardFooter>
+        </CardFooter> -->
       </Card>
     </TabsContent>
   </Tabs>

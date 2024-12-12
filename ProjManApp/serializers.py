@@ -31,4 +31,24 @@ class TaskSerializer(serializers.ModelSerializer):
         # Assuming 'username' is the field you want to show from the assignee (user model)
         return obj.assignee.name if obj.assignee else None
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'name', 'role', 'manager', 'is_active']
+
+
+class UserCreateSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'name', 'role', 'manager', 'is_active', 'password']
+
+    def create(self, validated_data):
+        # Hash the password before saving the user
+        password = validated_data.pop('password')
+        user = User(**validated_data)
+        user.set_password(password)
+        user.save()
+        return user
 
