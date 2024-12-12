@@ -1,114 +1,631 @@
-<template>
-  <div class="flex items-center justify-center min-h-screen">
-    <Card class="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle class="text-2xl">
-          Register
-        </CardTitle>
-        <CardDescription>
-          Create an account by entering your email and password below.
-        </CardDescription>
-      </CardHeader>
-      <CardContent class="grid gap-4">
-        <!-- Display error message -->
-        <p v-if="error" class="text-red-500 text-sm">{{ error }}</p>
-        <p v-if="success" class="text-green-500 text-sm">{{ success }}</p>
-
-        <div class="grid gap-2">
-          <Label for="email">Email</Label>
-          <Input
-            v-model="email"
-            id="email"
-            type="email"
-            placeholder="m@example.com"
-            required
-            class="text-gray-700"
-          />
+<template xmlns="http://www.w3.org/1999/html">
+  <div class="flex items-center justify-end min-h-screen">
+    <div class="max-w-[550px] w-full h-[780px] border border-white p-6 rounded-lg shadow-md overflow-auto mr-20">
+      <!-- Title and Description -->
+      <div class="text-center mb-5">
+        <h3 class="text-3xl font-bold mb-4">Register Your Account</h3>
+      </div>
+      <!-- Progress Tracker -->
+      <div class="flex justify-between items-right mb-4">
+        <div
+          v-for="(step, index) in steps"
+          :key="index"
+          class="flex flex-col items-center space-x-2"
+        >
+          <!-- Step number -->
+          <div
+            :class="{
+              'bg-white text-black': currentStep === index + 1,
+              'bg-gray-500 text-white': currentStep !== index + 1,
+              'underline': currentStep === index + 1,
+            }"
+            class="w-8 h-8 flex items-center justify-center rounded-full font-bold"
+          >
+            {{ index + 1 }}
+          </div>
+          <!-- Step Title -->
+          <div
+            :class="{
+              'text-white': currentStep === index + 1,
+              'text-gray-500': currentStep !== index + 1,
+            }"
+            class="text-sm font-semibold"
+          >
+            {{ step }}
+          </div>
         </div>
+      </div>
 
-        <div class="grid gap-2">
-          <Label for="password">Password</Label>
-          <Input
-            v-model="password"
-            id="password"
-            type="password"
-            required
-            placeholder="••••••••"
-            class="text-gray-700"
-          />
+<!-- Form Content -->
+<!-- First Name and Last Name Inputs Side by Side -->
+<div class="relative mb-2">
+  <div class="flex justify-between gap-2">
+    <!-- First Name Input -->
+    <div class="w-full">
+    <div class="relative mb-2">
+      <div class="flex items-center justify-between">
+        <label for="firstname" class="block mb-1 font-bold">First Name</label>
+        <div v-if="showErrors.firstName" class="text-red-500 text-sm">This field is required</div>
+      </div>
+      <div class="flex items-center border-2 border-white rounded p-2 bg-black">
+        <input
+          v-model="formData.firstName"
+          id="username"
+          type="text"
+          placeholder="Enter First Name"
+          class="w-full bg-transparent text-white outline-none"
+          required
+        />
+        <AkPerson class="text-white ml-2 cursor-pointer" />
+      </div>
+    </div>
+    </div>
+
+    <!-- Last Name Input -->
+    <div class="w-full">
+    <div class="relative mb-2">
+      <div class="flex items-center justify-between">
+        <label for="lastname" class="block mb-1 font-bold">Last Name</label>
+        <div v-if="showErrors.lastName" class="text-red-500 text-sm">This field is required</div>
+      </div>
+      <div class="flex items-center border-2 border-white rounded p-2 bg-black">
+        <input
+          v-model="formData.lastName"
+          id="username"
+          type="text"
+          placeholder="Enter Last Name"
+          class="w-full bg-transparent text-white outline-none"
+          required
+        />
+        <AkPerson class="text-white ml-2 cursor-pointer" />
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- Email Input with Icon on the Right -->
+<div class="relative mb-2">
+  <div class="flex items-center justify-between">
+    <label for="email" class="block mb-1 font-bold">Email</label>
+    <div v-if="showErrors.email" class="text-red-500 text-sm">This field is required</div>
+  </div>
+  <div class="flex items-center border-2 border-white rounded p-2 bg-black">
+    <input
+      v-model="formData.email"
+      id="email"
+      type="email"
+      placeholder="example@mail.com"
+      class="w-full bg-transparent text-white outline-none"
+      required
+    />
+    <IoOutlineMail class="text-white ml-2 cursor-pointer" />
+  </div>
+</div>
+
+<!-- Username Input with Icon -->
+<div class="relative mb-2">
+  <div class="flex items-center justify-between">
+    <label for="username" class="block mb-1 font-bold">Username</label>
+    <div v-if="showErrors.username" class="text-red-500 text-sm">This field is required</div>
+  </div>
+  <div class="flex items-center border-2 border-white rounded p-2 bg-black">
+    <input
+      v-model="formData.username"
+      id="username"
+      type="text"
+      placeholder="Enter Username"
+      class="w-full bg-transparent text-white outline-none"
+      required
+    />
+    <AkPerson class="text-white ml-2 cursor-pointer" />
+  </div>
+</div>
+
+<!-- Password Input with Icon -->
+<div class="relative mb-2">
+  <div class="flex items-center justify-between">
+    <label for="password" class="block mb-1 font-bold">Password</label>
+    <span v-if="showErrors.password" class="text-red-500 text-sm">This field is required</span>
+  </div>
+  <div class="relative">
+    <input
+      v-model="formData.password"
+      :type="showPassword ? 'text' : 'password'"
+      id="password"
+      placeholder="Enter Password"
+      class="w-full border border-white rounded p-2 bg-black text-white"
+      required
+    />
+    <span
+      class="absolute right-3 top-3 cursor-pointer"
+      @click="togglePassword('password')"
+    >
+      <AkEyeClosed v-if="!showPassword" class="text-white" />
+      <AkEyeOpen v-if="showPassword" class="text-white" />
+    </span>
+  </div>
+  <div v-if="passwordInvalid" class="text-red-500 text-sm">
+    Password must be more than 8 characters, with at least one special character, one uppercase letter, and one number.
+  </div>
+</div>
+
+<!-- Confirm Password Input with Icon -->
+<div class="relative mb-2">
+  <div class="flex items-center justify-between">
+    <label for="confirmPassword" class="block mb-1 font-bold">Confirm Password</label>
+    <div v-if="showErrors.confirmPassword" class="text-red-500 text-sm">This field is required</div>
+  </div>
+  <div class="relative">
+    <input
+      v-model="formData.confirmPassword"
+      :type="showConfirmPassword ? 'text' : 'password'"
+      id="confirmPassword"
+      placeholder="Re-type Password"
+      class="w-full border border-white rounded p-2 bg-black text-white"
+      required
+    />
+    <span
+      class="absolute right-3 top-3 cursor-pointer"
+      @click="togglePassword('confirmPassword')"
+    >
+      <AkEyeClosed v-if="!showConfirmPassword" class="text-white" />
+      <AkEyeOpen v-if="showConfirmPassword" class="text-white" />
+    </span>
+  </div>
+  <div v-if="passwordMismatch" class="text-red-500 text-sm">Passwords do not match</div>
+</div>
+
+<!-- Birthday Input with Icon -->
+<div class="relative mb-2">
+  <div class="flex items-center justify-between">
+    <label for="birthday" class="block mb-1 font-bold">Birthday</label>
+    <div v-if="showErrors.birthday" class="text-red-500 text-sm">This field is required</div>
+  </div>
+  <div class="relative">
+    <input
+      v-model="formData.birthday"
+      id="birthday"
+      type="date"
+      class="w-full border border-white rounded p-1.5 pl-3 pr-10 bg-black text-white"
+      required
+      ref="birthdayInput"
+    />
+    <CiCalendarDate
+      class="absolute right-3 top-1/2 transform -translate-y-1/2 text-white cursor-pointer"
+      @click="toggleDatePicker"
+    />
+  </div>
+</div>
+
+<!-- Gender Input with Icon -->
+<div class="relative mb-2">
+  <div class="flex items-center justify-between">
+    <label for="gender" class="block mb-1 font-bold">Gender</label>
+    <div v-if="showErrors.gender" class="text-red-500 text-sm">This field is required</div>
+  </div>
+  <select
+    v-model="formData.gender"
+    id="gender"
+    class="w-full border border-white rounded p-2 bg-black text-white"
+    required
+  >
+    <option value="">Select</option>
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
+    <option value="Other">Other</option>
+  </select>
+</div>
+
+      <div v-if="currentStep === 2" class="space-y-4">
+        <label class="block mb-1 font-bold">Terms and Conditions</label>
+        <textarea style="resize: none;"
+         class="w-full p-3 border border-white rounded bg-black text-white h-80"
+          readonly
+        >
+Welcome to ProjMan!
+
+These terms and conditions ("Terms") govern your access to and use of the ProjMan website and services ("Services"). By using our website, you agree to comply with and be bound by these Terms. If you do not agree with these Terms, please do not use the Services.
+
+1. Acceptance of Terms
+By accessing or using the ProjMan platform, you agree to comply with these Terms, as well as our Privacy Policy. We reserve the right to modify, update, or change these Terms at any time. Any changes will be posted on this page, and the updated Terms will be effective immediately upon posting.
+
+2. Use of the Service
+ProjMan provides a platform for project management tools, including task management, time tracking, and collaboration features. You agree to:
+
+Use the Service only for lawful purposes and in accordance with these Terms.
+Not misuse or interfere with the Service in any way.
+Not attempt to gain unauthorized access to the Service, servers, or networks.
+3. Account Registration
+To use certain features of ProjMan, you must create an account. You are responsible for maintaining the confidentiality of your account credentials, and you agree to notify us immediately of any unauthorized use of your account. You must be at least 18 years old to register for an account.
+
+4. Subscription Plans and Payment
+ProjMan offers both free and paid subscription plans. If you subscribe to a paid plan, you agree to pay the applicable subscription fees in accordance with the plan you choose. Payments are non-refundable, and fees are subject to change. You will be notified of any changes to the fees.
+
+5. License to Use the Service
+ProjMan grants you a limited, non-exclusive, non-transferable, revocable license to access and use the Service for your internal business or personal use. You may not distribute, modify, or create derivative works based on the Service.
+
+6. User Content
+You are solely responsible for the content you upload, create, or share through the Service ("User Content"). By uploading or submitting content to ProjMan, you grant us a worldwide, royalty-free, and non-exclusive license to use, display, and distribute the content within the Service.
+
+7. Privacy
+Your use of the Service is also governed by our Privacy Policy, which outlines how we collect, use, and protect your personal data. Please review our Privacy Policy to understand how your information is handled.
+
+8. Prohibited Activities
+You agree not to:
+
+Violate any applicable laws, regulations, or third-party rights.
+Engage in any activity that could harm the Service or other users.
+Use the Service for any illegal or unauthorized purpose, including but not limited to spamming, hacking, or distributing malware.
+Attempt to reverse-engineer, decompile, or disassemble the Service.
+9. Termination
+We reserve the right to suspend or terminate your access to the Service if you violate these Terms or engage in any unlawful activities. You may also terminate your account at any time by contacting us.
+
+10. Disclaimer of Warranties
+The Service is provided "as is" without any warranties of any kind, either express or implied. We do not guarantee that the Service will be uninterrupted or error-free. You use the Service at your own risk.
+
+11. Limitation of Liability
+In no event shall ProjMan or its affiliates be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or in connection with your use of the Service.
+
+12. Indemnification
+You agree to indemnify and hold harmless ProjMan, its affiliates, employees, and partners from any claims, damages, losses, liabilities, or expenses arising from your use of the Service or violation of these Terms.
+
+13. Governing Law
+These Terms shall be governed by and construed in accordance with the laws of [Your jurisdiction], without regard to its conflict of law principles. Any disputes arising from these Terms shall be resolved in the courts of [Your jurisdiction].
+
+14. Changes to the Terms
+We may update these Terms at any time. You will be notified of any material changes, and your continued use of the Service after such changes will constitute your acceptance of the new Terms.
+        </textarea>
+        <div v-if="showErrors.agreeTerms" class="text-red-500 text-sm">This field is required</div>
+        <div>
+          <label class="inline-flex items-right">
+            <input
+              type="checkbox"
+              v-model="formData.agreeTerms"
+              class="mr-2 bg-black text-white"
+              required
+            />
+            I agree to the terms and conditions.
+          </label>
         </div>
-      </CardContent>
-      <CardFooter>
-        <Button class="w-full" @click.prevent="register">
+      </div>
+
+<div v-if="currentStep === 3" class="space-y-4">
+  <div>
+    <label for="profilePicture" class="block mb-1 font-bold">Profile Picture</label>
+    <input
+      id="profilePicture"
+      type="file"
+      @change="handleFileUpload"
+      accept="image/*"
+      class="w-full border border-white rounded p-2 bg-black text-white"
+      required
+    />
+  </div>
+  <div v-if="formData.profilePicture" class="relative mt-4">
+<div class="flex justify-center">
+  <img
+    :src="formData.profilePicture"
+    alt="Profile Picture Preview"
+    class="w-48 h-48 object-cover rounded-full cursor-pointer transition-transform duration-300 hover:scale-110 border-2 border-white"
+  />
+</div>
+  </div>
+</div>
+
+      <!-- Navigation Buttons -->
+      <div class="flex justify-between mt-5">
+        <button
+          v-if="currentStep > 1"
+          @click="prevStep"
+          class="px-4 py-2 border border-white rounded text-white bg-gray-700"
+        >
+          Back
+        </button>
+        <button
+          v-if="currentStep < steps.length"
+          @click="nextStep"
+          class="px-4 py-2 bg-white text-black rounded"
+          :disabled="isNextDisabled"
+        >
+          Next
+        </button>
+        <button
+          v-if="currentStep === steps.length"
+          @click="register"
+          class="px-4 py-2 bg-white text-black rounded"
+        >
           Register
-        </Button>
-      </CardFooter>
-    </Card>
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { getCSRFToken } from "@/store/auth";
+import { AkEyeClosed, AkEyeOpen } from "@kalimahapps/vue-icons";
+import { IoOutlineMail } from '@kalimahapps/vue-icons';
+import { AkPerson } from '@kalimahapps/vue-icons';
+import { CiCalendarDate } from '@kalimahapps/vue-icons';
+import VueCal from 'vue-cal';
 
 export default {
+  components: {
+    AkEyeClosed,
+    AkEyeOpen,
+    IoOutlineMail,
+    AkPerson,
+    CiCalendarDate,
+    VueCal,
+  },
+  props: {
+    text: {
+      type: String,
+      required: true,
+    },
+    maxLength: {
+      type: Number,
+      default: 100,
+    },
+  },
+
   data() {
     return {
-      email: "",
-      password: "",
-      error: "",
-      success: "",
+      currentStep: 1,
+      steps: ["Account Setup", "Terms and Conditions", "Upload Image"],
+      formData: {
+        firstName:  "",
+        lastName:  "",
+        email: "",
+        username: "",
+        password: "",
+        confirmPassword: "",
+        birthday: "",
+        gender: "",
+        agreeTerms: false,
+        profilePicture: null,
+        isExpanded: false,
+      },
+
+      showErrors: {
+        firstName: false,
+        lastName: false,
+        email: false,
+        username: false,
+        password: false,
+        confirmPassword: false,
+        birthday: false,
+        gender: false,
+        agreeTerms: false,
+        profilePicture: false,
+      },
+
+      passwordInvalid: false,
+      passwordMismatch: false,
+
+      isFieldTouched: {
+        firstName: false,
+        lastName: false,
+        email: false,
+        username: false,
+        password: false,
+        confirmPassword: false,
+        birthday: false,
+        gender: false,
+        agreeTerms: false,
+      },
+      showDatePicker: false,
+      showPassword: false,
+      showConfirmPassword: false,
     };
   },
-  methods: {
-    async register() {
-      try {
-        const response = await fetch("http://localhost:8000/api/register", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCSRFToken(),
-          },
-          body: JSON.stringify({
-            email: this.email,
-            password: this.password,
-          }),
-          credentials: "include",
-        });
-        const data = await response.json();
-        if (response.ok) {
-          this.success = "Registration successful! Redirecting to login...";
-          setTimeout(() => {
-            this.$router.push("/login");
-          }, 1000);
-        } else {
-          this.error = data.error || "Registration failed.";
-        }
-      } catch (err) {
-        this.error = "An error occurred during registration: " + err;
+  computed: {
+    isTruncatable() {
+      return this.text.length > this.maxLength;
+    },
+    truncatedText() {
+      return this.isTruncatable
+        ? this.text.slice(0, this.maxLength) + "..."
+        : this.text;
+    },
+    fullText() {
+      return this.text;
+    },
+  },
+  watch: {
+
+    "formData.firstName"(value) {
+      if (this.isFieldTouched.firstName) {
+        this.showErrors.firstName = !value || value.trim().length === 0;
+      }
+    },
+
+    "formData.lastName"(value) {
+      if (this.isFieldTouched.lastName) {
+        this.showErrors.lastName = !value || value.trim().length === 0;
+      }
+    },
+
+    "formData.email"(value) {
+      if (this.isFieldTouched.email) {
+        this.showErrors.email = !value;
+      }
+    },
+    "formData.username"(value) {
+      if (this.isFieldTouched.username) {
+        this.showErrors.username = !value;
+      }
+    },
+    "formData.password"(value) {
+      if (this.isFieldTouched.password) {
+        this.showErrors.password = !value;
+        this.passwordInvalid = !this.validatePassword(value);
+      }
+    },
+    "formData.confirmPassword"(value) {
+      if (this.isFieldTouched.confirmPassword) {
+        this.showErrors.confirmPassword = !value;
+        this.passwordMismatch = value !== this.formData.password;
+      }
+    },
+    "formData.birthday"(value) {
+      if (this.isFieldTouched.birthday) {
+        this.showErrors.birthday = !value;
+      }
+    },
+    "formData.gender"(value) {
+      if (this.isFieldTouched.gender) {
+        this.showErrors.gender = !value;
+      }
+    },
+    "formData.agreeTerms"(value) {
+      if (this.isFieldTouched.agreeTerms) {
+        this.showErrors.agreeTerms = !value;
       }
     },
   },
-  components: {
-    Button,
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-    Input,
-    Label,
+  methods: {
+    togglePassword(field) {
+      this[field] = !this[field];
+      if (field === "password") {
+        this.showPassword = !this.showPassword;
+      } else if (field === "confirmPassword") {
+        this.showConfirmPassword = !this.showConfirmPassword;
+      }
+    },
+
+validateField(field) {
+  this.isFieldTouched[field] = true;
+
+  if (field === "firstName") {
+    // Validate the first name field explicitly
+    if (!this.formData.firstName || this.formData.firstName.trim().length === 0) {
+      this.showErrors.firstName = true;
+    } else {
+      this.showErrors.firstName = false;
+    }
+  } else if (field === "lastName") {
+    // Validate the last name field explicitly
+    if (!this.formData.lastName || this.formData.lastName.trim().length === 0) {
+      this.showErrors.lastName = true;
+    } else {
+      this.showErrors.lastName = false;
+    }
+  } else if (!this.formData[field]) {
+    // For other fields, handle the standard required validation
+    this.showErrors[field] = true;
+  } else {
+    this.showErrors[field] = false;
+
+    // Password validation
+    if (field === "password") {
+      this.passwordInvalid = !this.validatePassword(this.formData.password);
+    }
+
+    // Confirm password validation
+    if (field === "confirmPassword") {
+      this.passwordMismatch =
+        this.formData.password !== this.formData.confirmPassword;
+    }
+  }
+},
+    validatePassword(password) {
+      const regex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+      return regex.test(password);
+    },
+
+  handleFileUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.formData.profilePicture = e.target.result;  // Set the image URL as the preview
+        this.showErrors.profilePicture = false;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      this.showErrors.profilePicture = true;
+    }
   },
+
+    nextStep() {
+      // Validate current step fields before proceeding
+      let valid = true;
+      if (this.currentStep === 1) {
+        [
+          "firstName",
+          "lastName",
+          "email",
+          "username",
+          "password",
+          "confirmPassword",
+          "birthday",
+          "gender",
+        ].forEach((field) => {
+          this.validateField(field);
+          if (
+            this.showErrors[field] ||
+            this.passwordInvalid ||
+            this.passwordMismatch
+          ) {
+            valid = false;
+          }
+        });
+      } else if (this.currentStep === 2) {
+        this.validateField("agreeTerms");
+        if (this.showErrors.agreeTerms) valid = false;
+      }
+      if (valid) this.currentStep++;
+    },
+    prevStep() {
+      this.currentStep--;
+    },
+    toggleText() {
+      this.isExpanded = !this.isExpanded;
+    },
+register() {
+  // Validate all fields
+  this.validateField('firstName');
+  this.validateField('lastName');
+  this.validateField('email');
+  this.validateField('username');
+  this.validateField('password');
+  this.validateField('confirmPassword');
+  this.validateField('birthday');
+  this.validateField('gender');
+  if (this.formData.agreeTerms === false) {
+    this.showErrors.agreeTerms = true;
+  }
+
+  // Check if any errors exist before submitting
+  if (Object.values(this.showErrors).includes(true)) {
+    alert("Please fix the errors before submitting.");
+    return;
+  }
+
+  // Proceed with form submission (e.g., API call)
+  alert("Registration successful!");
+},
+    toggleDatePicker() {
+      // Trigger the native date picker by clicking the input field programmatically
+      const input = this.$refs.birthdayInput;
+      if (input) {
+        input.showPicker();
+      }
+    }
+   },
 };
 </script>
+
+<style scoped>
+
+img {
+  user-select: none;
+}
+
+.text-container {
+  line-height: 1;
+}
+
+</style>
