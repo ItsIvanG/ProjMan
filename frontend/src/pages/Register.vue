@@ -1,5 +1,6 @@
 <template xmlns="http://www.w3.org/1999/html">
   <div class="flex items-center justify-end min-h-screen">
+        <!-- Border -->
     <div class="max-w-[550px] w-full h-[780px] border border-white p-6 rounded-lg shadow-md overflow-auto mr-20">
       <!-- Title and Description -->
       <div class="text-center mb-5">
