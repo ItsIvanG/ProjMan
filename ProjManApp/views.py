@@ -111,10 +111,20 @@ class TaskCreateView(generics.CreateAPIView):
 class TaskListView(generics.ListAPIView):
     serializer_class = TaskSerializer
 
-    # Overriding the get_queryset method to filter tasks by project_id
     def get_queryset(self):
-        project_id = self.kwargs['project_id']  # Get project_id from URL parameters
-        return Task.objects.filter(project_id=project_id)  # Filter tasks by project_id
+        # Get the project_id from URL parameters
+        project_id = self.kwargs['project_id']
+        # Get the status from query parameters, if present
+        status = self.request.query_params.get('status', None)
+
+        # Filter tasks by project_id and optionally by status
+        queryset = Task.objects.filter(project_id=project_id)
+
+        if status:
+            queryset = queryset.filter(status=status)  # Filter by status if provided
+
+        return queryset
+        
     
 class TaskEditView(generics.UpdateAPIView):
     queryset = Task.objects.all()
