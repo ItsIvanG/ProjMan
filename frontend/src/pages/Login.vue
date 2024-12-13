@@ -63,7 +63,9 @@
         <Button class="w-full" @click="login">
           Log in
         </Button>
-
+        <div v-if="error" class="text-red-500 text-sm">
+          {{ error }}
+        </div>
                   <!-- Separator with "Sign in with" -->
           <div class="justify-center relative flex items-center mx-2 ">
             <span class="text-sm px-2 py-1">or</span>

@@ -40,7 +40,7 @@ Click on an archived project and press Unarchive.</DialogDescription>
               </SelectGroup>
             </SelectContent>
           </Select>
-        <p>Selected Project: {{ selectedProject }}</p>
+<!--        <p>Selected Project: {{ selectedProject }}</p>-->
         <DialogFooter>
           <Button type="button" @click="unarchiveProject" class="w-full sm:w-auto">
   <PlusCircle class="mr-2 h-4 w-4" />
