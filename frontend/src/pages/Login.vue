@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center justify-right min-h-screen">
-    <Card class="max-w-[500px] w-full h-[700px] border border-white p-6 rounded-lg shadow-md overflow-auto ml-[850px]">
+    <Card class="max-w-[500px] w-full h-[700px] border-white p-6 rounded-lg shadow-md overflow-auto ml-[850px]">
       <CardHeader class="text-center mt-10">
         <CardTitle class="text-2xl mt">Welcome Back!</CardTitle>
         <CardDescription>
@@ -31,7 +31,7 @@
           v-model="password"
           placeholder="••••••••"
           required
-          class="w-full border border-white rounded p-2 bg-black text-white"
+          class="w-full border rounded p-2"
         />
         <span v-if="showErrors.password" class="text-red-500 text-sm">
           Password should be at least 8 characters.
@@ -40,8 +40,8 @@
           class="absolute right-3 top-10 cursor-pointer"
           @click="togglePassword"
         >
-          <AkEyeClosed v-if="!showPassword" class="text-gray-400" />
-          <AkEyeOpen v-if="showPassword" class="text-gray-400" />
+          <AkEyeClosed v-if="!showPassword" />
+          <AkEyeOpen v-if="showPassword" />
         </span>
       </div>
 
@@ -52,41 +52,41 @@
             id="remember"
             type="checkbox"
             v-model="rememberMe"
-            class="h-4 w-4 text-blue-400 border-gray-300 rounded focus:ring-blue-300"
           />
-          <label for="remember" class="ml-2 text-gray-300">Remember Me</label>
+          <label for="remember">Remember Me</label>
         </div>
-        <router-link to="/forgotpass" class="text-blue-200 hover:underline">Forgot Password?</router-link>
+        <router-link to="/forgotpass" class=" hover:underline">Forgot Password?</router-link>
       </div>
     </CardContent>
       <CardFooter class="flex flex-col gap-4">
         <!-- Login Button -->
-        <Button class="w-full hover:bg-blue-300" @click="login">
+        <Button class="w-full" @click="login">
           Log in
         </Button>
 
                   <!-- Separator with "Sign in with" -->
           <div class="justify-center relative flex items-center mx-2 ">
-            <span class="text-white text-sm px-2 py-1">or</span>
+            <span class="text-sm px-2 py-1">or</span>
           </div>
 
           <!-- Google Sign-In Button -->
           <Button
-            class="w-full bg-white hover:bg-blue-300 flex items-center justify-center mt-2"
+            class="w-full flex items-center justify-center mt-2"
             @click="googleSignIn"
           >
             <span class="mr-2"><DeGoogleOriginal /></span>
-            <span class="text-black">Continue with Google</span>
+            <span>Continue with Google</span>
           </Button>
 
 
-        <p class="text-center text-sm text-gray-500">
-          Don't have an account?
+        <p>
+          <span class="text-center text-sm text-gray-500">
+          Don't have an account?</span>
           <button
-            class="text-blue-200 hover:underline focus:outline-none"
+            class="text-center text-sm hover:underline focus:outline-none"
             @click="redirectToRegister"
           >
-            Register here
+             Register here
           </button>
         </p>
       </CardFooter>
@@ -196,11 +196,6 @@ export default {
 
 <style scoped>
 /* Customize input and background colors */
-input {
-  background-color: #1a1a1a;
-  color: white;
-  border: 1px solid #fff;
-}
 
 input:focus {
   outline: none;
