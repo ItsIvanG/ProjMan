@@ -90,6 +90,7 @@ class User(AbstractUser, PermissionsMixin):
 
 class Project(models.Model):
     project_id = models.AutoField(primary_key=True)  # Auto-increment ID
+    manager_id = models.IntegerField(null=True, blank=True)  # Manager's ID as an integer (optional)
     project_name = models.CharField(max_length=255, blank=False)  # Required
     project_description = models.TextField(blank=True, null=True)  # Nullable
     user = models.ForeignKey(

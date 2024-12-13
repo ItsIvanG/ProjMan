@@ -84,6 +84,7 @@ const authStore = useAuthStore();
 
 // Use a computed property to get the user ID from the store
 const userId = computed(() => authStore.user?.id);
+const managerId = computed(() => authStore.user?.manager_id);
 
 const saveProject = async () => {
   try {
@@ -96,6 +97,7 @@ const saveProject = async () => {
       project_name: projectName.value,
       project_description: projectDescription.value,
       user: userId.value,
+      manager: managerId.value,
     });
     console.log('Project Created:', response.data);
 

@@ -6,12 +6,12 @@ from .models import Project
 User = get_user_model()
 
 class ProjectSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=True)
+
     class Meta:
         model = Project
-        fields = ['project_id', 'project_name', 'project_description', 'user']
+        fields = ['project_id', 'project_name', 'project_description', 'user', 'manager_id']
 
-    # Use the dynamically fetched user model
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=True)
 
 
 
@@ -29,6 +29,25 @@ class TaskSerializer(serializers.ModelSerializer):
 
     def get_assignee(self, obj):
         # Assuming 'username' is the field you want to show from the assignee (user model)
+        return obj.assignee.name if obj.assignee else None
+    
+class AssignTaskSerializer(serializers.ModelSerializer):
+    task_id = serializers.ReadOnlyField()
+    task_code = serializers.ReadOnlyField()
+    assignee = serializers.SerializerMethodField()
+    assignee_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(),  # Replace `User` with the appropriate model for your assignees
+        source='assignee',
+        write_only=True
+    )
+
+    class Meta:
+        model = Task
+        fields = ['task_id', 'task_code', 'features', 'status', 'assignee', 'assignee_id', 'sprint', 'priority', 'deadline', 'project']
+        read_only_fields = ['task_id', 'task_code', 'features', 'status', 'assignee', 'sprint', 'priority', 'deadline', 'project']
+
+    def get_assignee(self, obj):
+        # Assuming 'name' is the field you want to show from the assignee (user model)
         return obj.assignee.name if obj.assignee else None
 
 class UserSerializer(serializers.ModelSerializer):

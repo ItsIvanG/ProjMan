@@ -60,6 +60,7 @@ def user(request):
             'name': request.user.name,
             'role': request.user.role, 
             'is_active': request.user.is_active,
+            'manager_id': request.user.manager_id,
         }
         return JsonResponse(user_data)
     return JsonResponse(
@@ -79,12 +80,12 @@ def register(request):
         return JsonResponse({'error': errors}, status=400)
     
 class ProjectCreateView(APIView):
-    def get(self, request, user_id=None):
-        if user_id:
-            # Filter projects by the user_id
-            projects = Project.objects.filter(user__id=user_id)
+    def get(self, request, manager_id=None):
+        if manager_id:
+            # Filter projects by the manager_id (plain IntegerField)
+            projects = Project.objects.filter(manager_id=manager_id)
         else:
-            # If no user_id is provided, return all projects
+            # If no manager_id is provided, return all projects
             projects = Project.objects.all()
 
         # Serialize the projects and return them
@@ -97,7 +98,7 @@ class ProjectCreateView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+   
 
 
 from rest_framework import generics
@@ -117,13 +118,18 @@ class TaskListView(generics.ListAPIView):
         # Get the status from query parameters, if present
         status = self.request.query_params.get('status', None)
 
-        # Filter tasks by project_id and optionally by status
+        # Filter tasks by project_id
         queryset = Task.objects.filter(project_id=project_id)
 
+        # Optionally filter by status
         if status:
-            queryset = queryset.filter(status=status)  # Filter by status if provided
+            queryset = queryset.filter(status=status)
+
+        # Sort by sprint (ascending by default)
+        queryset = queryset.order_by('sprint')
 
         return queryset
+
         
     
 class TaskEditView(generics.UpdateAPIView):
@@ -134,6 +140,18 @@ class TaskEditView(generics.UpdateAPIView):
     def get_object(self):
         task_id = self.kwargs['task_id']  # Get task_id from URL parameters
         return Task.objects.get(task_id=task_id)  # Fetch the task by ID
+    
+from .serializers import AssignTaskSerializer
+    
+class TaskAssignEditView(generics.UpdateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = AssignTaskSerializer
+
+    # Overriding the get_object method to fetch the task by ID
+    def get_object(self):
+        task_id = self.kwargs['task_id']  # Get task_id from URL parameters
+        return Task.objects.get(task_id=task_id)  # Fetch the task by ID
+
 
 from .models import User
 from .serializers import UserSerializer

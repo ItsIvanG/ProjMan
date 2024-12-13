@@ -1,5 +1,18 @@
 <script setup lang="ts">
 import { Badge } from '@/components/ui/badge'
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '@/components/ui/popover';
+import {
+  Command,
+  CommandInput,
+  CommandEmpty,
+  CommandList,
+  CommandGroup,
+  CommandItem,
+} from '@/components/ui/command';
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader, CardDescription, CardTitle } from '@/components/ui/card'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -22,20 +35,34 @@ import {
   ListFilter,
   MoreHorizontal,
 } from 'lucide-vue-next'
-import { computed, ref, watchEffect } from "vue";
+import { computed, ref, watchEffect, reactive } from "vue";
 import  AddTask  from '@/components/reusable/modals/taskmodal.vue'
 import  EditTask  from '@/components/reusable/modals/edittaskmodal.vue'
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+    DialogDescription,
+  } from '@/components/ui/dialog';
+  import { Input } from '@/components/ui/input';
+  import { Label } from '@/components/ui/label';
+  import { PlusCircle , Check } from 'lucide-vue-next';
 
 
 import { getAPI } from '@/axios';
 import { useProjectStore } from '@/store/project';
 import { useTaskStore } from '@/store/taskStore';
+import { useAuthStore } from '@/store/auth'
+
 
 const taskStore = useTaskStore();
 
 // Reference for tasks
 const allTasks = ref<any[]>([]); // Task data from API
   const selectedStatus = ref<string | null>(null);
+
 
 // API URL (replace this with the actual backend URL)
 const apiUrl = '/tasks/';
@@ -152,6 +179,111 @@ const getPriorityVariant = (priority: string) => {
       return 'default';
   }
 };
+
+const members = ref<any[]>([]); 
+// Fetch members based on manager_id
+const fetchMembers = async (managerId: number) => {
+  try {
+    const response = await getAPI.get(`/manager/${managerId}/`);
+    members.value = response.data.map((member: any) => ({
+      value: member.id,
+      label: member.name,
+    }));
+    console.log('Fetched members:', members.value);
+  } catch (error) {
+    console.error('Failed to fetch members:', error);
+  }
+};
+const authStore = useAuthStore();
+const managerId  = computed(() => authStore.user?.manager_id);
+watchEffect(() => {
+  const managerIdValue = managerId.value;
+  if (managerIdValue) {
+    fetchMembers(managerIdValue);
+  }
+});
+
+// Selected member
+const selectedMember = ref(null);
+
+// Select a member
+const selectMember = (member: any) => {
+  selectedMember.value = member;
+  formData.assignee_id = member.value;
+};
+  // Computed task ID
+  const selectedTaskId = computed(() => taskStore.task?.task_id);
+
+const isDialogOpen = ref(false);
+  
+  // Form data for editing the task
+  const formData = reactive({
+    assignee_id: '',
+  });
+  
+  // Function to open the dialog
+// Function to open the dialog
+const openDialog = () => {
+  if (!selectedTaskId.value) {
+    console.error('No task ID selected.');
+    return;
+  }
+  
+  const task = taskStore.task;
+  if (task) {
+    // Populate the formData with the current values from the selected task
+    formData.assignee_id = task.assignee_id || ''; // Set assignee_id or empty if not available
+  }
+  
+  isDialogOpen.value = true; // Open the dialog
+};
+
+
+
+  
+  // Function to close the dialog
+  const closeDialog = () => {
+    selectedMember.value = null;
+    formData.assignee_id = '';
+    isDialogOpen.value = false;
+  };
+  
+  // Function to handle form submission for editing the task
+  const handleSubmit = async () => {
+  if (!selectedTaskId.value) {
+    console.error('No task ID selected.');
+    return;
+  }
+
+  // Check if the form is empty (e.g., assignee_id is not selected)
+  if (!formData.assignee_id) {
+    console.log('No assignee selected, closing the modal.');
+    closeDialog(); // Close the modal if no assignee is selected
+    return;
+  }
+
+  try {
+    const response = await getAPI.put(
+      `/tasks/assign/${selectedTaskId.value}/`,
+      formData
+    );
+    console.log('Task updated:', response.data);
+
+    // Update the task in the local store or state
+    if (taskStore.task && selectedTaskId.value === taskStore.task.task_id) {
+      Object.assign(taskStore.task, response.data); // Merge updated data into the store
+    }
+
+    closeDialog(); // Close the modal after successful update
+  } catch (error) {
+    console.error('Error updating task:', error);
+  }
+};
+
+
+
+
+
 </script>
 
 
@@ -213,9 +345,18 @@ const getPriorityVariant = (priority: string) => {
                       {{ task.status }}
                     </Badge>
                   </TableCell>
-                  <TableCell class="hidden md:table-cell">
-                    {{ task.assignee }}
-                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline">
+        <a
+          href="#"
+          @click.prevent="openDialog"
+          @click="taskStore.setTask(task)"
+        >
+        {{ task.assignee || 'Assign Member' }}
+        </a>
+      </Badge>
+</TableCell>
+
                   <TableCell class="hidden md:table-cell">
   <Badge :variant="getSprintVariant('Sprint ' + task.sprint)">
     Sprint {{ task.sprint }}
@@ -264,4 +405,70 @@ const getPriorityVariant = (priority: string) => {
       </Card>
     </TabsContent>
   </Tabs>
+        <!-- Dialog for Task Editing -->
+        <Dialog v-model:open="isDialogOpen" @close="closeDialog">
+        <DialogContent >
+          <DialogHeader>
+            <DialogTitle class="text-2xl font-bold">Assign Task</DialogTitle>
+            <DialogDescription class="text-md">
+              Fill out the form below to assign the task. Provide the necessary details and click "Save changes."
+            </DialogDescription>
+          </DialogHeader>
+  
+          <form @submit.prevent="handleSubmit">
+  <div class="grid gap-4 py-4 sm:grid-cols-1 md:grid-cols-2">
+    <!-- Assign Member input -->
+    <div class="grid gap-2 md:col-span-2">
+      <Label for="assignee_id">Assign Member</Label>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            class="w-full justify-between"
+            aria-label="Select Member"
+          >
+            {{ selectedMember?.label || 'Select Member' }}
+            <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent class="w-full p-0">
+          <Command>
+            <CommandInput placeholder="Search member..." />
+            <CommandEmpty>No member found.</CommandEmpty>
+            <CommandList>
+              <CommandGroup>
+                <CommandItem
+                  v-for="(member, index) in members"
+                  :key="member.value"
+                  @click="selectMember(member)"
+                  class="cursor-pointer"
+                >
+                  <Check
+                    v-if="member.value === selectedMember?.value"
+                    class="mr-2 h-4 w-4"
+                  />
+                  {{ member.label }}
+                </CommandItem>
+                <div
+                  v-if="index < members.length - 1"
+                  class="border-t border-gray-200 my-1"
+                ></div>
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </div>
+  </div>
+  <DialogFooter>
+    <Button type="submit" class="mt-6 w-full sm:w-auto">
+      <PlusCircle class="mr-2 h-4 w-4" />
+      Save changes
+    </Button>
+  </DialogFooter>
+</form>
+
+
+        </DialogContent>
+      </Dialog>
 </template>
