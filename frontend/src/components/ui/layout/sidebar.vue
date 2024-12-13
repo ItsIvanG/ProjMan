@@ -167,6 +167,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { getAPI } from '@/axios';
 import { useAuthStore } from '@/store/auth';
 import { useProjectStore } from '@/store/project';
+import { useProjectListStore } from '@/store/projectListStore';
 import { Button } from '@/components/ui/button';
 import ProjectModal from '@/components/reusable/modals/projectmodal.vue';
 import { ScrollArea } from '@/components/ui/scroll-area';

@@ -1,3 +1,5 @@
+from datetime import timezone
+
 from django.db import models
 from django.contrib.auth.models import UserManager, AbstractUser, PermissionsMixin
 from django.conf import settings
@@ -137,3 +139,4 @@ class Task(models.Model):
 class Report(models.Model):
     report_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    report_datetime = models.DateTimeField(auto_now_add=True, null=True, blank=True)
