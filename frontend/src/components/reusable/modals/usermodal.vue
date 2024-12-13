@@ -123,10 +123,11 @@
   import { Label } from '@/components/ui/label';
   import { PlusCircle, Eye, EyeOff } from 'lucide-vue-next';
   import { useAuthStore } from '@/store/auth';
+  import { useUserListStore } from '@/store/userListStore';
   
   const authStore = useAuthStore();
   const managerId = computed(() => authStore.user?.manager_id);
-  
+  const userListStore = useUserListStore();
   // Dialog state
   const isDialogOpen = ref(false);
   
@@ -162,7 +163,6 @@
   };
   
   const closeDialog = () => {
-    window.location.reload();
     // Reset form data and errors
     formData.name = '';
     formData.email = '';
@@ -185,7 +185,7 @@
   try {
     clearErrors(); // Clear previous errors
     const response = await getAPI.post('manager/create/', formData);
-    console.log('Form submitted successfully:', response.data);
+    userListStore.addUser(response.data);
     closeDialog(); // Close the dialog upon successful submission
   } catch (error) {
     if (error.response && error.response.data) {

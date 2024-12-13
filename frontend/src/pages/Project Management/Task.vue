@@ -55,43 +55,12 @@ import { getAPI } from '@/axios';
 import { useProjectStore } from '@/store/project';
 import { useTaskStore } from '@/store/taskStore';
 import { useAuthStore } from '@/store/auth'
-
+import { useAllTasksStore } from '@/store/allTasksStore';
 
 const taskStore = useTaskStore();
+const allTasksStore = useAllTasksStore();
 
-// Reference for tasks
-const allTasks = ref<any[]>([]); // Task data from API
   const selectedStatus = ref<string | null>(null);
-
-
-// API URL (replace this with the actual backend URL)
-const apiUrl = '/tasks/';
-
-// Fetch tasks based on the project ID
-const fetchTasks = async (projectId: number, status: string | null) => {
-  try {
-    if (!projectId) {
-      throw new Error("Invalid project ID.");
-    }
-    let url = `${apiUrl}${projectId}/`;
-    
-    // Include the status in the query string if provided
-    if (status) {
-      url += `?status=${status}`;
-    }
-
-    // Send GET request to fetch tasks for the specific project_id and status
-    const response = await getAPI.get(url);
-    allTasks.value = response.data; // Store tasks in the allTasks ref
-    
-    // Log the fetched task data to the console
-    console.log('Fetched tasks:', response.data);
-  } catch (error) {
-    console.error("Failed to fetch tasks:", error);
-  }
-};
-
-// Reactive store for project ID
 const projectStore = useProjectStore();
 const projectId = computed(() => projectStore.project_id);
 
@@ -99,7 +68,7 @@ const projectId = computed(() => projectStore.project_id);
 watchEffect(() => {
   const id = projectId.value;
   if (id) {
-    fetchTasks(id, selectedStatus.value);
+    allTasksStore.fetchTasks(id, selectedStatus.value); // Fetch tasks from the store
   }
 });
 
@@ -107,7 +76,7 @@ const applyStatusFilter = (status: string) => {
   selectedStatus.value = status;
   const id = projectId.value;
   if (id) {
-    fetchTasks(id, status); // Fetch tasks with the selected status filter
+    allTasksStore.fetchTasks(id, status); // Fetch tasks with the selected status filter
   }
 };
 
@@ -250,31 +219,27 @@ const openDialog = () => {
   
   // Function to handle form submission for editing the task
   const handleSubmit = async () => {
-  if (!selectedTaskId.value) {
-    console.error('No task ID selected.');
+  const selectedTask = taskStore.task;
+  if (!selectedTask) {
+    console.error('No task selected');
     return;
   }
 
-  // Check if the form is empty (e.g., assignee_id is not selected)
   if (!formData.assignee_id) {
-    console.log('No assignee selected, closing the modal.');
-    closeDialog(); // Close the modal if no assignee is selected
+    console.log('No assignee selected, closing the modal');
+    closeDialog();
     return;
   }
 
   try {
-    const response = await getAPI.put(
-      `/tasks/assign/${selectedTaskId.value}/`,
-      formData
-    );
+    const response = await getAPI.put(`/tasks/assign/${selectedTask.task_id}/`, formData);
     console.log('Task updated:', response.data);
 
-    // Update the task in the local store or state
-    if (taskStore.task && selectedTaskId.value === taskStore.task.task_id) {
-      Object.assign(taskStore.task, response.data); // Merge updated data into the store
-    }
+    // Update the task in the store
+    taskStore.task = response.data;
+    allTasksStore.updateTask(response.data); // Update the task list with the new data
 
-    closeDialog(); // Close the modal after successful update
+    closeDialog();
   } catch (error) {
     console.error('Error updating task:', error);
   }
@@ -310,7 +275,7 @@ const openDialog = () => {
             <DropdownMenuLabel>Filter by</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem @click="applyStatusFilter('')">All</DropdownMenuItem>
-            <DropdownMenuItem @click="applyStatusFilter('Not Started')">Not Started</DropdownMenuItem>
+            <DropdownMenuItem @click="applyStatusFilter('Not started')">Not Started</DropdownMenuItem>
             <DropdownMenuItem @click="applyStatusFilter('In Progress')">In Progress</DropdownMenuItem>
             <DropdownMenuItem @click="applyStatusFilter('Completed')">Completed</DropdownMenuItem>
             <DropdownMenuItem @click="applyStatusFilter('Cancelled')">Cancelled</DropdownMenuItem>
@@ -336,8 +301,8 @@ const openDialog = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              <template v-if="allTasks.length">
-              <TableRow v-for="task in allTasks" :key="task.task_id">
+              <template v-if="allTasksStore.allTasks.length">
+              <TableRow v-for="task in allTasksStore.allTasks" :key="task.id">
                   <TableCell>{{task.task_code}}</TableCell>
                   <TableCell>{{ task.features }}</TableCell>
                   <TableCell>

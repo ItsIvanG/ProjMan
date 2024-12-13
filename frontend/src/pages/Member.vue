@@ -28,14 +28,16 @@ import  Useredit  from '@/components/reusable/modals/editusermodal.vue'
 import { getAPI } from '@/axios';
 import { useAuthStore } from '@/store/auth'
 import { useUserInfoStore } from '@/store/userStore';
+import { useUserListStore } from '@/store/userListStore';
 
 const userStore = useUserInfoStore();
 
 
 const authStore = useAuthStore();
 const managerId  = computed(() => authStore.user?.manager_id);
+const userListStore = useUserListStore();
 
-const allUsers = ref<any[]>([]); // Users data from API
+const allUsers = useUserListStore();
 const filterStatus = ref<string>('All'); // Track selected filter status
 
 // Fetch users from the API
@@ -46,11 +48,11 @@ const fetchUsers = async (managerId: number, status: string) => {
       url += `?is_active=${status === 'Active' ? 1 : 0}`;
     }
     const response = await getAPI.get(url);
-    allUsers.value = response.data;
+    userListStore.setUsers(response.data); // Update the store with fetched users
   } catch (error) {
     console.error('Error fetching users:', error);
   }
-}
+};
 
 // Watch for changes in filterStatus and fetch users accordingly
 watchEffect(() => {
@@ -125,8 +127,8 @@ const getStatusVariant = (status: string) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              <template v-if="allUsers.length">
-                <TableRow v-for="(user, index) in allUsers" :key="index">
+              <template v-if="userListStore.users.length">
+                <TableRow v-for="(user, index) in userListStore.users" :key="index">
                   <TableCell>{{ user.name }}</TableCell>
                   <TableCell>{{ user.username }}</TableCell>
                   <TableCell>

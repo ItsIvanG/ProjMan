@@ -76,6 +76,9 @@ import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-vue-next';
 import { getAPI } from '@/axios';
 import { useAuthStore } from '@/store/auth';
+import { useProjectListStore } from '@/store/projectListStore';
+
+const projectListStore = useProjectListStore();
 
 const projectName = ref('');
 const projectDescription = ref('');
@@ -97,15 +100,20 @@ const saveProject = async () => {
       project_name: projectName.value,
       project_description: projectDescription.value,
       user: userId.value,
-      manager: managerId.value,
+      manager_id: managerId.value,
     });
     console.log('Project Created:', response.data);
 
     // Close the dialog
     closeDialog();
+    projectListStore.addProject(response.data);
 
-    // Reload the window
-    window.location.reload();
+    // Set the newly created project as the selected project
+    projectListStore.setSelectedProject(response.data);
+
+    // Clear the input fields
+    projectName.value = '';
+    projectDescription.value = '';
   } catch (error) {
     console.error('Error creating project:', error);
   }
