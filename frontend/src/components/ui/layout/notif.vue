@@ -5,18 +5,18 @@
   >
     <!-- Backdrop -->
     <div
-      class="fixed inset-0 bg-black bg-opacity-50"
+      class="fixed inset-0  bg-opacity-50"
       @click="closePanel"
     ></div>
 
     <!-- Notification Panel -->
     <div
-      class="relative mt-[25px] mr-[35px] w-[380px] max-h-[500px] rounded-lg bg-black shadow-xl border border-white"
+      class="relative mt-[25px] mr-[35px] w-[380px] max-h-[500px] rounded-lg  shadow-xl border bg-white dark:bg-black"
     >
       <!-- Panel Header -->
-      <div class="flex items-center justify-between px-4 py-3 border-b border-gray-700">
-        <h2 class="text-sm font-medium text-white">Notifications</h2>
-        <button @click="closePanel" class="text-gray-400 hover:text-gray-300">
+      <div class="flex items-center justify-between px-4 py-3 border-b ">
+        <h2 class="text-sm font-medium ">Notifications</h2>
+        <button @click="closePanel" class="">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-4 w-4"
@@ -35,11 +35,11 @@
       </div>
 
       <!-- Notifications List -->
-      <div class="overflow-y-auto max-h-[450px] divide-y divide-gray-700">
+      <div class="overflow-y-auto max-h-[450px] divide-y ">
         <div
           v-for="notification in notifications"
           :key="notification.id"
-          class="flex items-start gap-3 px-4 py-3 hover:bg-gray-800 group"
+          class="flex items-start gap-3 px-4 py-3  group"
         >
           <!-- Avatar -->
           <Avatar>
@@ -50,13 +50,13 @@
           <!-- Message Content -->
           <div class="flex-1">
             <p
-              class="text-sm font-medium"
-              :class="notification.unread ? 'text-white' : 'text-gray-400'"
-            >
+              class="text-sm font-medium">
+<!--              :class="notification.unread ? 'text-white' : 'text-gray-400'"-->
+
               {{ notification.message }}
             </p>
-            <p class="text-sm text-gray-400">{{ notification.body }}</p>
-            <p class="text-xs text-gray-500">{{ notification.time }}</p>
+            <p class="text-sm ">{{ notification.body }}</p>
+            <p class="text-xs ">{{ notification.time }}</p>
           </div>
 
           <!-- Action Buttons Container -->
@@ -64,7 +64,6 @@
             <!-- Archive Button -->
             <button
               @click="archive(notification.id)"
-              class="text-gray-400 hover:text-gray-300 p-2 rounded-full bg-gray-700 hover:bg-gray-600"
             >
               <ReArchiveFill class="h-4 w-5" />
             </button>
@@ -72,7 +71,6 @@
             <!-- Unread Button -->
             <button
               @click="toggleUnread(notification.id)"
-              class="text-gray-400 hover:text-gray-300 p-2 rounded-full bg-gray-700 hover:bg-gray-600"
             >
               <MdRoundMarkEmailUnread class="h-4 w-5" />
             </button>
@@ -216,7 +214,6 @@ export default {
 }
 
 .max-h-\[450px\]::-webkit-scrollbar-thumb {
-  background-color: #777777; /* Gray */
   border-radius: 4px; /* Round corners for the thumb */
 }
 

@@ -44,9 +44,9 @@
           </DropdownMenuContent>
         </DropdownMenu>
         <!-- Notifications Dropdown -->
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+<!--        <DropdownMenu>-->
+<!--          <DropdownMenuTrigger asChild>-->
+<!--            <Button variant="ghost" size="icon">-->
 
          <!-- Bell Icon and Notifications -->
           <div class="relative">
@@ -165,7 +165,6 @@ div[max-h]::-webkit-scrollbar {
 }
 
 div[max-h]::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
   border-radius: 9999px;
 }
 
@@ -175,7 +174,6 @@ div[max-h]::-webkit-scrollbar-track {
 
 div[max-h] {
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
 }
 
 nav {
