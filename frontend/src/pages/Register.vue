@@ -29,9 +29,9 @@
         <!-- Step Title -->
         <div
           :class="{
-            'text-gray-500': currentStep !== index + 1,
-            'text-gray-700': currentStep === index + 1 && !isDarkMode,
-            'text-gray-300': currentStep === index + 1 && isDarkMode,
+            'text-gray-300': currentStep !== index + 1,
+            'text-gray-300': currentStep === index + 1 && !isDarkMode,
+            'text-gray-900': currentStep === index + 1 && isDarkMode,
           }"
           class="text-sm font-semibold"
         >
