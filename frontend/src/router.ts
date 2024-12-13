@@ -14,7 +14,7 @@ import Notifications from "./pages/Notifications.vue";
 
 const routes = [
     {
-        path: '/dashboard',
+        path: '/',
         name: 'dashboard',
         component: Dashboard
     },
@@ -53,11 +53,7 @@ const routes = [
         name: 'register',
         component: Register
     },
-      {
-        path: '/notification',
-        name: 'notification',
-        component: Notifications
-    },
+
     {
         path: '/forgotpass',
         name: 'notification',

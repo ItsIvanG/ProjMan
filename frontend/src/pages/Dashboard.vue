@@ -10,6 +10,7 @@ import {useRouter} from "vue-router";
 import {Button} from "@/components/ui/button/";
 import {Pencil,Trash} from "lucide-vue-next";
 import ProjectModal from '@/components/reusable/modals/editprojectmodal.vue';
+import Archiveprojectmodal from "@/components/reusable/modals/archiveprojectmodal.vue";
 
 const projectStore = useProjectStore();
 
@@ -51,12 +52,7 @@ watch(
        <div class="ml-auto flex items-center gap-2">
 
          <ProjectModal />
-     <Button variant="destructive" size="sm" class="h-7 gap-1">
-              <Trash/>
-              <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                Delete Project
-              </span>
-    </Button>
+          <Archiveprojectmodal />
     </div>
      </div>
 
