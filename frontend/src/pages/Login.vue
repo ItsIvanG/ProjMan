@@ -193,15 +193,3 @@ export default {
 
 
 
-
-<style scoped>
-/* Customize input and background colors */
-
-input:focus {
-  outline: none;
-}
-
-span {
-  cursor: pointer;
-}
-</style>
