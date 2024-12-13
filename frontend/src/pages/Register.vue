@@ -1,54 +1,47 @@
 <template xmlns="http://www.w3.org/1999/html">
   <div :class="[isDarkMode ? 'dark' : 'light', 'flex items-center justify-end min-h-screen']">
-    <!-- Left Section: Web Image -->
     <div class="w-1/2 flex items-center justify-center">
     </div>
 
-    <div class="max-w-[600px] w-full h-[820px] border p-6 rounded-lg shadow-md overflow-auto mr-20">
-      <!-- Title and Theme Toggle -->
-      <div class="flex justify-between items-center mb-8">
-        <h3 class="text-3xl font-bold">Register Your Account</h3>
-        <button
-          @click="toggleTheme"
-          class="p-2 border rounded-full"
-          :class="isDarkMode ? 'bg-white text-black' : 'bg-black text-white'"
-        >
-          {{ isDarkMode ? 'Light Mode' : 'Dark Mode' }}
-        </button>
+  <div class="max-w-[600px] w-full h-[820px] border p-6 rounded-lg shadow-md overflow-auto mr-20">
+    <!-- Title and Theme Toggle -->
+      <div class="flex flex-col justify-center items-center mb-8">
+        <h3 class="text-3xl font-bold text-center">Register Your Account</h3>
       </div>
 
-      <!-- Progress Tracker -->
-      <div class="flex justify-between items-right mb-4">
+    <div class="flex justify-between items-right mb-4">
+      <div
+        v-for="(step, index) in steps"
+        :key="index"
+        class="flex flex-col items-center space-x-2"
+      >
+        <!-- Step number -->
         <div
-          v-for="(step, index) in steps"
-          :key="index"
-          class="flex flex-col items-center space-x-2"
+          :class="{
+            'bg-gray-500 text-white': currentStep !== index + 1,
+            'bg-gray-300 text-gray-700': currentStep === index + 1 && !isDarkMode,
+            'bg-gray-700 text-gray-300': currentStep === index + 1 && isDarkMode,
+          }"
+          class="w-8 h-8 flex items-center justify-center rounded-full font-bold"
         >
-          <!-- Step number -->
-          <div
-            :class="{
-              'bg-white text-black': currentStep === index + 1,
-              'bg-gray-500 text-white': currentStep !== index + 1,
-              'underline': currentStep === index + 1,
-            }"
-            class="w-8 h-8 flex items-center justify-center rounded-full font-bold"
-          >
-            {{ index + 1 }}
-          </div>
-          <!-- Step Title -->
-          <div
-            :class="{
-              'text-white': currentStep === index + 1,
-              'text-gray-500': currentStep !== index + 1,
-            }"
-            class="text-sm font-semibold"
-          >
-            {{ step }}
+          {{ index + 1 }}
+        </div>
+        <!-- Step Title -->
+        <div
+          :class="{
+            'text-gray-500': currentStep !== index + 1,
+            'text-gray-700': currentStep === index + 1 && !isDarkMode,
+            'text-gray-300': currentStep === index + 1 && isDarkMode,
+          }"
+          class="text-sm font-semibold"
+        >
+          {{ step }}
           </div>
         </div>
       </div>
+
       <!-- Form Content -->
-      <div v-if="currentStep === 1" class="grid grid-cols-1">
+<div v-if="currentStep === 1" class="grid grid-cols-1">
 
 <!-- Input Form with Consistent Spacing -->
 <div class="space-y-2">
@@ -67,7 +60,7 @@
             id="firstname"
             type="text"
             placeholder="Enter First Name"
-            class="input-field"
+            class="border rounded-md w-full h-10 px-2 focus:outline-none focus:ring-2"
             required
           />
           <span class="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -90,7 +83,7 @@
             id="lastname"
             type="text"
             placeholder="Enter Last Name"
-            class="input-field"
+            class="border rounded-md w-full h-10 px-2 focus:outline-none focus:ring-2"
             required
           />
           <span class="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -113,7 +106,7 @@
         id="email"
         type="email"
         placeholder="example@mail.com"
-        class="input-field"
+        class="border rounded-md w-full h-10 px-2 focus:outline-none focus:ring-2"
         required
       />
       <span class="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -135,7 +128,7 @@
         id="username"
         type="text"
         placeholder="Your username"
-        class="input-field"
+        class="border rounded-md w-full h-10 px-2 focus:outline-none focus:ring-2"
         required
       />
       <span class="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -156,7 +149,7 @@
         id="password"
         :type="showPassword ? 'text' : 'password'"
         placeholder="Enter Password"
-        class="input-field"
+        class="border rounded-md w-full h-10 px-2 focus:outline-none focus:ring-2"
         required
       />
       <span
@@ -184,7 +177,7 @@
         id="confirmPassword"
         :type="showConfirmPassword ? 'text' : 'password'"
         placeholder="Re-type Password"
-        class="input-field"
+        class="border rounded-md w-full h-10 px-2 focus:outline-none focus:ring-2"
         required
       />
       <span
@@ -209,7 +202,7 @@
         v-model="formData.birthday"
         id="birthday"
         type="date"
-        class="input-field"
+        class="border rounded-md w-full h-10 px-2 focus:outline-none focus:ring-2"
         required
         ref="birthdayInput"
       />
@@ -247,7 +240,6 @@
   <!-- Terms and Conditions Label -->
   <label
     class="block mb-1 font-bold"
-    :class="isDarkMode ? 'text-white' : 'text-black'"
   >
     Terms and Conditions
   </label>
@@ -256,10 +248,6 @@
   <textarea
     style="resize: none;"
     class="w-full p-3 border rounded h-80"
-    :class="{
-      'bg-gray-800 text-gray-200 border-gray-700': isDarkMode,
-      'bg-white text-black border-gray-300': !isDarkMode
-    }"
     readonly
   >
     Welcome to ProjMan!
@@ -327,13 +315,9 @@
         type="checkbox"
         v-model="formData.agreeTerms"
         class="mr-2"
-        :class="{
-          'bg-gray-700 text-white': isDarkMode,
-          'bg-black text-white': !isDarkMode
-        }"
         required
       />
-      <span :class="isDarkMode ? 'text-gray-200' : 'text-black'">
+      <span>
         I agree to the terms and conditions.
       </span>
     </label>
@@ -343,7 +327,7 @@
 <div v-if="currentStep === 3" class="space-y-4">
   <!-- Profile Picture Upload -->
   <div>
-    <label for="profilePicture" class="block mb-1 font-bold" :class="isDarkMode ? 'text-white' : 'text-black'">
+    <label for="profilePicture" class="block mb-1 font-bold">
       Profile Picture
     </label>
     <input
@@ -352,7 +336,6 @@
       @change="handleFileUpload"
       accept="image/*"
       class="w-full border rounded p-2"
-      :class="isDarkMode ? 'bg-gray-800 text-white border-gray-700' : 'bg-white text-black border-gray-300'"
       required
     />
   </div>
@@ -364,7 +347,6 @@
         :src="formData.profilePicture"
         alt="Profile Picture Preview"
         class="w-48 h-48 object-cover rounded-full cursor-pointer transition-transform duration-300 hover:scale-110 border-2"
-        :class="isDarkMode ? 'border-gray-300' : 'border-black'"
       />
     </div>
   </div>
@@ -372,39 +354,30 @@
 
 <!-- Navigation Buttons -->
 <div class="flex justify-between mt-5">
-  <button
+  <Button
     v-if="currentStep > 1"
     @click="prevStep"
     class="px-4 py-2 border rounded"
-    :class="isDarkMode ? 'border-gray-700 text-white bg-gray-800' : 'border-gray-300 text-black bg-white'"
   >
     Back
-  </button>
+  </Button>
 
-<button
-  v-if="currentStep < steps.length"
-  @click="nextStep"
-  class="px-4 py-2 rounded"
-  :class="{
-    'bg-white text-black border border-gray-300': !isDarkMode,  /* Light mode */
-    'bg-gray-800 text-white border border-gray-700': isDarkMode   /* Dark mode */
-  }"
-  :disabled="isNextDisabled"
->
-  Next
-</button>
+  <Button
+    v-if="currentStep < steps.length"
+    @click="nextStep"
+    class="px-4 py-2 border rounded"
+    :disabled="isNextDisabled"
+  >
+    Next
+  </Button>
 
-  <button
+  <Button
     v-if="currentStep === steps.length"
     @click="register"
-    class="px-4 py-2 rounded"
-    :class="{
-      'bg-white text-black border-gray-300': !isDarkMode,
-      'bg-gray-800 text-white border-gray-700': isDarkMode
-    }"
+    class="px-4 py-2 border rounded"
   >
     Register
-  </button>
+  </Button>
 </div>
     </div>
   </div>
@@ -708,59 +681,3 @@ export default {
    },
 };
 </script>
-
-<style scoped>
-
-.dark {
-  background-color: #121212;
-  color: #ffffff;
-}
-.light {
-  background-color: #ffffff;
-  color: #000000;
-}
-.input-field {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid currentColor;
-  border-radius: 0.25rem;
-  background: transparent;
-  color: inherit;
-}
-.btn-primary {
-  padding: 0.5rem 1rem;
-  background-color: #007bff;
-  color: #ffffff;
-  border: none;
-  border-radius: 0.25rem;
-  cursor: pointer;
-}
-.btn-secondary {
-  padding: 0.5rem 1rem;
-  background-color: #6c757d;
-  color: #ffffff;
-  border: none;
-  border-radius: 0.25rem;
-  cursor: pointer;
-}
-
-.textarea {
-  width: 100%;
-  height: 10rem;
-  padding: 0.5rem;
-  border: 1px solid currentColor;
-  border-radius: 0.25rem;
-  background: transparent;
-  color: inherit;
-  resize: none;
-}
-
-img {
-  user-select: none;
-}
-
-.text-container {
-  line-height: 1;
-}
-
-</style>
