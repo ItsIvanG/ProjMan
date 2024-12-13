@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import ProjectCreateView
+from .views import ProjectCreateView, ArchiveProjectView, UnarchiveProjectView
 from .views import TaskCreateView, TaskListView, TaskEditView, TaskAssignEditView
 from .views import UserListView, UserCreateView, UserUpdateView, UserIsActiveUpdateView
 
@@ -23,5 +23,8 @@ urlpatterns = [
     path('manager/edit/<int:pk>/', UserUpdateView.as_view(), name='user-edit'),
     path('user/<int:pk>/deactivate/', UserIsActiveUpdateView.as_view(), name='user-deactivate'),
     path('api/projects/update/<int:project_id>/', ProjectCreateView.as_view(), name='update_project'),
+    path('api/projects/archive/<int:project_id>/', ArchiveProjectView.as_view(), name='archive_project'),
+    path('projects/archives/<int:manager_id>/', ArchiveProjectView.as_view(), name='archived-projects'),
+    path('api/projects/unarchive/<int:project_id>/', UnarchiveProjectView.as_view(), name='archive_project'),
 
 ]

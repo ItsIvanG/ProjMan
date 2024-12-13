@@ -48,7 +48,10 @@
 
                 <!-- Create New Project Button -->
                 <DropdownMenuSeparator class="my-2 border-t border-gray-100" />
-                <ProjectModal />
+                <ProjectModal class="my-2"/>
+                <archivedprojectsmodal />
+
+
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -193,12 +196,15 @@ import {
   LayoutDashboard,
   Users,
 } from 'lucide-vue-next';
+import Archivedprojectsmodal from "@/components/reusable/modals/archivedprojectsmodal.vue";
 
 
 const router = useRouter();
 const route = useRoute();
 const selectedProject = ref(null);
 const projects = ref([]);
+const archivedProjects = ref([]);
+
 
 // Access the authentication store
 const authStore = useAuthStore();
@@ -212,10 +218,11 @@ const fetchProjects = async () => {
     if (userId.value) {
       const response = await getAPI.get(`/projects/${userId.value}`);
       projects.value = response.data;
-      console.log("RESPONSE SIDEBAR-----------------");
-      Object.keys(response).forEach((key) => {
-        console.log(`${key}: ${response[key]}`);
-      });
+
+      // console.log("RESPONSE SIDEBAR-----------------");
+      // Object.keys(response).forEach((key) => {
+      //   console.log(`${key}: ${response[key]}`);
+      // });
       // Set the first project as the default selected
       if (projects.value.length > 0) {
         selectProject(response.data[0]); // Automatically select the first project

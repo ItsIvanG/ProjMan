@@ -85,7 +85,7 @@ class ProjectCreateView(APIView):
     def get(self, request, manager_id=None):
         if manager_id:
             # Filter projects by the manager_id (plain IntegerField)
-            projects = Project.objects.filter(manager_id=manager_id)
+            projects = Project.objects.filter(manager_id=manager_id,archived=False)
         else:
             # If no manager_id is provided, return all projects
             projects = Project.objects.all()
@@ -115,6 +115,60 @@ class ProjectCreateView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class ArchiveProjectView(APIView):
+    def get(self, request, manager_id=None):
+        if manager_id:
+            # Filter projects by the manager_id (plain IntegerField)
+            projects = Project.objects.filter(manager_id=manager_id, archived=True)
+        else:
+            # If no manager_id is provided, return all projects
+            projects = Project.objects.all()
+
+        # Serialize the projects and return them
+        serializer = ProjectSerializer(projects, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, project_id=None):
+        if not project_id:
+            return Response({"error": "Project ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Get the project by ID or return a 404 error if not found
+        project = get_object_or_404(Project, project_id=project_id)
+
+        # Update the 'archived' status to True
+        project.archived = True
+        project.save()
+        print(str(project_id) + " archived")
+        return Response(
+            {
+                "message": f"Project '{project.project_name}' has been archived.",
+                "project_id": project.project_id,
+                "archived": project.archived,
+            },
+            status=status.HTTP_200_OK
+        )
+
+class UnarchiveProjectView(APIView):
+    def post(self, request, project_id=None):
+        if not project_id:
+            return Response({"error": "Project ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Get the project by ID or return a 404 error if not found
+        project = get_object_or_404(Project, project_id=project_id)
+
+        # Update the 'archived' status to True
+        project.archived = False
+        project.save()
+        print(str(project_id) + " unarchived")
+        return Response(
+            {
+                "message": f"Project '{project.project_name}' has been unarchived.",
+                "project_id": project.project_id,
+                "archived": project.archived,
+            },
+            status=status.HTTP_200_OK
+        )
 
 from rest_framework import generics
 from .models import Task

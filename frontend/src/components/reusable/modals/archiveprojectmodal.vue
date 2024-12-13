@@ -24,7 +24,7 @@
         </DialogHeader>
 
         <DialogFooter>
-          <Button type="button" @click="saveProject" class="w-full sm:w-auto" variant="destructive">
+          <Button type="button" @click="archiveProj" class="w-full sm:w-auto" variant="destructive">
             <Trash class="mr-2 h-4 w-4" />
             Archive Project
           </Button>
@@ -63,20 +63,20 @@ const userId = computed(() => authStore.user?.id);
 const projectStore = useProjectStore();
 const managerId = computed(() => authStore.user?.manager_id);
 
-const saveProject = async () => {
+const archiveProj = async () => {
   try {
     if (!userId.value) {
       console.error('User ID is not available.');
       return;
     }
 
-    const response = await getAPI.put(`/api/projects/update/${projectStore.project_id}/`, {
+    const response = await getAPI.post(`/api/projects/archive/${projectStore.project_id}/`, {
       project_name: projectName.value,
       project_description: projectDescription.value,
       user: userId.value,
       manager_id: managerId.value,
     });
-    console.log('Project Created:', response.data);
+    console.log('Project Archived:', response.data);
 
     // Close the dialog
     closeDialog();
@@ -84,7 +84,7 @@ const saveProject = async () => {
     // Reload the window
     window.location.reload();
   } catch (error) {
-    console.error('Error creating project:', error);
+    console.error('Error archiving project:', error);
   }
 };
 

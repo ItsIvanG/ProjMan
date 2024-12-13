@@ -22,19 +22,15 @@ const authStore = useAuthStore()
 const user = ref(null);
 //
 
-onMounted(async () => {
-  await authStore.fetchUser();
-  user.value = authStore.user;
-});
-watch(
-  () => projectStore.project_id,
-  (newValue, oldValue) => {
-    console.log(`Project ID changed from ${oldValue} to ${newValue}`);
-    if (!newValue) {
-      console.log('Project ID was cleared.');
-    }
-  }
-);
+// watch(
+//   () => projectStore.project_id,
+//   (newValue, oldValue) => {
+//     console.log(`Project ID changed from ${oldValue} to ${newValue}`);
+//     if (!newValue) {
+//       console.log('Project ID was cleared.');
+//     }
+//   }
+// );
 
 
 </script>
