@@ -158,25 +158,3 @@ const navigateTo = (path) => {
 
 </script>
 
-<style>
-/* Custom Scrollbar */
-div[max-h]::-webkit-scrollbar {
-  width: 6px;
-}
-
-div[max-h]::-webkit-scrollbar-thumb {
-  border-radius: 9999px;
-}
-
-div[max-h]::-webkit-scrollbar-track {
-  background-color: transparent;
-}
-
-div[max-h] {
-  scrollbar-width: thin;
-}
-
-nav {
-  background-color: #1a1a1a;
-}
-</style>

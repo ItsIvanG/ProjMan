@@ -207,23 +207,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.max-h-\[450px\]::-webkit-scrollbar {
-  width: 6px;
-}
-
-.max-h-\[450px\]::-webkit-scrollbar-thumb {
-  border-radius: 4px; /* Round corners for the thumb */
-}
-
-.max-h-\[450px\]::-webkit-scrollbar-track {
-  background-color: transparent;
-  border-radius: 4px; /* Optional: round the corners of the track */
-}
-
-/* Ensure the action buttons are hidden initially and only visible on hover */
-.group:hover .group-hover\:opacity-100 {
-  opacity: 1;
-}
-</style>

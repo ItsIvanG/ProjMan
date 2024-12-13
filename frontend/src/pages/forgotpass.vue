@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center justify-center min-h-screen">
-    <Card class="max-w-[500px] w-full h-[700px] border border-white p-6 rounded-lg shadow-md overflow-auto ml-[665px]">
+    <Card class="max-w-[500px] w-full h-[700px] border p-6 rounded-lg shadow-md overflow-auto ml-[665px]">
       <CardHeader class="text-center mt-[140px]">
         <CardTitle class="text-2xl">Forgot Password</CardTitle>
         <CardDescription>
@@ -25,19 +25,19 @@
           </span>
 
           <!-- Success Message -->
-          <span v-if="message && !showError" class="text-green-500 text-sm mt-2 block">
+          <span v-if="message && !showError" class="text-green-600 text-sm mt-2 block">
             {{ message }}
           </span>
         </div>
       </CardContent>
 
       <CardFooter class="flex flex-col gap-4">
-        <Button class="w-full hover:bg-blue-300" @click="handleForgotPassword">
+        <Button class="w-full " @click="handleForgotPassword">
           Reset Password
         </Button>
 
         <p class="text-center text-sm text-gray-500">
-          <router-link to="/login" class="text-blue-200 hover:underline">
+          <router-link to="/login" class=" hover:underline">
             Back to Login
           </router-link>
         </p>
@@ -95,26 +95,3 @@ export default {
 };
 </script>
 
-<style scoped>
-/**** Match the style of login layout ****/
-input {
-  background-color: #1a1a1a;
-  color: white;
-  border: 1px solid #fff;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-}
-
-input:focus {
-  outline: none;
-  border-color: #4f46e5;
-}
-
-input.border-red-500 {
-  border-color: #f87171;
-}
-
-span {
-  cursor: pointer;
-}
-</style>
