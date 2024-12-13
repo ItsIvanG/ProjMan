@@ -14,6 +14,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Project
 from .serializers import ProjectSerializer
+from django.shortcuts import get_object_or_404
+
 
 
 @ensure_csrf_cookie
@@ -98,7 +100,20 @@ class ProjectCreateView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-   
+
+    def put(self, request, project_id=None):
+        if not project_id:
+            return Response({"error": "Project ID is required for updating."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Get the project object or return a 404 if it doesn't exist
+        project = get_object_or_404(Project, project_id=project_id)
+
+        # Pass the existing project instance and new data to the serializer
+        serializer = ProjectSerializer(project, data=request.data)
+        if serializer.is_valid():
+            serializer.save()  # Save the updated instance
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 from rest_framework import generics
@@ -140,7 +155,7 @@ class TaskEditView(generics.UpdateAPIView):
     def get_object(self):
         task_id = self.kwargs['task_id']  # Get task_id from URL parameters
         return Task.objects.get(task_id=task_id)  # Fetch the task by ID
-    
+
 from .serializers import AssignTaskSerializer
     
 class TaskAssignEditView(generics.UpdateAPIView):

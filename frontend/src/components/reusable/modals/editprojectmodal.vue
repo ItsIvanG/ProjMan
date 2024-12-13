@@ -1,17 +1,15 @@
 <template>
   <div>
     <!-- Dropdown Menu Item -->
-    <div 
-    class="w-full text-left font-medium flex items-center justify-start space-x-3 cursor-pointer"
-    @click="createNewProject"
-  >
+    <div>
     <!-- Full-Length Button with Icon -->
-    <Button variant="outline" class="w-full flex items-center px-4 py-2">
-      <!-- Icon -->
-      <PlusCircle class="h-5 w-5 mr-2" />
-      <!-- Button Text -->
-      <span>Create New</span>
+    <Button @click="editProject" variant="default" size="sm" class="h-7 gap-1">
+              <Pencil/>
+              <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                Edit Project
+              </span>
     </Button>
+
   </div>
 
     <!-- Dialog -->
@@ -19,9 +17,9 @@
       <!-- Updated DialogContent size -->
       <DialogContent class="max-w-[600px]">
         <DialogHeader>
-          <DialogTitle class="text-2xl font-bold">Create New Project</DialogTitle>
+          <DialogTitle class="text-2xl font-bold">Edit Project</DialogTitle>
           <DialogDescription class=" text-lg">
-            Fill out the form below to create a new project. Provide the necessary details and click "Save Project."
+           Edit details and click "Save Project."
           </DialogDescription>
         </DialogHeader>
         <div class="grid gap-6 py-6">
@@ -29,7 +27,7 @@
             <Label for="projectName" class="text-right text-lg font-medium">
               Project Name
             </Label>
-            <Input
+ <Input
   id="projectName"
   v-model="projectName"
   placeholder="Enter project name"
@@ -73,9 +71,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { PlusCircle } from 'lucide-vue-next';
+import { PlusCircle,Pencil } from 'lucide-vue-next';
 import { getAPI } from '@/axios';
 import { useAuthStore } from '@/store/auth';
+import {useProjectStore} from "@/store/project.ts";
 
 const projectName = ref('');
 const projectDescription = ref('');
@@ -84,6 +83,7 @@ const authStore = useAuthStore();
 
 // Use a computed property to get the user ID from the store
 const userId = computed(() => authStore.user?.id);
+const projectStore = useProjectStore();
 const managerId = computed(() => authStore.user?.manager_id);
 
 const saveProject = async () => {
@@ -93,7 +93,7 @@ const saveProject = async () => {
       return;
     }
 
-    const response = await getAPI.post('/api/projects/create', {
+    const response = await getAPI.put(`/api/projects/update/${projectStore.project_id}/`, {
       project_name: projectName.value,
       project_description: projectDescription.value,
       user: userId.value,
@@ -118,8 +118,11 @@ const saveProject = async () => {
 const isDialogOpen = ref(false);
 
 // Function to open dialog
-const createNewProject = () => {
+const editProject = () => {
   isDialogOpen.value = true;
+  projectName.value = projectStore.project_name;
+  projectDescription.value = projectStore.project_description;
+
 };
 
 // Function to close dialog (can be used if Dialog doesn't automatically close)
