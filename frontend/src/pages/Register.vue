@@ -1,18 +1,22 @@
 <template xmlns="http://www.w3.org/1999/html">
-  <div class="flex items-center justify-end min-h-screen">
-        <!-- Left Section: Web Image -->
+  <div :class="[isDarkMode ? 'dark' : 'light', 'flex items-center justify-end min-h-screen']">
+    <!-- Left Section: Web Image -->
     <div class="w-1/2 flex items-center justify-center">
-      <img
-        src="https://aphrodite.gmanetwork.com/imagefiles/pepito_1424432146.jpg"
-        alt="Your Image"
-        class="max-w-full h-auto"
-      />
     </div>
-    <div class="max-w-[600px] w-full h-[820px] border border-white p-6 rounded-lg shadow-md overflow-auto mr-20">
-      <!-- Title and Description -->
-      <div class="text-center mb-8">
-        <h3 class="text-3xl font-bold mb-4">Register Your Account</h3>
+
+    <div class="max-w-[600px] w-full h-[820px] border p-6 rounded-lg shadow-md overflow-auto mr-20">
+      <!-- Title and Theme Toggle -->
+      <div class="flex justify-between items-center mb-8">
+        <h3 class="text-3xl font-bold">Register Your Account</h3>
+        <button
+          @click="toggleTheme"
+          class="p-2 border rounded-full"
+          :class="isDarkMode ? 'bg-white text-black' : 'bg-black text-white'"
+        >
+          {{ isDarkMode ? 'Light Mode' : 'Dark Mode' }}
+        </button>
       </div>
+
       <!-- Progress Tracker -->
       <div class="flex justify-between items-right mb-4">
         <div
@@ -54,19 +58,21 @@
     <div class="w-1/2">
       <div class="relative">
         <div class="flex items-center justify-between mb-2">
-          <label for="firstname" class="block font-bold text-white">First Name</label>
+          <label for="firstname" class="block font-bold">First Name</label>
           <div v-if="showErrors.firstName" class="text-red-500 text-sm">This field is required</div>
         </div>
-        <div class="flex items-center border-2 border-white rounded p-2 bg-black">
+        <div class="relative">
           <input
             v-model="formData.firstName"
             id="firstname"
             type="text"
             placeholder="Enter First Name"
-            class="w-full bg-transparent text-white outline-none"
+            class="input-field"
             required
           />
-          <AkPerson class="text-white ml-2 cursor-pointer" />
+          <span class="absolute right-3 top-1/2 transform -translate-y-1/2">
+            <AkPerson class="cursor-pointer" />
+          </span>
         </div>
       </div>
     </div>
@@ -75,83 +81,90 @@
     <div class="w-1/2">
       <div class="relative">
         <div class="flex items-center justify-between mb-2">
-          <label for="lastname" class="block font-bold text-white">Last Name</label>
+          <label for="lastname" class="block font-bold">Last Name</label>
           <div v-if="showErrors.lastName" class="text-red-500 text-sm">This field is required</div>
         </div>
-        <div class="flex items-center border-2 border-white rounded p-2 bg-black">
+        <div class="relative">
           <input
             v-model="formData.lastName"
             id="lastname"
             type="text"
             placeholder="Enter Last Name"
-            class="w-full bg-transparent text-white outline-none"
+            class="input-field"
             required
           />
-          <AkPerson class="text-white ml-2 cursor-pointer" />
+          <span class="absolute right-3 top-1/2 transform -translate-y-1/2">
+            <AkPerson class="cursor-pointer" />
+          </span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Email Input with Icon -->
+  <!-- Email Input -->
   <div class="relative">
     <div class="flex items-center justify-between mb-2">
-      <label for="email" class="block font-bold text-white">Email</label>
+      <label for="email" class="block font-bold">Email</label>
       <div v-if="showErrors.email" class="text-red-500 text-sm">This field is required</div>
     </div>
-    <div class="flex items-center border-2 border-white rounded p-2 bg-black">
+    <div class="relative">
       <input
         v-model="formData.email"
         id="email"
         type="email"
         placeholder="example@mail.com"
-        class="w-full bg-transparent text-white outline-none"
+        class="input-field"
         required
       />
-      <IoOutlineMail class="text-white ml-2 cursor-pointer" />
+      <span class="absolute right-3 top-1/2 transform -translate-y-1/2">
+        <IoOutlineMail class="cursor-pointer" />
+      </span>
     </div>
   </div>
+
 
   <!-- Username Input -->
   <div class="relative">
     <div class="flex items-center justify-between mb-2">
-      <label for="username" class="block font-bold text-white">Username</label>
+      <label for="username" class="block font-bold">Username</label>
       <div v-if="showErrors.username" class="text-red-500 text-sm">This field is required</div>
     </div>
-    <div class="flex items-center border-2 border-white rounded p-2 bg-black">
+    <div class="relative">
       <input
         v-model="formData.username"
         id="username"
         type="text"
         placeholder="Your username"
-        class="w-full bg-transparent text-white outline-none"
+        class="input-field"
         required
       />
-      <AkPerson class="text-white ml-2 cursor-pointer" />
+      <span class="absolute right-3 top-1/2 transform -translate-y-1/2">
+        <AkPerson class="cursor-pointer" />
+      </span>
     </div>
   </div>
 
   <!-- Password Input -->
   <div class="relative">
     <div class="flex items-center justify-between mb-2">
-      <label for="password" class="block font-bold text-white">Password</label>
+      <label for="password" class="block font-bold">Password</label>
       <span v-if="showErrors.password" class="text-red-500 text-sm">This field is required</span>
     </div>
     <div class="relative">
       <input
         v-model="formData.password"
-        :type="showPassword ? 'text' : 'password'"
         id="password"
+        :type="showPassword ? 'text' : 'password'"
         placeholder="Enter Password"
-        class="w-full border border-white rounded p-2 bg-black text-white"
+        class="input-field"
         required
       />
       <span
         class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
         @click="togglePassword('password')"
       >
-        <AkEyeClosed v-if="!showPassword" class="text-white" />
-        <AkEyeOpen v-if="showPassword" class="text-white" />
+        <AkEyeClosed v-if="!showPassword" />
+        <AkEyeOpen v-if="showPassword" />
       </span>
     </div>
     <div v-if="passwordInvalid" class="text-red-500 text-sm">
@@ -162,24 +175,24 @@
   <!-- Confirm Password Input -->
   <div class="relative">
     <div class="flex items-center justify-between mb-2">
-      <label for="confirmPassword" class="block font-bold text-white">Confirm Password</label>
+      <label for="confirmPassword" class="block font-bold">Confirm Password</label>
       <div v-if="showErrors.confirmPassword" class="text-red-500 text-sm">This field is required</div>
     </div>
     <div class="relative">
       <input
         v-model="formData.confirmPassword"
-        :type="showConfirmPassword ? 'text' : 'password'"
         id="confirmPassword"
+        :type="showConfirmPassword ? 'text' : 'password'"
         placeholder="Re-type Password"
-        class="w-full border border-white rounded p-2 bg-black text-white"
+        class="input-field"
         required
       />
       <span
         class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
         @click="togglePassword('confirmPassword')"
       >
-        <AkEyeClosed v-if="!showConfirmPassword" class="text-white" />
-        <AkEyeOpen v-if="showConfirmPassword" class="text-white" />
+        <AkEyeClosed v-if="!showConfirmPassword" />
+        <AkEyeOpen v-if="showConfirmPassword" />
       </span>
     </div>
     <div v-if="passwordMismatch" class="text-red-500 text-sm">Passwords do not match</div>
@@ -188,7 +201,7 @@
   <!-- Birthday Input -->
   <div class="relative">
     <div class="flex items-center justify-between mb-2">
-      <label for="birthday" class="block font-bold text-white">Birthday</label>
+      <label for="birthday" class="block font-bold">Birthday</label>
       <div v-if="showErrors.birthday" class="text-red-500 text-sm">This field is required</div>
     </div>
     <div class="relative">
@@ -196,158 +209,203 @@
         v-model="formData.birthday"
         id="birthday"
         type="date"
-        class="w-full border border-white rounded p-2 bg-black text-white"
+        class="input-field"
         required
         ref="birthdayInput"
       />
-      <CiCalendarDate
-        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-white cursor-pointer"
+      <span
+        class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
         @click="toggleDatePicker"
-      />
+      >
+        <CiCalendarDate/>
+      </span>
     </div>
   </div>
 
-  <!-- Gender Input -->
-  <div class="relative">
-    <div class="flex items-center justify-between mb-2">
-      <label for="gender" class="block font-bold text-white">Gender</label>
-      <div v-if="showErrors.gender" class="text-red-500 text-sm">This field is required</div>
-    </div>
-    <select
-      v-model="formData.gender"
-      id="gender"
-      class="w-full border border-white rounded p-2 bg-black text-white"
-      required
-    >
-      <option value="">Select</option>
-      <option value="Male">Male</option>
-      <option value="Female">Female</option>
-      <option value="Other">Other</option>
-    </select>
-  </div>
-</div>
-      </div>
-      <div v-if="currentStep === 2" class="space-y-4">
-        <label class="block mb-1 font-bold">Terms and Conditions</label>
-        <textarea style="resize: none;"
-         class="w-full p-3 border border-white rounded bg-black text-white h-80"
-          readonly
-        >
-Welcome to ProjMan!
-
-These terms and conditions ("Terms") govern your access to and use of the ProjMan website and services ("Services"). By using our website, you agree to comply with and be bound by these Terms. If you do not agree with these Terms, please do not use the Services.
-
-1. Acceptance of Terms
-By accessing or using the ProjMan platform, you agree to comply with these Terms, as well as our Privacy Policy. We reserve the right to modify, update, or change these Terms at any time. Any changes will be posted on this page, and the updated Terms will be effective immediately upon posting.
-
-2. Use of the Service
-ProjMan provides a platform for project management tools, including task management, time tracking, and collaboration features. You agree to:
-
-Use the Service only for lawful purposes and in accordance with these Terms.
-Not misuse or interfere with the Service in any way.
-Not attempt to gain unauthorized access to the Service, servers, or networks.
-3. Account Registration
-To use certain features of ProjMan, you must create an account. You are responsible for maintaining the confidentiality of your account credentials, and you agree to notify us immediately of any unauthorized use of your account. You must be at least 18 years old to register for an account.
-
-4. Subscription Plans and Payment
-ProjMan offers both free and paid subscription plans. If you subscribe to a paid plan, you agree to pay the applicable subscription fees in accordance with the plan you choose. Payments are non-refundable, and fees are subject to change. You will be notified of any changes to the fees.
-
-5. License to Use the Service
-ProjMan grants you a limited, non-exclusive, non-transferable, revocable license to access and use the Service for your internal business or personal use. You may not distribute, modify, or create derivative works based on the Service.
-
-6. User Content
-You are solely responsible for the content you upload, create, or share through the Service ("User Content"). By uploading or submitting content to ProjMan, you grant us a worldwide, royalty-free, and non-exclusive license to use, display, and distribute the content within the Service.
-
-7. Privacy
-Your use of the Service is also governed by our Privacy Policy, which outlines how we collect, use, and protect your personal data. Please review our Privacy Policy to understand how your information is handled.
-
-8. Prohibited Activities
-You agree not to:
-
-Violate any applicable laws, regulations, or third-party rights.
-Engage in any activity that could harm the Service or other users.
-Use the Service for any illegal or unauthorized purpose, including but not limited to spamming, hacking, or distributing malware.
-Attempt to reverse-engineer, decompile, or disassemble the Service.
-9. Termination
-We reserve the right to suspend or terminate your access to the Service if you violate these Terms or engage in any unlawful activities. You may also terminate your account at any time by contacting us.
-
-10. Disclaimer of Warranties
-The Service is provided "as is" without any warranties of any kind, either express or implied. We do not guarantee that the Service will be uninterrupted or error-free. You use the Service at your own risk.
-
-11. Limitation of Liability
-In no event shall ProjMan or its affiliates be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or in connection with your use of the Service.
-
-12. Indemnification
-You agree to indemnify and hold harmless ProjMan, its affiliates, employees, and partners from any claims, damages, losses, liabilities, or expenses arising from your use of the Service or violation of these Terms.
-
-13. Governing Law
-These Terms shall be governed by and construed in accordance with the laws of [Your jurisdiction], without regard to its conflict of law principles. Any disputes arising from these Terms shall be resolved in the courts of [Your jurisdiction].
-
-14. Changes to the Terms
-We may update these Terms at any time. You will be notified of any material changes, and your continued use of the Service after such changes will constitute your acceptance of the new Terms.
-        </textarea>
-        <div v-if="showErrors.agreeTerms" class="text-red-500 text-sm">This field is required</div>
-        <div>
-          <label class="inline-flex items-right">
-            <input
-              type="checkbox"
-              v-model="formData.agreeTerms"
-              class="mr-2 bg-black text-white"
+          <!-- Gender Input -->
+          <div class="relative">
+            <div class="flex items-center justify-between mb-2">
+              <label for="gender" class="block font-bold">Gender</label>
+              <div v-if="showErrors.gender" class="text-red-500 text-sm">This field is required</div>
+            </div>
+            <select
+              v-model="formData.gender"
+              id="gender"
+              :class="darkMode ? 'w-full border border-white rounded p-2 bg-black text-white' : 'w-full border border-black rounded p-2 bg-white text-black'"
               required
-            />
-            I agree to the terms and conditions.
-          </label>
+            >
+              <option value="">Select</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
         </div>
       </div>
 
-<div v-if="currentStep === 3" class="space-y-4">
+<div v-if="currentStep === 2" class="space-y-4">
+  <!-- Terms and Conditions Label -->
+  <label
+    class="block mb-1 font-bold"
+    :class="isDarkMode ? 'text-white' : 'text-black'"
+  >
+    Terms and Conditions
+  </label>
+
+  <!-- Terms and Conditions Text Area -->
+  <textarea
+    style="resize: none;"
+    class="w-full p-3 border rounded h-80"
+    :class="{
+      'bg-gray-800 text-gray-200 border-gray-700': isDarkMode,
+      'bg-white text-black border-gray-300': !isDarkMode
+    }"
+    readonly
+  >
+    Welcome to ProjMan!
+
+    These terms and conditions ("Terms") govern your access to and use of the ProjMan website and services ("Services"). By using our website, you agree to comply with and be bound by these Terms. If you do not agree with these Terms, please do not use the Services.
+
+    1. Acceptance of Terms
+    By accessing or using the ProjMan platform, you agree to comply with these Terms, as well as our Privacy Policy. We reserve the right to modify, update, or change these Terms at any time. Any changes will be posted on this page, and the updated Terms will be effective immediately upon posting.
+
+    2. Use of the Service
+    ProjMan provides a platform for project management tools, including task management, time tracking, and collaboration features. You agree to:
+
+    Use the Service only for lawful purposes and in accordance with these Terms.
+    Not misuse or interfere with the Service in any way.
+    Not attempt to gain unauthorized access to the Service, servers, or networks.
+
+    3. Account Registration
+    To use certain features of ProjMan, you must create an account. You are responsible for maintaining the confidentiality of your account credentials, and you agree to notify us immediately of any unauthorized use of your account. You must be at least 18 years old to register for an account.
+
+    4. Subscription Plans and Payment
+    ProjMan offers both free and paid subscription plans. If you subscribe to a paid plan, you agree to pay the applicable subscription fees in accordance with the plan you choose. Payments are non-refundable, and fees are subject to change. You will be notified of any changes to the fees.
+
+    5. License to Use the Service
+    ProjMan grants you a limited, non-exclusive, non-transferable, revocable license to access and use the Service for your internal business or personal use. You may not distribute, modify, or create derivative works based on the Service.
+
+    6. User Content
+    You are solely responsible for the content you upload, create, or share through the Service ("User Content"). By uploading or submitting content to ProjMan, you grant us a worldwide, royalty-free, and non-exclusive license to use, display, and distribute the content within the Service.
+
+    7. Privacy
+    Your use of the Service is also governed by our Privacy Policy, which outlines how we collect, use, and protect your personal data. Please review our Privacy Policy to understand how your information is handled.
+
+    8. Prohibited Activities
+    You agree not to:
+
+    Violate any applicable laws, regulations, or third-party rights.
+    Engage in any activity that could harm the Service or other users.
+    Use the Service for any illegal or unauthorized purpose, including but not limited to spamming, hacking, or distributing malware.
+    Attempt to reverse-engineer, decompile, or disassemble the Service.
+
+    9. Termination
+    We reserve the right to suspend or terminate your access to the Service if you violate these Terms or engage in any unlawful activities. You may also terminate your account at any time by contacting us.
+
+    10. Disclaimer of Warranties
+    The Service is provided "as is" without any warranties of any kind, either express or implied. We do not guarantee that the Service will be uninterrupted or error-free. You use the Service at your own risk.
+
+    11. Limitation of Liability
+    In no event shall ProjMan or its affiliates be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or in connection with your use of the Service.
+
+    12. Indemnification
+    You agree to indemnify and hold harmless ProjMan, its affiliates, employees, and partners from any claims, damages, losses, liabilities, or expenses arising from your use of the Service or violation of these Terms.
+
+    13. Governing Law
+    These Terms shall be governed by and construed in accordance with the laws of [Your jurisdiction], without regard to its conflict of law principles. Any disputes arising from these Terms shall be resolved in the courts of [Your jurisdiction].
+
+    14. Changes to the Terms
+    We may update these Terms at any time. You will be notified of any material changes, and your continued use of the Service after such changes will constitute your acceptance of the new Terms.
+  </textarea>
+
+  <!-- Terms Agreement Checkbox -->
+  <div v-if="showErrors.agreeTerms" class="text-red-500 text-sm">This field is required</div>
+
   <div>
-    <label for="profilePicture" class="block mb-1 font-bold">Profile Picture</label>
+    <label class="inline-flex items-center">
+      <input
+        type="checkbox"
+        v-model="formData.agreeTerms"
+        class="mr-2"
+        :class="{
+          'bg-gray-700 text-white': isDarkMode,
+          'bg-black text-white': !isDarkMode
+        }"
+        required
+      />
+      <span :class="isDarkMode ? 'text-gray-200' : 'text-black'">
+        I agree to the terms and conditions.
+      </span>
+    </label>
+  </div>
+</div>
+
+<div v-if="currentStep === 3" class="space-y-4">
+  <!-- Profile Picture Upload -->
+  <div>
+    <label for="profilePicture" class="block mb-1 font-bold" :class="isDarkMode ? 'text-white' : 'text-black'">
+      Profile Picture
+    </label>
     <input
       id="profilePicture"
       type="file"
       @change="handleFileUpload"
       accept="image/*"
-      class="w-full border border-white rounded p-2 bg-black text-white"
+      class="w-full border rounded p-2"
+      :class="isDarkMode ? 'bg-gray-800 text-white border-gray-700' : 'bg-white text-black border-gray-300'"
       required
     />
   </div>
+
+  <!-- Profile Picture Preview -->
   <div v-if="formData.profilePicture" class="relative mt-4">
-<div class="flex justify-center">
-  <img
-    :src="formData.profilePicture"
-    alt="Profile Picture Preview"
-    class="w-48 h-48 object-cover rounded-full cursor-pointer transition-transform duration-300 hover:scale-110 border-2 border-white"
-  />
-</div>
+    <div class="flex justify-center">
+      <img
+        :src="formData.profilePicture"
+        alt="Profile Picture Preview"
+        class="w-48 h-48 object-cover rounded-full cursor-pointer transition-transform duration-300 hover:scale-110 border-2"
+        :class="isDarkMode ? 'border-gray-300' : 'border-black'"
+      />
+    </div>
   </div>
 </div>
 
-      <!-- Navigation Buttons -->
-      <div class="flex justify-between mt-5">
-        <button
-          v-if="currentStep > 1"
-          @click="prevStep"
-          class="px-4 py-2 border border-white rounded text-white bg-gray-700"
-        >
-          Back
-        </button>
-        <button
-          v-if="currentStep < steps.length"
-          @click="nextStep"
-          class="px-4 py-2 bg-white text-black rounded"
-          :disabled="isNextDisabled"
-        >
-          Next
-        </button>
-        <button
-          v-if="currentStep === steps.length"
-          @click="register"
-          class="px-4 py-2 bg-white text-black rounded"
-        >
-          Register
-        </button>
-      </div>
+<!-- Navigation Buttons -->
+<div class="flex justify-between mt-5">
+  <button
+    v-if="currentStep > 1"
+    @click="prevStep"
+    class="px-4 py-2 border rounded"
+    :class="isDarkMode ? 'border-gray-700 text-white bg-gray-800' : 'border-gray-300 text-black bg-white'"
+  >
+    Back
+  </button>
+
+<button
+  v-if="currentStep < steps.length"
+  @click="nextStep"
+  class="px-4 py-2 rounded"
+  :class="{
+    'bg-white text-black border border-gray-300': !isDarkMode,  /* Light mode */
+    'bg-gray-800 text-white border border-gray-700': isDarkMode   /* Dark mode */
+  }"
+  :disabled="isNextDisabled"
+>
+  Next
+</button>
+
+  <button
+    v-if="currentStep === steps.length"
+    @click="register"
+    class="px-4 py-2 rounded"
+    :class="{
+      'bg-white text-black border-gray-300': !isDarkMode,
+      'bg-gray-800 text-white border-gray-700': isDarkMode
+    }"
+  >
+    Register
+  </button>
+</div>
     </div>
   </div>
 </template>
@@ -381,6 +439,7 @@ export default {
 
   data() {
     return {
+      isDarkMode: true,
       currentStep: 1,
       steps: ["Account Setup", "Terms and Conditions", "Upload Image"],
       formData: {
@@ -492,6 +551,11 @@ export default {
     },
   },
   methods: {
+    computed: {
+    themeClasses() {
+      return this.isDarkMode ? 'bg-black text-white' : 'bg-white text-black';
+    },
+  },
     togglePassword(field) {
       this[field] = !this[field];
       if (field === "password") {
@@ -533,6 +597,11 @@ export default {
         this.showErrors.profilePicture = true;
       }
     },
+
+    toggleTheme() {
+      this.isDarkMode = !this.isDarkMode;
+    },
+
     nextStep() {
       // Validate current step fields before proceeding
       let valid = true;
@@ -641,6 +710,50 @@ export default {
 </script>
 
 <style scoped>
+
+.dark {
+  background-color: #121212;
+  color: #ffffff;
+}
+.light {
+  background-color: #ffffff;
+  color: #000000;
+}
+.input-field {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid currentColor;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: inherit;
+}
+.btn-primary {
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+.btn-secondary {
+  padding: 0.5rem 1rem;
+  background-color: #6c757d;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.textarea {
+  width: 100%;
+  height: 10rem;
+  padding: 0.5rem;
+  border: 1px solid currentColor;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: inherit;
+  resize: none;
+}
 
 img {
   user-select: none;
