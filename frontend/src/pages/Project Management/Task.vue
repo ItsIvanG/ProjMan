@@ -13,6 +13,13 @@ import {
   CommandGroup,
   CommandItem,
 } from '@/components/ui/command';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader, CardDescription, CardTitle } from '@/components/ui/card'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -49,6 +56,9 @@ import {
   import { Input } from '@/components/ui/input';
   import { Label } from '@/components/ui/label';
   import { PlusCircle , Check } from 'lucide-vue-next';
+  import { useToast } from '@/components/ui/toast/use-toast'
+
+const { toast } = useToast()
 
 
 import { getAPI } from '@/axios';
@@ -235,6 +245,16 @@ const openDialog = () => {
     const response = await getAPI.put(`/tasks/assign/${selectedTask.task_id}/`, formData);
     console.log('Task updated:', response.data);
 
+    toast({
+  title: 'Member Assigned',
+  description: 'The member has been assigned to the task successfully.',
+});
+
+// Ensure any previously lingering toasts are cleared after 3 seconds
+setTimeout(() => {
+  // This can trigger any toast cleanup if needed
+}, 3000);
+
     // Update the task in the store
     taskStore.task = response.data;
     allTasksStore.updateTask(response.data); // Update the task list with the new data
@@ -385,44 +405,22 @@ const openDialog = () => {
     <!-- Assign Member input -->
     <div class="grid gap-2 md:col-span-2">
       <Label for="assignee_id">Assign Member</Label>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            class="w-full justify-between"
-            aria-label="Select Member"
+      <Select v-model="formData.assignee_id" aria-label="Select Member">
+        <SelectTrigger>
+          <SelectValue 
+            :placeholder="selectedMember?.label || 'Select Member'" 
+          />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem 
+            v-for="(member, index) in members" 
+            :key="member.value" 
+            :value="member.value"
           >
-            {{ selectedMember?.label || 'Select Member' }}
-            <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent class="w-full p-0">
-          <Command>
-            <CommandInput placeholder="Search member..." />
-            <CommandEmpty>No member found.</CommandEmpty>
-            <CommandList>
-              <CommandGroup>
-                <CommandItem
-                  v-for="(member, index) in members"
-                  :key="member.value"
-                  @click="selectMember(member)"
-                  class="cursor-pointer"
-                >
-                  <Check
-                    v-if="member.value === selectedMember?.value"
-                    class="mr-2 h-4 w-4"
-                  />
-                  {{ member.label }}
-                </CommandItem>
-                <div
-                  v-if="index < members.length - 1"
-                  class="border-t border-gray-200 my-1"
-                ></div>
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
+            {{ member.label }}
+          </SelectItem>
+        </SelectContent>
+      </Select>
     </div>
   </div>
   <DialogFooter>
@@ -432,6 +430,7 @@ const openDialog = () => {
     </Button>
   </DialogFooter>
 </form>
+
 
 
         </DialogContent>

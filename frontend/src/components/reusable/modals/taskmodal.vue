@@ -114,6 +114,9 @@ import { PlusCircle } from 'lucide-vue-next';
 import { getAPI } from '@/axios';
 import { useProjectStore } from '@/store/project';
 import { useAllTasksStore } from '@/store/allTasksStore'; // Import the new allTasksStore
+import { useToast } from '@/components/ui/toast/use-toast'
+
+const { toast } = useToast()
 
 const projectStore = useProjectStore();
 const allTasksStore = useAllTasksStore(); // Use allTasksStore
@@ -154,7 +157,15 @@ const handleSubmit = async () => {
       deadline: formData.deadline,
     });
 
-    console.log('Task created:', response.data);
+    toast({
+      title: 'Task Created',
+      description: 'Your task has been created successfully.',
+    });
+
+    // Ensure any previously lingering toasts are cleared after 3 seconds
+    setTimeout(() => {
+      // This can trigger any toast cleanup if needed
+    }, 3000);
 
     // Use the store's addTask method to add the new task to the task list
     allTasksStore.addTask(response.data);

@@ -124,6 +124,9 @@
   import { PlusCircle, Eye, EyeOff } from 'lucide-vue-next';
   import { useAuthStore } from '@/store/auth';
   import { useUserListStore } from '@/store/userListStore';
+  import { useToast } from '@/components/ui/toast/use-toast'
+
+const { toast } = useToast()
   
   const authStore = useAuthStore();
   const managerId = computed(() => authStore.user?.manager_id);
@@ -185,6 +188,16 @@
   try {
     clearErrors(); // Clear previous errors
     const response = await getAPI.post('manager/create/', formData);
+    toast({
+      title: 'Member Created',
+      description: 'The member has been created successfully.',
+      
+    });
+
+    // Ensure any previously lingering toasts are cleared after 3 seconds
+    setTimeout(() => {
+      // This can trigger any toast cleanup if needed
+    }, 3000);
     userListStore.addUser(response.data);
     closeDialog(); // Close the dialog upon successful submission
   } catch (error) {

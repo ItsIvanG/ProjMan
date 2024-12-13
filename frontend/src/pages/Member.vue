@@ -37,7 +37,6 @@ const authStore = useAuthStore();
 const managerId  = computed(() => authStore.user?.manager_id);
 const userListStore = useUserListStore();
 
-const allUsers = useUserListStore();
 const filterStatus = ref<string>('All'); // Track selected filter status
 
 // Fetch users from the API

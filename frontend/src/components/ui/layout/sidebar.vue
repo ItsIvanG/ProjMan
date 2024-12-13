@@ -235,7 +235,7 @@ watchEffect(() => {
 
 // Select project and update the global store
 const selectProject = (project) => {
-  selectedProject.value = project; // Store the full project object
+  projectListStore.setSelectedProject(project); // Store the full project object
   projectStore.setProject(project); // Update the global project store
   console.log('Selected project:', project);
 };
