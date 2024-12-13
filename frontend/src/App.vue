@@ -9,7 +9,7 @@ const route = useRoute();
 
 <template>
   <!-- Only show sidebar and navbar if not on login or register pages -->
-  <div v-if="!['/login', '/register'].includes(route.path)">
+  <div v-if="!['/login', '/register','/forgotpass'].includes(route.path)">
     <!-- Sidebar -->
     <aside 
       :class="[
@@ -30,7 +30,7 @@ const route = useRoute();
   </div>
 
   <!-- Main content will only be displayed if not on login or register pages -->
-  <main v-if="!['/login', '/register'].includes(route.path)" class="p-4 md:ml-64 h-auto pt-20">
+  <main v-if="!['/login', '/register', '/forgotpass'].includes(route.path)" class="p-4 md:ml-64 h-auto pt-20">
     <router-view />
   </main>
 

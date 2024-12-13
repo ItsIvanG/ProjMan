@@ -23,55 +23,39 @@
           </div>
         </form>
 
-        <!-- Notifications Dropdown -->
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+         <!-- Bell Icon and Notifications -->
+          <div class="relative">
+            <Button variant="ghost" size="icon" @click="toggleNotifications">
               <Bell class="h-5 w-5" />
               <span class="sr-only">Notifications</span>
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" class="w-[280px] md:w-[300px]">
-            <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <ScrollArea class="h-[300px]">
-              <div class="space-y-3 p-4">
-                <div v-for="i in 5" :key="i" class="flex items-start gap-3 rounded-lg p-2 hover:bg-accent">
-                  <Avatar>
-                    <AvatarImage :src="`https://i.pravatar.cc/40?img=${i}`" />
-                    <AvatarFallback>U{{ i }}</AvatarFallback>
-                  </Avatar>
-                  <div class="space-y-1">
-                    <p class="text-sm font-medium">New message from User {{ i }}</p>
-                    <p class="text-sm text-muted-foreground">Hey, what's up? All set for the presentation?</p>
-                    <p class="text-xs text-muted-foreground">2 hours ago</p>
-                  </div>
-                </div>
-              </div>
-            </ScrollArea>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem class="cursor-pointer justify-center">
-              View all notifications
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+
+            <!-- Notifications Modal -->
+            <div
+              v-if="isNotificationOpen"
+              class="absolute right-0 mt-2 w-[320px] max-h-[400px] overflow-hidden rounded-lg"
+            >
+              <NotificationsModal :isVisible="isNotificationOpen" @closePanel="toggleNotifications" />
+            </div>
+          </div>
 
         <!-- User Account Dropdown -->
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" class="relative h-8 w-8 rounded-full">
               <Avatar class="h-8 w-8">
-                <AvatarImage src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/340px-Default_pfp.svg.png" alt="@shadcn" />
+                <AvatarImage
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/340px-Default_pfp.svg.png"
+                  alt="@user"
+                />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
-              
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem @click="navigateTo('/profile')">Profile</DropdownMenuItem>
-            <DropdownMenuSeparator />
             <DropdownMenuItem @click="logout">Log out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -81,46 +65,70 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/store/auth'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { 
-  DropdownMenu, 
-  DropdownMenuTrigger, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator 
-} from '@/components/ui/dropdown-menu'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { Bell, LayoutGrid, Menu, Search, ShoppingCart, Users, Inbox, Settings, CreditCard, HelpCircle } from 'lucide-vue-next'
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/store/auth';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
+import { Bell, Search } from 'lucide-vue-next';
+import NotificationsModal from '@/components/ui/layout/notif.vue'; // Ensure the path is correct
 
-const router = useRouter()
-const authStore = useAuthStore()
+// Router and Store
+const router = useRouter();
+const authStore = useAuthStore();
 
-const apps = [
-  { name: 'Sales', icon: ShoppingCart },
-  { name: 'Users', icon: Users },
-  { name: 'Inbox', icon: Inbox },
-  { name: 'Settings', icon: Settings },
-  { name: 'Billing', icon: CreditCard },
-  { name: 'Help', icon: HelpCircle },
-]
+// State Management
+const isNotificationOpen = ref(false);
+
+// Methods
+const toggleNotifications = () => {
+  isNotificationOpen.value = !isNotificationOpen.value;
+};
 
 const navigateTo = (path) => {
-  router.push(path)
-}
+  router.push(path);
+};
 
 const logout = async () => {
   try {
-    await authStore.logout()
-    router.push('/login')
+    await authStore.logout();
+    router.push('/login');
   } catch (error) {
-    console.error("Logout failed:", error)
+    console.error('Logout failed:', error);
   }
-}
+};
 </script>
+
+<style>
+/* Custom Scrollbar */
+div[max-h]::-webkit-scrollbar {
+  width: 6px;
+}
+
+div[max-h]::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 9999px;
+}
+
+div[max-h]::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+div[max-h] {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+nav {
+  background-color: #1a1a1a;
+}
+</style>

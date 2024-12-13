@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center justify-center min-h-screen">
-    <Card class="max-w-[500px] w-full h-[650px] border border-white p-6 rounded-lg shadow-md overflow-auto ml-[665px]">
+    <Card class="max-w-[500px] w-full h-[700px] border border-white p-6 rounded-lg shadow-md overflow-auto ml-[665px]">
       <CardHeader class="text-center mt-[140px]">
         <CardTitle class="text-2xl">Forgot Password</CardTitle>
         <CardDescription>

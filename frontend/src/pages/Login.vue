@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center justify-right min-h-screen">
-    <Card class="max-w-[500px] w-full h-[650px] border border-white p-6 rounded-lg shadow-md overflow-auto ml-[850px]">
+    <Card class="max-w-[500px] w-full h-[700px] border border-white p-6 rounded-lg shadow-md overflow-auto ml-[850px]">
       <CardHeader class="text-center mt-10">
         <CardTitle class="text-2xl mt">Welcome Back!</CardTitle>
         <CardDescription>
