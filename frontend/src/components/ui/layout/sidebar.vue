@@ -196,19 +196,24 @@ import {
   LayoutDashboard,
   Users,
 } from 'lucide-vue-next';
+
 import Archivedprojectsmodal from "@/components/reusable/modals/archivedprojectsmodal.vue";
 
 
 const router = useRouter();
 const route = useRoute();
-const selectedProject = ref(null);
-const projects = ref([]);
+const projects = computed(() => projectListStore.projects);
+const selectedProject = computed(() => projectListStore.selectedProject);
 const archivedProjects = ref([]);
+
 
 
 // Access the authentication store
 const authStore = useAuthStore();
 const projectStore = useProjectStore();
+
+
+const projectListStore = useProjectListStore();
 
 // Computed user ID
 const userId = computed(() => authStore.user?.manager_id);
@@ -217,7 +222,7 @@ const fetchProjects = async () => {
   try {
     if (userId.value) {
       const response = await getAPI.get(`/projects/${userId.value}`);
-      projects.value = response.data;
+      projectListStore.setProjects(response.data);
 
       // console.log("RESPONSE SIDEBAR-----------------");
       // Object.keys(response).forEach((key) => {
@@ -225,7 +230,7 @@ const fetchProjects = async () => {
       // });
       // Set the first project as the default selected
       if (projects.value.length > 0) {
-        selectProject(response.data[0]); // Automatically select the first project
+        projectListStore.setSelectedProject(response.data[0]);
       }
     }
   } catch (error) {
@@ -242,7 +247,7 @@ watchEffect(() => {
 
 // Select project and update the global store
 const selectProject = (project) => {
-  selectedProject.value = project; // Store the full project object
+  projectListStore.setSelectedProject(project); // Store the full project object
   projectStore.setProject(project); // Update the global project store
   console.log('Selected project:', project);
 };

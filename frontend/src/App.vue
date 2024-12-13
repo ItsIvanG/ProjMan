@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 import Sidebar from "@/components/ui/layout/sidebar.vue";
 import Navbar from "@/components/ui/layout/navbar.vue";
+import Toaster from '@/components/ui/toast/Toaster.vue'
 
 const route = useRoute();
 </script>
@@ -28,7 +29,7 @@ const route = useRoute();
       <Navbar />
     </nav>
   </div>
-
+  <Toaster />
   <!-- Main content will only be displayed if not on login or register pages -->
   <main v-if="!['/login', '/register', '/forgotpass'].includes(route.path)" class="p-4 md:ml-64 h-auto pt-20">
     <router-view />

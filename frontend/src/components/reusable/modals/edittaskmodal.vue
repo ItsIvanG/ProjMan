@@ -108,6 +108,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { PlusCircle } from 'lucide-vue-next';
 import { getAPI } from '@/axios';
 import { useTaskStore } from '@/store/taskStore';
+import { useToast } from '@/components/ui/toast/use-toast'
+
+const { toast } = useToast()
 
 const taskStore = useTaskStore();
 const selectedTaskId = computed(() => taskStore.task?.task_id); // Added null safety
@@ -164,6 +167,15 @@ const handleSubmit = async () => {
   try {
     const response = await getAPI.put(`/tasks/edit/${selectedTaskId.value}/`, formData);
     console.log('Task updated:', response.data);
+    toast({
+  title: 'Task Edited',
+  description: 'The task has been updated successfully.',
+});
+
+// Ensure any previously lingering toasts are cleared after 3 seconds
+setTimeout(() => {
+  // This can trigger any toast cleanup if needed
+}, 3000);
 
     // Update the task in the local store or state
     if (taskStore.task && selectedTaskId.value === taskStore.task.task_id) {

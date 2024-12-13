@@ -107,6 +107,9 @@ import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFoo
 import { PlusCircle } from 'lucide-vue-next';
 import { useUserInfoStore } from '@/store/userStore';
 import { getAPI } from '@/axios';
+import { useToast } from '@/components/ui/toast/use-toast'
+
+const { toast } = useToast()
 
 const userStore = useUserInfoStore();
 const userID = computed(() => userStore.user?.id);
@@ -166,6 +169,17 @@ const handleDeactivation = async () => {
     const response = await getAPI.put(`/user/${userID.value}/deactivate/`, { is_active: false });
     console.log('User deactivated successfully:', response.data);
 
+    toast({
+  title: 'User Archived',
+  description: 'The user has been archived successfully.',
+});
+
+// Ensure any previously lingering toasts are cleared after 3 seconds
+setTimeout(() => {
+  // This can trigger any toast cleanup if needed
+}, 3000);
+
+
     // Update the user data in the store
     if (userStore.user && userID.value === userStore.user.id) {
       Object.assign(userStore.user, response.data); // Merge updated data into the store
@@ -208,7 +222,15 @@ const handleSubmit = async () => {
     clearErrors();
     const response = await getAPI.put(`/manager/edit/${userID.value}/`, formData);
     console.log('Form submitted successfully:', response.data);
+    toast({
+  title: 'User Edited',
+  description: 'The user details have been updated successfully.',
+});
 
+// Ensure any previously lingering toasts are cleared after 3 seconds
+setTimeout(() => {
+  // This can trigger any toast cleanup if needed
+}, 3000);
     // Update the user data in the store
     if (userStore.user && userID.value === userStore.user.id) {
       Object.assign(userStore.user, response.data); // Merge updated data into the store

@@ -13,6 +13,13 @@ import {
   CommandGroup,
   CommandItem,
 } from '@/components/ui/command';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader, CardDescription, CardTitle } from '@/components/ui/card'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -49,49 +56,21 @@ import {
   import { Input } from '@/components/ui/input';
   import { Label } from '@/components/ui/label';
   import { PlusCircle , Check } from 'lucide-vue-next';
+  import { useToast } from '@/components/ui/toast/use-toast'
+
+const { toast } = useToast()
 
 
 import { getAPI } from '@/axios';
 import { useProjectStore } from '@/store/project';
 import { useTaskStore } from '@/store/taskStore';
 import { useAuthStore } from '@/store/auth'
-
+import { useAllTasksStore } from '@/store/allTasksStore';
 
 const taskStore = useTaskStore();
+const allTasksStore = useAllTasksStore();
 
-// Reference for tasks
-const allTasks = ref<any[]>([]); // Task data from API
   const selectedStatus = ref<string | null>(null);
-
-
-// API URL (replace this with the actual backend URL)
-const apiUrl = '/tasks/';
-
-// Fetch tasks based on the project ID
-const fetchTasks = async (projectId: number, status: string | null) => {
-  try {
-    if (!projectId) {
-      throw new Error("Invalid project ID.");
-    }
-    let url = `${apiUrl}${projectId}/`;
-    
-    // Include the status in the query string if provided
-    if (status) {
-      url += `?status=${status}`;
-    }
-
-    // Send GET request to fetch tasks for the specific project_id and status
-    const response = await getAPI.get(url);
-    allTasks.value = response.data; // Store tasks in the allTasks ref
-    
-    // Log the fetched task data to the console
-    console.log('Fetched tasks:', response.data);
-  } catch (error) {
-    console.error("Failed to fetch tasks:", error);
-  }
-};
-
-// Reactive store for project ID
 const projectStore = useProjectStore();
 const projectId = computed(() => projectStore.project_id);
 
@@ -99,7 +78,7 @@ const projectId = computed(() => projectStore.project_id);
 watchEffect(() => {
   const id = projectId.value;
   if (id) {
-    fetchTasks(id, selectedStatus.value);
+    allTasksStore.fetchTasks(id, selectedStatus.value); // Fetch tasks from the store
   }
 });
 
@@ -107,7 +86,7 @@ const applyStatusFilter = (status: string) => {
   selectedStatus.value = status;
   const id = projectId.value;
   if (id) {
-    fetchTasks(id, status); // Fetch tasks with the selected status filter
+    allTasksStore.fetchTasks(id, status); // Fetch tasks with the selected status filter
   }
 };
 
@@ -250,31 +229,37 @@ const openDialog = () => {
   
   // Function to handle form submission for editing the task
   const handleSubmit = async () => {
-  if (!selectedTaskId.value) {
-    console.error('No task ID selected.');
+  const selectedTask = taskStore.task;
+  if (!selectedTask) {
+    console.error('No task selected');
     return;
   }
 
-  // Check if the form is empty (e.g., assignee_id is not selected)
   if (!formData.assignee_id) {
-    console.log('No assignee selected, closing the modal.');
-    closeDialog(); // Close the modal if no assignee is selected
+    console.log('No assignee selected, closing the modal');
+    closeDialog();
     return;
   }
 
   try {
-    const response = await getAPI.put(
-      `/tasks/assign/${selectedTaskId.value}/`,
-      formData
-    );
+    const response = await getAPI.put(`/tasks/assign/${selectedTask.task_id}/`, formData);
     console.log('Task updated:', response.data);
 
-    // Update the task in the local store or state
-    if (taskStore.task && selectedTaskId.value === taskStore.task.task_id) {
-      Object.assign(taskStore.task, response.data); // Merge updated data into the store
-    }
+    toast({
+  title: 'Member Assigned',
+  description: 'The member has been assigned to the task successfully.',
+});
 
-    closeDialog(); // Close the modal after successful update
+// Ensure any previously lingering toasts are cleared after 3 seconds
+setTimeout(() => {
+  // This can trigger any toast cleanup if needed
+}, 3000);
+
+    // Update the task in the store
+    taskStore.task = response.data;
+    allTasksStore.updateTask(response.data); // Update the task list with the new data
+
+    closeDialog();
   } catch (error) {
     console.error('Error updating task:', error);
   }
@@ -310,7 +295,7 @@ const openDialog = () => {
             <DropdownMenuLabel>Filter by</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem @click="applyStatusFilter('')">All</DropdownMenuItem>
-            <DropdownMenuItem @click="applyStatusFilter('Not Started')">Not Started</DropdownMenuItem>
+            <DropdownMenuItem @click="applyStatusFilter('Not started')">Not Started</DropdownMenuItem>
             <DropdownMenuItem @click="applyStatusFilter('In Progress')">In Progress</DropdownMenuItem>
             <DropdownMenuItem @click="applyStatusFilter('Completed')">Completed</DropdownMenuItem>
             <DropdownMenuItem @click="applyStatusFilter('Cancelled')">Cancelled</DropdownMenuItem>
@@ -336,8 +321,8 @@ const openDialog = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              <template v-if="allTasks.length">
-              <TableRow v-for="task in allTasks" :key="task.task_id">
+              <template v-if="allTasksStore.allTasks.length">
+              <TableRow v-for="task in allTasksStore.allTasks" :key="task.id">
                   <TableCell>{{task.task_code}}</TableCell>
                   <TableCell>{{ task.features }}</TableCell>
                   <TableCell>
@@ -420,44 +405,22 @@ const openDialog = () => {
     <!-- Assign Member input -->
     <div class="grid gap-2 md:col-span-2">
       <Label for="assignee_id">Assign Member</Label>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            class="w-full justify-between"
-            aria-label="Select Member"
+      <Select v-model="formData.assignee_id" aria-label="Select Member">
+        <SelectTrigger>
+          <SelectValue 
+            :placeholder="selectedMember?.label || 'Select Member'" 
+          />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem 
+            v-for="(member, index) in members" 
+            :key="member.value" 
+            :value="member.value"
           >
-            {{ selectedMember?.label || 'Select Member' }}
-            <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent class="w-full p-0">
-          <Command>
-            <CommandInput placeholder="Search member..." />
-            <CommandEmpty>No member found.</CommandEmpty>
-            <CommandList>
-              <CommandGroup>
-                <CommandItem
-                  v-for="(member, index) in members"
-                  :key="member.value"
-                  @click="selectMember(member)"
-                  class="cursor-pointer"
-                >
-                  <Check
-                    v-if="member.value === selectedMember?.value"
-                    class="mr-2 h-4 w-4"
-                  />
-                  {{ member.label }}
-                </CommandItem>
-                <div
-                  v-if="index < members.length - 1"
-                  class="border-t border-gray-200 my-1"
-                ></div>
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
+            {{ member.label }}
+          </SelectItem>
+        </SelectContent>
+      </Select>
     </div>
   </div>
   <DialogFooter>
@@ -467,6 +430,7 @@ const openDialog = () => {
     </Button>
   </DialogFooter>
 </form>
+
 
 
         </DialogContent>

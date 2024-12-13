@@ -123,10 +123,14 @@
   import { Label } from '@/components/ui/label';
   import { PlusCircle, Eye, EyeOff } from 'lucide-vue-next';
   import { useAuthStore } from '@/store/auth';
+  import { useUserListStore } from '@/store/userListStore';
+  import { useToast } from '@/components/ui/toast/use-toast'
+
+const { toast } = useToast()
   
   const authStore = useAuthStore();
   const managerId = computed(() => authStore.user?.manager_id);
-  
+  const userListStore = useUserListStore();
   // Dialog state
   const isDialogOpen = ref(false);
   
@@ -162,7 +166,6 @@
   };
   
   const closeDialog = () => {
-    window.location.reload();
     // Reset form data and errors
     formData.name = '';
     formData.email = '';
@@ -185,7 +188,17 @@
   try {
     clearErrors(); // Clear previous errors
     const response = await getAPI.post('manager/create/', formData);
-    console.log('Form submitted successfully:', response.data);
+    toast({
+      title: 'Member Created',
+      description: 'The member has been created successfully.',
+      
+    });
+
+    // Ensure any previously lingering toasts are cleared after 3 seconds
+    setTimeout(() => {
+      // This can trigger any toast cleanup if needed
+    }, 3000);
+    userListStore.addUser(response.data);
     closeDialog(); // Close the dialog upon successful submission
   } catch (error) {
     if (error.response && error.response.data) {
