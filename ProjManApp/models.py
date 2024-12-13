@@ -98,6 +98,7 @@ class Project(models.Model):
         on_delete=models.CASCADE,  # Delete projects when the user is deleted
         related_name='projects',  # Allows reverse access: user.projects.all()
     )
+    archived = models.BooleanField(default=False)
 
     def __str__(self):
         return self.project_name
