@@ -34,6 +34,7 @@
   v-model="projectName"
   placeholder="Enter project name"
   class="col-span-3 text-base p-3"
+  required
 />
           </div>
           <div class="grid grid-cols-4 items-center gap-6">
@@ -49,6 +50,7 @@
           </div>
         </div>
         <DialogFooter>
+
           <Button type="button" @click="saveProject" class="w-full sm:w-auto">
   <PlusCircle class="mr-2 h-4 w-4" />
   Save Project
@@ -76,6 +78,12 @@ import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-vue-next';
 import { getAPI } from '@/axios';
 import { useAuthStore } from '@/store/auth';
+import { useProjectListStore } from '@/store/projectListStore';
+import { useToast } from '@/components/ui/toast/use-toast'
+
+const { toast } = useToast()
+
+const projectListStore = useProjectListStore();
 
 const projectName = ref('');
 const projectDescription = ref('');
@@ -84,6 +92,7 @@ const authStore = useAuthStore();
 
 // Use a computed property to get the user ID from the store
 const userId = computed(() => authStore.user?.id);
+const managerId = computed(() => authStore.user?.manager_id);
 
 const saveProject = async () => {
   try {
@@ -96,18 +105,37 @@ const saveProject = async () => {
       project_name: projectName.value,
       project_description: projectDescription.value,
       user: userId.value,
+      manager_id: managerId.value,
     });
     console.log('Project Created:', response.data);
 
     // Close the dialog
     closeDialog();
+    projectListStore.addProject(response.data);
 
-    // Reload the window
-    window.location.reload();
+    // Set the newly created project as the selected project
+    projectListStore.setSelectedProject(response.data);
+
+    // Clear the input fields
+    projectName.value = '';
+    projectDescription.value = '';
+
+    // Display toast notification for successful creation
+    toast({
+      title: 'Project Created',
+      description: 'Your project has been created successfully.',
+    });
+
+    // Ensure any previously lingering toasts are cleared after 3 seconds
+    setTimeout(() => {
+      // This can trigger any toast cleanup if needed
+    }, 3000);
   } catch (error) {
     console.error('Error creating project:', error);
   }
 };
+
+
 
 
 

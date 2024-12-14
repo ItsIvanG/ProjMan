@@ -22,62 +22,45 @@ import {
   ListFilter,
   MoreHorizontal,
 } from 'lucide-vue-next'
-import { computed, ref } from "vue";
+import { computed, ref, watchEffect } from "vue";
 import  Usermodal  from '@/components/reusable/modals/usermodal.vue'
 import  Useredit  from '@/components/reusable/modals/editusermodal.vue'
+import { getAPI } from '@/axios';
+import { useAuthStore } from '@/store/auth'
+import { useUserInfoStore } from '@/store/userStore';
+import { useUserListStore } from '@/store/userListStore';
 
-// Sample users data
-const allUsers = ref([
-  {
-    email: "kean@gmail.com",
-    name: "Kean Lucas",
-    project: " project",
-    role: "Member",
-    status: "Active",
-  },
-  {
-    email: "kean@gmail.com",
-    name: "Kean Lucas",
-    project: " project",
-    role: "Member",
-    status: "Active",
-  },
-  {
-    email: "kean@gmail.com",
-    name: "Kean Lucas",
-    project: " project",
-    role: "Member",
-    status: "Deactivated",
-  },
-  {
-    email: "kean@gmail.com",
-    name: "Kean Lucas",
-    project: " project",
-    role: "Member",
-    status: "Active",
-  },
-  {
-    email: "admin@example.com",
-    name: "Admin User",
-    project: "Admin Project",
-    role: "Manager",
-    status: "Active",
-  },
-  {
-    email: "cheska.lucas@example.com",
-    name: "Cheska Lucas",
-    project: "Marketing",
-    role: "Member",
-    status: "Active",
-  },
-  {
-    email: "john.doe@example.com",
-    name: "John Doe",
-    project: "Development",
-    role: "Manager",
-    status: "Active",
-  },
-]);
+const userStore = useUserInfoStore();
+
+
+const userRole = computed(() => authStore.user?.role);
+
+const authStore = useAuthStore();
+const managerId  = computed(() => authStore.user?.manager_id);
+const userListStore = useUserListStore();
+
+const filterStatus = ref<string>('All'); // Track selected filter status
+
+// Fetch users from the API
+const fetchUsers = async (managerId: number, status: string) => {
+  try {
+    let url = `/manager/${managerId}/`;
+    if (status !== 'All') {
+      url += `?is_active=${status === 'Active' ? 1 : 0}`;
+    }
+    const response = await getAPI.get(url);
+    userListStore.setUsers(response.data); // Update the store with fetched users
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
+
+// Watch for changes in filterStatus and fetch users accordingly
+watchEffect(() => {
+  if (managerId.value) {
+    fetchUsers(managerId.value, filterStatus.value);
+  }
+});
 
 const getStatusVariant = (status: string) => {
   switch (status.toLowerCase()) {
@@ -87,27 +70,14 @@ const getStatusVariant = (status: string) => {
       return 'member';
     case 'active':
       return 'active';
-    case 'deactivated':
-      return 'destructive';
+    case 'archived':
+      return 'archived';
     default:
       return 'default';
   }
 };
 
-// Pagination settings
-const currentPage = ref(1);
-const itemsPerPage = 5;
 
-// Paginated users
-const paginatedUsers = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  return allUsers.value.slice(start, start + itemsPerPage);
-});
-
-// Total number of pages
-const totalPages = computed(() =>
-  Math.ceil(allUsers.value.length / itemsPerPage)
-);
 
 </script>
 
@@ -115,7 +85,9 @@ const totalPages = computed(() =>
   <Tabs default-value="all">
     <div class="flex items-center">
       <CardHeader>
-                <CardTitle>Member Management </CardTitle>
+        <CardTitle v-if="userRole !== 'Member'">Member Management</CardTitle>
+<CardTitle v-if="userRole === 'Member'">Project Member</CardTitle>
+
                 <CardDescription>
                   List of manager and member.
                 </CardDescription>
@@ -134,11 +106,12 @@ const totalPages = computed(() =>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Filter by</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Manager</DropdownMenuItem>
-            <DropdownMenuItem>Member</DropdownMenuItem>
+            <DropdownMenuItem @click="filterStatus = 'All'">All</DropdownMenuItem> 
+            <DropdownMenuItem @click="filterStatus = 'Active'">Active</DropdownMenuItem>
+            <DropdownMenuItem @click="filterStatus = 'Archived'">Archived</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Usermodal />
+        <Usermodal v-if="userRole !== 'Member'"/>
       </div>
     </div>
     
@@ -149,36 +122,39 @@ const totalPages = computed(() =>
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
+                <TableHead>Username</TableHead>
                 <TableHead class="hidden md:table-cell">Role</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Project</TableHead>
                 <TableHead class="hidden md:table-cell">Status</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead v-if="userRole !== 'Member'">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              <template v-if="paginatedUsers.length">
-                <TableRow v-for="(user, index) in paginatedUsers" :key="index">
+              <template v-if="userListStore.users.length">
+                <TableRow v-for="(user, index) in userListStore.users" :key="index">
                   <TableCell>{{ user.name }}</TableCell>
+                  <TableCell>{{ user.username }}</TableCell>
                   <TableCell>
                     <Badge :variant="getStatusVariant( user.role )">
                       {{ user.role }}
                     </Badge>
                   </TableCell>
                   <TableCell>{{ user.email }}</TableCell>
-                  <TableCell>{{ user.project }}</TableCell>
                   <TableCell>
-                    <Badge :variant="getStatusVariant( user.status )">
-                      {{ user.status }}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
+  <Badge :variant="getStatusVariant(user.is_active ? 'Active' : 'Archived')">
+    {{ user.is_active ? 'Active' : 'Archived' }}
+  </Badge>
+</TableCell>
+
+
+                  <TableCell v-if="userRole !== 'Member'">
                     <DropdownMenu>
                       <DropdownMenuTrigger as-child>
                         <Button
                           aria-haspopup="true"
                           size="icon"
                           variant="ghost"
+                          @click="userStore.setTask(user)"
                         >
                           <MoreHorizontal class="h-4 w-4" />
                           <span class="sr-only">Toggle menu</span>
@@ -201,7 +177,7 @@ const totalPages = computed(() =>
             </TableBody>
           </Table>
         </CardContent>
-        <CardFooter class="flex justify-between items-center">
+        <!-- <CardFooter class="flex justify-between items-center">
           <div class="text-xs text-muted-foreground">
             Showing <strong>{{ (currentPage - 1) * itemsPerPage + 1 }}</strong> to
             <strong>{{ Math.min(currentPage * itemsPerPage, allUsers.length) }}</strong>
@@ -212,7 +188,7 @@ const totalPages = computed(() =>
             :total-pages="totalPages"
             @page-change="currentPage = $event"
           />
-        </CardFooter>
+        </CardFooter> -->
       </Card>
     </TabsContent>
   </Tabs>

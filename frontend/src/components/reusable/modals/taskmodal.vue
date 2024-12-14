@@ -113,16 +113,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { PlusCircle } from 'lucide-vue-next';
 import { getAPI } from '@/axios';
 import { useProjectStore } from '@/store/project';
+import { useAllTasksStore } from '@/store/allTasksStore'; // Import the new allTasksStore
+import { useToast } from '@/components/ui/toast/use-toast'
+
+const { toast } = useToast()
 
 const projectStore = useProjectStore();
+const allTasksStore = useAllTasksStore(); // Use allTasksStore
 const projectId = computed(() => projectStore.project_id);
+
 // Form data for the task
 const formData = reactive({
   features: '',
   sprint: '',
   status: '',
   priority: '',
-  deadline: '', 
+  deadline: '',
 });
 
 // Dialog state
@@ -149,23 +155,32 @@ const handleSubmit = async () => {
       project: projectId.value,
       priority: formData.priority,
       deadline: formData.deadline,
-
     });
 
-    console.log('Task created:', response.data);
+    toast({
+      title: 'Task Created',
+      description: 'Your task has been created successfully.',
+    });
 
+    // Ensure any previously lingering toasts are cleared after 3 seconds
+    setTimeout(() => {
+      // This can trigger any toast cleanup if needed
+    }, 3000);
 
+    // Use the store's addTask method to add the new task to the task list
+    allTasksStore.addTask(response.data);
+
+    // Close the dialog and reset the form data
     closeDialog();
- window.location.reload();
-    // Optionally, reset form data
     formData.features = '';
     formData.sprint = '';
     formData.status = '';
     formData.priority = '';
-    formData.deadline = ''; 
+    formData.deadline = '';
   } catch (error) {
     console.error('Error creating task:', error);
   }
 };
 </script>
+
 

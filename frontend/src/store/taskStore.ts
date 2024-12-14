@@ -1,4 +1,3 @@
-// src/store/task.ts
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {defineComponent} from "vue";
+import {computed, defineComponent} from "vue";
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu, DropdownMenuContent,
@@ -9,6 +9,31 @@ import {
 } from '@/components/ui/dropdown-menu'
 import {CardDescription, CardFooter, CardHeader, CardTitle} from '@/components/ui/card'
 import {PlusCircle} from "lucide-vue-next";
+import {getAPI} from "@/axios.ts";
+import {useAuthStore} from "@/store/auth.ts";
+
+const authStore = useAuthStore();
+
+const userId = computed(() => authStore.user?.manager_id);
+
+const createReport = async () => {
+   console.log('Trying report');
+  try {
+    if (userId.value) {
+      const response = await getAPI.post(`/reports/create_report/`, {
+    user: userId.value,
+    // If you have more fields to update, include them here.
+    // Example: project_name: projectName.value,
+});
+      console.log('Report Created:', response.data);
+      return;
+    }
+
+  } catch (error) {
+    console.error('Error creating report:', error);
+  }
+};
+
 
 </script>
 
@@ -23,7 +48,7 @@ import {PlusCircle} from "lucide-vue-next";
 
 
       <div class="ml-auto flex items-center gap-2">
-          <Button variant="default" size="sm" class="h-7 gap-1">
+          <Button variant="default" size="sm" class="h-7 gap-1" @click="createReport">
               <PlusCircle>
               </PlusCircle>
               <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
@@ -52,7 +77,6 @@ import {PlusCircle} from "lucide-vue-next";
 
 
       </div>
+
     </div>
 </template>
-
-

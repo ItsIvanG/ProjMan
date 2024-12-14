@@ -44,37 +44,25 @@
           </DropdownMenuContent>
         </DropdownMenu>
         <!-- Notifications Dropdown -->
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+<!--        <DropdownMenu>-->
+<!--          <DropdownMenuTrigger asChild>-->
+<!--            <Button variant="ghost" size="icon">-->
+
+         <!-- Bell Icon and Notifications -->
+          <div class="relative">
+            <Button variant="ghost" size="icon" @click="toggleNotifications">
               <Bell class="h-5 w-5" />
               <span class="sr-only">Notifications</span>
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" class="w-[280px] md:w-[300px]">
-            <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <ScrollArea class="h-[300px]">
-              <div class="space-y-3 p-4">
-                <div v-for="i in 5" :key="i" class="flex items-start gap-3 rounded-lg p-2 hover:bg-accent">
-                  <Avatar>
-                    <AvatarImage :src="`https://i.pravatar.cc/40?img=${i}`" />
-                    <AvatarFallback>U{{ i }}</AvatarFallback>
-                  </Avatar>
-                  <div class="space-y-1">
-                    <p class="text-sm font-medium">New message from User {{ i }}</p>
-                    <p class="text-sm text-muted-foreground">Hey, what's up? All set for the presentation?</p>
-                    <p class="text-xs text-muted-foreground">2 hours ago</p>
-                  </div>
-                </div>
-              </div>
-            </ScrollArea>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem class="cursor-pointer justify-center">
-              View all notifications
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+
+            <!-- Notifications Modal -->
+            <div
+              v-if="isNotificationOpen"
+              class="absolute right-0 mt-2 w-[320px] max-h-[400px] overflow-hidden rounded-lg"
+            >
+              <NotificationsModal :isVisible="isNotificationOpen" @closePanel="toggleNotifications" />
+            </div>
+          </div>
 
         <!-- User Account Dropdown -->
         <DropdownMenu>
@@ -108,23 +96,29 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { 
-  DropdownMenu, 
-  DropdownMenuTrigger, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator 
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Bell, LayoutGrid, Menu, Search, ShoppingCart, Users, Inbox, Settings, CreditCard, HelpCircle } from 'lucide-vue-next'
 import { Icon } from '@iconify/vue'
 import { useColorMode } from '@vueuse/core'
 
+
+;
+import NotificationsModal from '@/components/ui/layout/notif.vue'; // Ensure the path is correct
+
+// Router and Store
+const router = useRouter();
+const authStore = useAuthStore();
 // Pass { disableTransition: false } to enable transitions
 const mode = useColorMode()
-const router = useRouter()
-const authStore = useAuthStore()
+
 
 const user = ref(null);
 
@@ -142,17 +136,17 @@ const logout = async () => {
   }
 };
 
-const apps = [
-  { name: 'Sales', icon: ShoppingCart },
-  { name: 'Users', icon: Users },
-  { name: 'Inbox', icon: Inbox },
-  { name: 'Settings', icon: Settings },
-  { name: 'Billing', icon: CreditCard },
-  { name: 'Help', icon: HelpCircle },
-]
+// State Management
+const isNotificationOpen = ref(false);
+
+// Methods
+const toggleNotifications = () => {
+  isNotificationOpen.value = !isNotificationOpen.value;
+};
 
 const navigateTo = (path) => {
-  router.push(path)
-}
+  router.push(path);
+};
 
 </script>
+

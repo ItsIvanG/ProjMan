@@ -1,3 +1,5 @@
+from datetime import timezone
+
 from django.db import models
 from django.contrib.auth.models import UserManager, AbstractUser, PermissionsMixin
 from django.conf import settings
@@ -90,6 +92,7 @@ class User(AbstractUser, PermissionsMixin):
 
 class Project(models.Model):
     project_id = models.AutoField(primary_key=True)  # Auto-increment ID
+    manager_id = models.IntegerField(null=True, blank=True)  # Manager's ID as an integer (optional)
     project_name = models.CharField(max_length=255, blank=False)  # Required
     project_description = models.TextField(blank=True, null=True)  # Nullable
     user = models.ForeignKey(
@@ -97,6 +100,7 @@ class Project(models.Model):
         on_delete=models.CASCADE,  # Delete projects when the user is deleted
         related_name='projects',  # Allows reverse access: user.projects.all()
     )
+    archived = models.BooleanField(default=False)
 
     def __str__(self):
         return self.project_name
@@ -135,3 +139,4 @@ class Task(models.Model):
 class Report(models.Model):
     report_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    report_datetime = models.DateTimeField(auto_now_add=True, null=True, blank=True)

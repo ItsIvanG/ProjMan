@@ -1,4 +1,4 @@
-<script setup>
+<script setup> 
 import { useAuthStore } from '../store/auth'
 import {CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {Separator} from "@/components/ui/separator/";
@@ -9,85 +9,86 @@ import {useColorMode} from "@vueuse/core";
 import {useRouter} from "vue-router";
 import {Button} from "@/components/ui/button/";
 import {Pencil,Trash} from "lucide-vue-next";
+import ProjectModal from '@/components/reusable/modals/editprojectmodal.vue';
+import Archiveprojectmodal from "@/components/reusable/modals/archiveprojectmodal.vue";
+import router from "@/router";
+import  popupproject  from '@/components/reusable/modals/popupproject.vue'
+
 
 const projectStore = useProjectStore();
-const selectedProject = ref(null);
 
-const selectProject = (project) => {
-  selectedProject.value = project; // Store the full project object
-  // projectStore.setProject(project); // Update the global project store
-  console.log('Selected project:', project);
-};
 // Watch the `project_id` for changes
 
-const mode = useColorMode()
-const router = useRouter()
+
 const authStore = useAuthStore()
-const projects = ref([]);
+
+const userRole = computed(() => authStore.user?.role);
+
 const user = ref(null);
 //
 
-onMounted(async () => {
-  await authStore.fetchUser();
-  user.value = authStore.user;
-});
-watch(
-  () => projectStore.project_id,
-  (newValue, oldValue) => {
-    console.log(`Project ID changed from ${oldValue} to ${newValue}`);
-    if (!newValue) {
-      console.log('Project ID was cleared.');
-    }
-  }
-);
+// watch(
+//   () => projectStore.project_id,
+//   (newValue, oldValue) => {
+//     console.log(`Project ID changed from ${oldValue} to ${newValue}`);
+//     if (!newValue) {
+//       console.log('Project ID was cleared.');
+//     }
+//   }
+// );
 
+if(!authStore.isAuthenticated){
+  console.log("not logged in! going to login");
+  router.push("/login");
+}
 
 </script>
 
 
 <template>
-  <div class="p-6">
+  <popupproject v-if="userRole === 'Manager' && !projectStore.project_id" />
+
+  <div >
      <div class="flex items-center">
-      <CardHeader>
-        <CardTitle>{{ projectStore?.project_name || 'Select Project' }} Dashboard </CardTitle>
+      <CardHeader v-if="projectStore?.project_name">
+        <CardTitle>{{ projectStore?.project_name }} Dashboard</CardTitle>
         <CardDescription>
-          View and generate reports for your project.
+          View overall project progress and edit project settings.
         </CardDescription>
       </CardHeader>
+        <CardHeader v-else>
+          <CardTitle>No Project Available</CardTitle>
+        <CardDescription>
+          Add a new project to get started.
+        </CardDescription>
+       
+
+      </CardHeader>
        <div class="ml-auto flex items-center gap-2">
-    <Button variant="default" size="sm" class="h-7 gap-1">
-              <Pencil>
-              </Pencil>
-              <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                Edit Project
-              </span>
-    </Button>
-     <Button variant="destructive" size="sm" class="h-7 gap-1">
-              <Trash>
-              </Trash>
-              <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                Delete Project
-              </span>
-    </Button>
+
+        <ProjectModal v-if="userRole !== 'Member' && (userRole !== 'Manager' || projectStore.project_id)" />
+<Archiveprojectmodal v-if="userRole !== 'Member' && (userRole !== 'Manager' || projectStore.project_id)" />
+
+
     </div>
      </div>
 
     <Separator/>
 
     <!-- Authenticated User Details -->
-    <div v-if="authStore.isAuthenticated" class="max-w-md mx-auto border p-4 rounded">
-      <h2 class="mb-4 text-lg font-medium">User Information</h2>
-      <ul class="space-y-2">
-        <!-- Loop Through All User Data -->
-        <li v-for="(value, key) in authStore.user" :key="key" class="flex justify-between">
-          <span class="capitalize">{{ key }}</span>
-          <span>{{ value }}</span>
-        </li>
-      </ul>
-    </div>
+<!--    <div  class="max-w-md mx-auto border p-4 rounded">-->
+<!--      <h2 class="mb-4 text-lg font-medium">User Information</h2>-->
+<!--      <ul class="space-y-2">-->
+<!--        &lt;!&ndash; Loop Through All User Data &ndash;&gt;-->
+<!--        <li v-for="(value, key) in authStore.user" :key="key" class="flex justify-between">-->
+<!--          <span class="capitalize">{{ key }}</span>-->
+<!--          <span>{{ value }}</span>-->
+<!--        </li>-->
+<!--      </ul>-->
+<!--    </div>-->
 
     <!-- Guest View -->
-    <p v-else>
+    <p v-if="!authStore.isAuthenticated">
       You are not logged in. 
       <router-link to="/login">Login</router-link>
     </p>

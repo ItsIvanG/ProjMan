@@ -46,50 +46,48 @@
 <!-- Input Form with Consistent Spacing -->
 <div class="space-y-2">
   <!-- First Name and Last Name Inputs Side by Side -->
-  <div class="flex justify-between gap-6">
     <!-- First Name Input -->
-    <div class="w-1/2">
+
       <div class="relative">
-        <div class="flex items-center justify-between mb-2">
-          <label for="firstname" class="block font-bold">First Name</label>
+        <div class="flex items-center justify-between mb-2 ">
+          <label for="firstname" class="block font-bold">Name</label>
           <div v-if="showErrors.firstName" class="text-red-500 text-sm">This field is required</div>
         </div>
         <div class="relative">
-          <input
+          <Input
             v-model="formData.firstName"
             id="firstname"
             type="text"
-            placeholder="Enter First Name"
-            class="border rounded-md w-full h-10 px-2 focus:outline-none focus:ring-2"
+            placeholder="Enter Name"
+            class="border rounded-md w-full h-10 px-2 f"
             required
           />
           <span class="absolute right-3 top-1/2 transform -translate-y-1/2">
             <AkPerson class="cursor-pointer" />
           </span>
         </div>
-      </div>
-    </div>
+
 
     <!-- Last Name Input -->
     <div class="w-1/2">
       <div class="relative">
-        <div class="flex items-center justify-between mb-2">
-          <label for="lastname" class="block font-bold">Last Name</label>
-          <div v-if="showErrors.lastName" class="text-red-500 text-sm">This field is required</div>
-        </div>
-        <div class="relative">
-          <input
-            v-model="formData.lastName"
-            id="lastname"
-            type="text"
-            placeholder="Enter Last Name"
-            class="border rounded-md w-full h-10 px-2 focus:outline-none focus:ring-2"
-            required
-          />
-          <span class="absolute right-3 top-1/2 transform -translate-y-1/2">
-            <AkPerson class="cursor-pointer" />
-          </span>
-        </div>
+<!--        <div class="flex items-center justify-between mb-2">-->
+<!--          <label for="lastname" class="block font-bold">Last Name</label>-->
+<!--          <div v-if="showErrors.lastName" class="text-red-500 text-sm">This field is required</div>-->
+<!--        </div>-->
+<!--        <div class="relative">-->
+<!--          <input-->
+<!--            v-model="formData.lastName"-->
+<!--            id="lastname"-->
+<!--            type="text"-->
+<!--            placeholder="Enter Last Name"-->
+<!--            class="border rounded-md w-full h-10 px-2 focus:outline-none focus:ring-2"-->
+<!--            required-->
+<!--          />-->
+<!--          <span class="absolute right-3 top-1/2 transform -translate-y-1/2">-->
+<!--            <AkPerson class="cursor-pointer" />-->
+<!--          </span>-->
+<!--        </div>-->
       </div>
     </div>
   </div>
@@ -101,7 +99,7 @@
       <div v-if="showErrors.email" class="text-red-500 text-sm">This field is required</div>
     </div>
     <div class="relative">
-      <input
+      <Input
         v-model="formData.email"
         id="email"
         type="email"
@@ -123,7 +121,7 @@
       <div v-if="showErrors.username" class="text-red-500 text-sm">This field is required</div>
     </div>
     <div class="relative">
-      <input
+      <Input
         v-model="formData.username"
         id="username"
         type="text"
@@ -144,7 +142,7 @@
       <span v-if="showErrors.password" class="text-red-500 text-sm">This field is required</span>
     </div>
     <div class="relative">
-      <input
+      <Input
         v-model="formData.password"
         id="password"
         :type="showPassword ? 'text' : 'password'"
@@ -161,7 +159,7 @@
       </span>
     </div>
     <div v-if="passwordInvalid" class="text-red-500 text-sm">
-      Password must be more than 8 characters, with at least one special character, one uppercase letter, and one number.
+      Password must be more than 8 characters, one uppercase letter, and one number.
     </div>
   </div>
 
@@ -172,12 +170,12 @@
       <div v-if="showErrors.confirmPassword" class="text-red-500 text-sm">This field is required</div>
     </div>
     <div class="relative">
-      <input
+      <Input
         v-model="formData.confirmPassword"
         id="confirmPassword"
         :type="showConfirmPassword ? 'text' : 'password'"
         placeholder="Re-type Password"
-        class="border rounded-md w-full h-10 px-2 focus:outline-none focus:ring-2"
+        class="border rounded-md w-full h-10 px-2"
         required
       />
       <span
@@ -198,7 +196,7 @@
       <div v-if="showErrors.birthday" class="text-red-500 text-sm">This field is required</div>
     </div>
     <div class="relative">
-      <input
+      <Input
         v-model="formData.birthday"
         id="birthday"
         type="date"
@@ -388,16 +386,22 @@ import { AkEyeClosed, AkEyeOpen } from "@kalimahapps/vue-icons";
 import { IoOutlineMail } from '@kalimahapps/vue-icons';
 import { AkPerson } from '@kalimahapps/vue-icons';
 import { CiCalendarDate } from '@kalimahapps/vue-icons';
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+
 import VueCal from 'vue-cal';
+import { getCSRFToken } from "@/store/auth";
 
 export default {
   components: {
+    Textarea,
     AkEyeClosed,
     AkEyeOpen,
     IoOutlineMail,
     AkPerson,
     CiCalendarDate,
     VueCal,
+    Input
   },
   props: {
     text: {
@@ -412,12 +416,10 @@ export default {
 
   data() {
     return {
-      isDarkMode: true,
       currentStep: 1,
       steps: ["Account Setup", "Terms and Conditions", "Upload Image"],
       formData: {
         firstName: '',
-        lastName: '',
         email: "",
         username: "",
         password: "",
@@ -478,11 +480,6 @@ export default {
     "formData.firstName"(value) {
       if (this.isFieldTouched.firstName) {
         this.showErrors.firstName = !value || value.trim().length === 0;
-      }
-    },
-    "formData.lastName"(value) {
-      if (this.isFieldTouched.lastName) {
-        this.showErrors.lastName = !value || value.trim().length === 0;
       }
     },
     "formData.email"(value) {
@@ -553,9 +550,8 @@ export default {
       }
     },
     validatePassword(password) {
-      const regex =
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
-      return regex.test(password);
+const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+return regex.test(password);
     },
     handleFileUpload(event) {
       const file = event.target.files[0];
@@ -581,7 +577,6 @@ export default {
       if (this.currentStep === 1) {
         [
           "firstName",
-          "lastName",
           "email",
           "username",
           "password",
@@ -613,44 +608,45 @@ export default {
 
     async register() {
       try {
-        // Validate all fields before making the request
-        let valid = true;
-        Object.keys(this.formData).forEach((field) => {
-          // Skip profilePicture since it's handled differently
-          if (field !== 'profilePicture') {
-            const fieldValid = this.validateField(field);
-            if (!fieldValid || this.showErrors[field]) valid = false;
-          }
-        });
-
-        // Also check if profilePicture is provided if it's required
-        if (!this.formData.profilePicture) {
-          this.showErrors.profilePicture = true;
-          valid = false;
-        }
-
-        if (!valid) {
-          alert("Please fill in all required fields correctly.");
-          return;
-        }
-
+        // // Validate all fields before making the request
+        // let valid = true;
+        // Object.keys(this.formData).forEach((field) => {
+        //   // Skip profilePicture since it's handled differently
+        //   if (field !== 'profilePicture') {
+        //     const fieldValid = this.validateField(field);
+        //     if (!fieldValid || this.showErrors[field]) valid = false;
+        //   }
+        // });
+        //
+        // // Also check if profilePicture is provided if it's required
+        // if (!this.formData.profilePicture) {
+        //   this.showErrors.profilePicture = true;
+        //   valid = false;
+        // }
+        //
+        // if (!valid) {
+        //   alert("Please fill in all required fields correctly.");
+        //   return;
+        // }
+    console.log("trying register with csrf: "+getCSRFToken());
     // Make the API request
-    const response = await fetch("http://localhost:8000/api/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+     const response = await fetch("http://localhost:8000/api/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCSRFToken(),
+          },
       body: JSON.stringify({
-        firstName: this.formData.firstName,
-        lastName: this.formData.lastName,
+        name: this.formData.firstName,
         email: this.formData.email,
         username: this.formData.username,
         password: this.formData.password,
-        birthday: this.formData.birthday,
-        gender: this.formData.gender,
-        profilePicture: this.formData.profilePicture,
-      }),
-    });
+        // birthday: this.formData.birthday,
+        // gender: this.formData.gender,
+        // profilePicture: this.formData.profilePicture,
+       }),
+          credentials: "include",
+        });
 
     if (!response.ok) {
       const errorMessage = await response.text();
@@ -661,8 +657,8 @@ export default {
 
     const data = await response.json();
     if (data.success) {
-      alert("Registration successful! Redirecting to dashboard...");
-      this.$router.push("/dashboard"); // Redirect to dashboard
+      alert("Registration successful! Redirecting to login...");
+      this.$router.push("/login"); // Redirect to dashboard
     } else {
       alert("Registration failed: " + (data.error || "Unknown error"));
     }

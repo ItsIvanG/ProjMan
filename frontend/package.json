@@ -9,8 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fortawesome/vue-fontawesome": "^3.0.8",
     "@heroicons/vue": "^2.2.0",
     "@iconify/vue": "^4.2.0",
+    "@kalimahapps/vue-icons": "^1.7.1",
     "@vee-validate/zod": "^4.14.7",
     "@vueuse/core": "^12.0.0",
     "axios": "^1.7.9",
@@ -25,6 +27,7 @@
     "tailwindcss-animate": "^1.0.7",
     "vee-validate": "^4.14.7",
     "vue": "^3.5.13",
+    "vue-cal": "^4.10.0",
     "vue-router": "^4.5.0",
     "zod": "^3.23.8"
   },
