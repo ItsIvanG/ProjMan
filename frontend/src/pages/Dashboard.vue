@@ -228,7 +228,7 @@ generateDays();
 <!--Gantt Chart-->
 
     <Card class="md:col-span-4 col-span-1">
-      <CardHeader>
+       <CardHeader>
         <CardTitle>Gantt Chart</CardTitle>
         <CardDescription>Manage your project timelines visually.</CardDescription>
       </CardHeader>
@@ -241,7 +241,7 @@ generateDays();
               id="start-date"
               type="date"
               v-model="startDate"
-              class="border rounded  text-sm w-full"
+              class="border rounded px-3 py-2 text-sm w-full"
             />
           </div>
           <div>
@@ -250,24 +250,22 @@ generateDays();
               id="end-date"
               type="date"
               v-model="endDate"
-              class="border rounded text-sm w-full"
+              class="border rounded px-3 py-2 text-sm w-full"
             />
           </div>
-          <div class="block text-sm mb-1">
-             <Button
+          <Button
             @click="generateDays"
-            class="rounded text-sm"
+            class=" px-4 py-2 mb-1 rounded text-sm"
           >
             Update Chart
           </Button>
-          </div>
-
         </div>
 
+        <!-- Gantt Chart -->
         <div class="overflow-x-auto">
           <div class="min-w-[800px]">
             <!-- Chart Header -->
-            <div class="flex items-center bg-primary-foreground text-sm font-medium">
+            <div class="flex items-center bg-secondary text-sm font-medium">
               <div class="w-40 px-4 py-2 border-r">Task</div>
               <div class="flex-1 grid" :style="{ gridTemplateColumns: `repeat(${days.length}, 1fr)` }">
                 <div
@@ -282,20 +280,20 @@ generateDays();
             <!-- Chart Rows -->
             <div v-for="(task, index) in tasks" :key="index" class="flex items-center text-sm">
               <!-- Task Name -->
-              <div class="w-40 px-4 py-2 border-r ">
+              <div class="w-40 px-4 py-2 border-r bg-background z-10">
                 {{ task.name }}
               </div>
               <!-- Timeline -->
-              <div class="flex-1 relative  h-12">
+              <div class="relative flex-1  h-12 z-0">
                 <Popover>
                   <PopoverTrigger>
                     <div
-                      class="absolute h-8 bg-primary rounded-md cursor-pointer"
+                      class="absolute h-5 bg-primary rounded-md cursor-pointer z-20"
                       :style="getTaskBarStyle(task)"
                     ></div>
                   </PopoverTrigger>
                   <PopoverContent>
-                    <div class="text-sm">
+                    <div class="text-sm p-2">
                       <p><strong>Task:</strong> {{ task.name }}</p>
                       <p><strong>Start:</strong> {{ task.start }}</p>
                       <p><strong>End:</strong> {{ task.end }}</p>
