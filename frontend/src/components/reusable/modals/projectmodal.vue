@@ -6,7 +6,7 @@
     @click="createNewProject"
   >
     <!-- Full-Length Button with Icon -->
-    <Button variant="outline" class="w-full  text-left">
+    <Button variant="outline" class="w-full flex items-center px-4 py-2">
       <!-- Icon -->
       <PlusCircle class="h-5 w-5 mr-2" />
       <!-- Button Text -->

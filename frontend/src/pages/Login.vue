@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center justify-right min-h-screen">
-    <Card class="max-w-[500px] w-full h-[700px] p-6 rounded-lg shadow-md overflow-auto ml-[850px]">
+    <Card class="max-w-[500px] w-full h-[700px] border-white p-6 rounded-lg shadow-md overflow-auto ml-[850px]">
       <CardHeader class="text-center mt-10">
         <CardTitle class="text-2xl mt">Welcome Back!</CardTitle>
         <CardDescription>
@@ -83,7 +83,7 @@
 
         <p>
           <span class="text-center text-sm text-gray-500">
-          Don't have an account? </span>
+          Don't have an account?</span>
           <button
             class="text-center text-sm hover:underline focus:outline-none"
             @click="redirectToRegister"

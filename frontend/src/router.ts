@@ -3,8 +3,6 @@ import Dashboard from './pages/Dashboard.vue';
 import Login from './pages/Login.vue';
 import forgotpass from './pages/forgotpass.vue';
 import Register from "./pages/Register.vue";
-import RegisterLegacy from "./pages/RegisterLegacy.vue";
-
 import Member from "./pages/Member.vue";
 import Report from "./pages/Report.vue";
 import Task from "./pages/Project Management/Task.vue";
@@ -55,11 +53,7 @@ const routes = [
         name: 'register',
         component: Register
     },
-{
-        path: '/registerlegacy',
-        name: 'registerlegacy',
-        component: RegisterLegacy
-    },
+
     {
         path: '/forgotpass',
         name: 'notification',
