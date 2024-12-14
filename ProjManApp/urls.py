@@ -31,5 +31,6 @@ urlpatterns = [
     path('api/tasks/filter/', FilterTasksAPIView.as_view(), name='filter_tasks'),
     path('api/tasks/completion-percentage/', TaskCompletionPercentageAPIView.as_view(),
          name='task-completion-percentage'),
+    path('users/manager/<int:manager_id>/', UserByManagerAPIView.as_view(), name='users-by-manager'),
 
 ]

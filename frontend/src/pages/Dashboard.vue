@@ -96,16 +96,17 @@ const generateDays = () => {
   );
 };
 
-const tasks = ref([
-  { name: "Design Wireframes", start: "2024-12-02", end: "2024-12-05" },
-  { name: "Develop Backend", start: "2024-12-06", end: "2024-12-12" },
-  { name: "Testing", start: "2024-12-10", end: "2024-12-14" },
-]);
+const tasks = ref([]);
 // Compute Task Bar Styles
 const getTaskBarStyle = (task) => {
+ console.log("parsing start date: ",task.start_date);
+    if (!task.start_date || !task.deadline) {
+    return {}; // Return an empty object if any date is missing or invalid
+  }
   const totalDays = days.value.length;
-  const taskStart = differenceInDays(parseISO(task.start), parseISO(startDate.value));
-  const taskEnd = differenceInDays(parseISO(task.end), parseISO(startDate.value));
+
+  const taskStart = differenceInDays(parseISO(task.start_date), parseISO(startDate.value));
+  const taskEnd = differenceInDays(parseISO(task.deadline), parseISO(startDate.value));
 
   const left = `${(taskStart / totalDays) * 100}%`;
   const width = `${((taskEnd - taskStart + 1) / totalDays) * 100}%`;
@@ -134,9 +135,22 @@ const taskData = ref<TaskData>({
   not_started: 0
 });
 
+const members = ref();
+
+
 const errorMessage = ref<string>("");
 
-
+const fetchUsersByManager = async (managerId: number) => {
+  try {
+    console.log("getting member number by manager ID: ",managerId);
+    const response = await getAPI.get(`/users/manager/${managerId}/`);
+    console.log("Mmber count: ",response.data.length);
+    members.value = response.data.length;
+  } catch (error) {
+    errorMessage.value = "An error occurred while fetching the users.";
+    console.error(error);
+  }
+};
 const getTaskCompletionPercentage = async () => {
   try {
     const response = await getAPI.get(`/api/tasks/completion-percentage/`, {
@@ -148,12 +162,25 @@ const getTaskCompletionPercentage = async () => {
     errorMessage.value = error.response?.data?.error || "An error occurred while fetching data.";
   }
 };
+const fetchTaskChart = async (projectId: number) => {
+  try {
+    console.log("getting task list for chart via projID: ",projectId);
+    const response = await getAPI.get(`/tasks/${projectId}/`);
 
+    tasks.value = response.data;
+        console.log("Tasks: ",response.data);
+  } catch (error) {
+    errorMessage.value = "An error occurred while fetching the users.";
+    console.error(error);
+  }
+};
 watchEffect(() => {
   const id = projectId.value;
   if (id) {
     fetchTasks(id,authStore.user?.id)
     getTaskCompletionPercentage()
+    fetchTaskChart(projectId.value)
+    fetchUsersByManager(projectStore.project_manager);
   }
 });
 
@@ -224,7 +251,7 @@ watchEffect(() => {
       </CardHeader>
       <CardContent>
         <div class="text-2xl font-bold">
-          69
+          {{ members }}
         </div>
 
       </CardContent>
@@ -312,7 +339,7 @@ watchEffect(() => {
         <div class="overflow-x-auto">
           <div class="min-w-[800px]">
             <!-- Chart Header -->
-            <div class="flex items-center outline text-sm font-medium">
+            <div class="flex items-center bg-secondary text-sm font-medium">
               <div class="w-40 px-4 py-2 border-r">Task</div>
               <div class="flex-1 grid" :style="{ gridTemplateColumns: `repeat(${days.length}, 1fr)` }">
                 <div
@@ -328,7 +355,7 @@ watchEffect(() => {
             <div v-for="(task, index) in tasks" :key="index" class="flex items-center text-sm">
               <!-- Task Name -->
               <div class="w-40 px-4 py-2 border-r bg-background z-10">
-                {{ task.name }}
+                {{ task.features }}
               </div>
               <!-- Timeline -->
               <div class="relative flex-1  h-12 z-0">
@@ -341,9 +368,9 @@ watchEffect(() => {
                   </PopoverTrigger>
                   <PopoverContent>
                     <div class="text-sm p-2">
-                      <p><strong>Task:</strong> {{ task.name }}</p>
-                      <p><strong>Start:</strong> {{ task.start }}</p>
-                      <p><strong>End:</strong> {{ task.end }}</p>
+                      <p><strong>Task:</strong> {{ task.task_code }}</p>
+                      <p><strong>Start:</strong> {{ task.start_date }}</p>
+                      <p><strong>End:</strong> {{ task.deadline }}</p>
                     </div>
                   </PopoverContent>
                 </Popover>

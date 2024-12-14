@@ -1,3 +1,126 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="37.07" height="36" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 198"><path fill="#41B883" d="M204.8 0H256L128 220.8L0 0h97.92L128 51.2L157.44 0h47.36Z"></path><path fill="#41B883" d="m0 0l128 220.8L256 0h-51.2L128 132.48L50.56 0H0Z"></path><path fill="#35495E" d="M50.56 0L128 133.12L204.8 0h-47.36L128 51.2L97.92 0H50.56Z"></path></svg>
+<template>
+  <div class="p-6 bg-gray-100 min-h-screen">
+    <Card class="max-w-5xl mx-auto shadow">
+      <CardHeader>
+        <CardTitle>Gantt Chart</CardTitle>
+        <CardDescription>Manage your project timelines visually.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <!-- Date Range Picker -->
+        <div class="mb-4 flex items-center gap-4">
+          <div>
+            <label for="start-date" class="block text-sm font-medium">Start Date</label>
+            <input
+              id="start-date"
+              type="date"
+              v-model="startDate"
+              class="border rounded px-3 py-2 text-sm w-full"
+            />
+          </div>
+          <div>
+            <label for="end-date" class="block text-sm font-medium">End Date</label>
+            <input
+              id="end-date"
+              type="date"
+              v-model="endDate"
+              class="border rounded px-3 py-2 text-sm w-full"
+            />
+          </div>
+          <button
+            @click="generateDays"
+            class="bg-blue-500 text-white px-4 py-2 rounded text-sm"
+          >
+            Update Chart
+          </button>
+        </div>
 
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 187.6 187.83"><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><g id="jiEqAz"><path d="M40.56,112.71V171A93.14,93.14,0,0,1,8.71,133.26C.12,114.7-2,95.33,1.86,75.11h110.4V186a93.38,93.38,0,0,1-37.09,0V112.71Z"/><path d="M150.21,168.31v-3.66q0-35,0-69.89c0-28.32-18.87-51.22-46.62-56.47a60.07,60.07,0,0,0-10.89-.85c-23.48-.08-46.95,0-70.43,0H18.89A92.49,92.49,0,0,1,54.73,8.48,94.93,94.93,0,0,1,99.78.13c40.67,2,76.69,32.79,85.58,73.2C194.43,114.52,174.53,151.33,150.21,168.31Z"/></g></g></g></svg>
+        <!-- Gantt Chart -->
+        <div class="overflow-x-auto">
+          <div class="min-w-[800px]">
+            <!-- Chart Header -->
+            <div class="flex items-center bg-gray-200 text-sm font-medium">
+              <div class="w-40 px-4 py-2 border-r">Task</div>
+              <div class="flex-1 grid" :style="{ gridTemplateColumns: `repeat(${days.length}, 1fr)` }">
+                <div
+                  v-for="(day, index) in days"
+                  :key="index"
+                  class="text-center py-2 border-r"
+                >
+                  {{ day }}
+                </div>
+              </div>
+            </div>
+            <!-- Chart Rows -->
+            <div v-for="(task, index) in tasks" :key="index" class="flex items-center text-sm">
+              <!-- Task Name -->
+              <div class="w-40 px-4 py-2 border-r bg-white z-10">
+                {{ task.name }}
+              </div>
+              <!-- Timeline -->
+              <div class="relative flex-1 bg-gray-50 h-12 z-0">
+                <Popover>
+                  <PopoverTrigger>
+                    <div
+                      class="absolute h-8 bg-blue-500 rounded-md cursor-pointer z-20"
+                      :style="getTaskBarStyle(task)"
+                    ></div>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <div class="text-sm p-2">
+                      <p><strong>Task:</strong> {{ task.name }}</p>
+                      <p><strong>Start:</strong> {{ task.start }}</p>
+                      <p><strong>End:</strong> {{ task.end }}</p>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  </div>
+</template>
+
+<script setup>
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { ref } from "vue";
+import { format, differenceInDays, parseISO, eachDayOfInterval } from "date-fns";
+
+// State
+const startDate = ref("2024-12-01");
+const endDate = ref("2024-12-15");
+
+const tasks = ref([
+  { name: "Design Wireframes", start: "2024-12-02", end: "2024-12-05" },
+  { name: "Develop Backend", start: "2024-12-06", end: "2024-12-12" },
+  { name: "Testing", start: "2024-12-10", end: "2024-12-14" },
+]);
+
+const days = ref([]);
+
+// Generate Days for Timeline
+const generateDays = () => {
+  const parsedStart = parseISO(startDate.value);
+  const parsedEnd = parseISO(endDate.value);
+  days.value = eachDayOfInterval({ start: parsedStart, end: parsedEnd }).map((date) =>
+    format(date, "MMM d")
+  );
+};
+
+// Compute Task Bar Styles
+const getTaskBarStyle = (task) => {
+  const totalDays = days.value.length;
+  const taskStart = differenceInDays(parseISO(task.start), parseISO(startDate.value));
+  const taskEnd = differenceInDays(parseISO(task.end), parseISO(startDate.value));
+
+  const left = `${(taskStart / totalDays) * 100}%`;
+  const width = `${((taskEnd - taskStart + 1) / totalDays) * 100}%`;
+
+  return { left, width };
+};
+
+// Initial Load
+generateDays();
+</script>

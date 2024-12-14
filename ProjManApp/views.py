@@ -385,3 +385,79 @@ class TaskCompletionPercentageAPIView(APIView):
                 {"error": f"An error occurred: {str(e)}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+# views.py
+
+class ProjectDetailAPIView(APIView):
+    """
+    API view to retrieve a specific project by project_id.
+    """
+
+    def get(self, request, *args, **kwargs):
+        # Get the project_id from the URL parameters
+        project_id = kwargs.get('project_id')
+
+        # Ensure the project_id is provided
+        if not project_id:
+            return Response(
+                {"error": "project_id is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            # Retrieve the project with the given project_id
+            project = Project.objects.get(project_id=project_id)
+
+            # Serialize the project data
+            serializer = ProjectSerializer(project)
+
+            # Return the serialized project data in the response
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Project.DoesNotExist:
+            return Response(
+                {"error": "Project not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            return Response(
+                {"error": f"An error occurred: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+class UserByManagerAPIView(APIView):
+    """
+    API view to retrieve all users with a specific manager_id.
+    """
+
+    def get(self, request, *args, **kwargs):
+        # Get the manager_id from the URL parameters
+        manager_id = kwargs.get('manager_id')
+
+        # Ensure the manager_id is provided
+        if not manager_id:
+            return Response(
+                {"error": "manager_id is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            # Retrieve all users managed by the specified manager_id
+            users = User.objects.filter(manager_id=manager_id)
+
+            # Check if any users were found
+            if not users.exists():
+                return Response(
+                    {"error": "No users found for the given manager_id."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            # Serialize the user data
+            serializer = UserSerializer(users, many=True)
+
+            # Return the serialized user data in the response
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {"error": f"An error occurred: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
