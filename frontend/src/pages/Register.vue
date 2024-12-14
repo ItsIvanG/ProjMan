@@ -243,66 +243,59 @@
   </label>
 
   <!-- Terms and Conditions Text Area -->
-  <textarea
-    style="resize: none;"
-    class="w-full p-3 border rounded h-80"
-    readonly
-  >
-    Welcome to ProjMan!
+  <ScrollArea class="h-[500px] w-flex rounded-md border p-4">
+Welcome to ProjMan!
+<br><br>
+These terms and conditions ("Terms") govern your access to and use of the ProjMan website and services ("Services"). By using our website, you agree to comply with and be bound by these Terms. If you do not agree with these Terms, please do not use the Services.<br>
+1. Acceptance of Terms<br>
+By accessing or using the ProjMan platform, you agree to comply with these Terms, as well as our Privacy Policy. We reserve the right to modify, update, or change these Terms at any time. Any changes will be posted on this page, and the updated Terms will be effective immediately upon posting.<br><br>
 
-    These terms and conditions ("Terms") govern your access to and use of the ProjMan website and services ("Services"). By using our website, you agree to comply with and be bound by these Terms. If you do not agree with these Terms, please do not use the Services.
+2. Use of the Service<br>
+ProjMan provides a platform for project management tools, including task management, time tracking, and collaboration features. You agree to:<br>
+- Use the Service only for lawful purposes and in accordance with these Terms.<br>
+- Not misuse or interfere with the Service in any way.<br>
+- Not attempt to gain unauthorized access to the Service, servers, or networks.<br><br>
 
-    1. Acceptance of Terms
-    By accessing or using the ProjMan platform, you agree to comply with these Terms, as well as our Privacy Policy. We reserve the right to modify, update, or change these Terms at any time. Any changes will be posted on this page, and the updated Terms will be effective immediately upon posting.
+3. Account Registration<br>
+To use certain features of ProjMan, you must create an account. You are responsible for maintaining the confidentiality of your account credentials, and you agree to notify us immediately of any unauthorized use of your account. You must be at least 18 years old to register for an account.<br><br>
 
-    2. Use of the Service
-    ProjMan provides a platform for project management tools, including task management, time tracking, and collaboration features. You agree to:
+4. Subscription Plans and Payment<br>
+ProjMan offers both free and paid subscription plans. If you subscribe to a paid plan, you agree to pay the applicable subscription fees in accordance with the plan you choose. Payments are non-refundable, and fees are subject to change. You will be notified of any changes to the fees.<br><br>
 
-    Use the Service only for lawful purposes and in accordance with these Terms.
-    Not misuse or interfere with the Service in any way.
-    Not attempt to gain unauthorized access to the Service, servers, or networks.
+5. License to Use the Service<br>
+ProjMan grants you a limited, non-exclusive, non-transferable, revocable license to access and use the Service for your internal business or personal use. You may not distribute, modify, or create derivative works based on the Service.<br><br>
 
-    3. Account Registration
-    To use certain features of ProjMan, you must create an account. You are responsible for maintaining the confidentiality of your account credentials, and you agree to notify us immediately of any unauthorized use of your account. You must be at least 18 years old to register for an account.
+6. User Content<br>
+You are solely responsible for the content you upload, create, or share through the Service ("User Content"). By uploading or submitting content to ProjMan, you grant us a worldwide, royalty-free, and non-exclusive license to use, display, and distribute the content within the Service.<br><br>
 
-    4. Subscription Plans and Payment
-    ProjMan offers both free and paid subscription plans. If you subscribe to a paid plan, you agree to pay the applicable subscription fees in accordance with the plan you choose. Payments are non-refundable, and fees are subject to change. You will be notified of any changes to the fees.
+7. Privacy<br>
+Your use of the Service is also governed by our Privacy Policy, which outlines how we collect, use, and protect your personal data. Please review our Privacy Policy to understand how your information is handled.<br><br>
 
-    5. License to Use the Service
-    ProjMan grants you a limited, non-exclusive, non-transferable, revocable license to access and use the Service for your internal business or personal use. You may not distribute, modify, or create derivative works based on the Service.
+8. Prohibited Activities<br>
+You agree not to:<br>
+- Violate any applicable laws, regulations, or third-party rights.<br>
+- Engage in any activity that could harm the Service or other users.<br>
+- Use the Service for any illegal or unauthorized purpose, including but not limited to spamming, hacking, or distributing malware.<br>
+- Attempt to reverse-engineer, decompile, or disassemble the Service.<br><br>
 
-    6. User Content
-    You are solely responsible for the content you upload, create, or share through the Service ("User Content"). By uploading or submitting content to ProjMan, you grant us a worldwide, royalty-free, and non-exclusive license to use, display, and distribute the content within the Service.
+9. Termination<br>
+We reserve the right to suspend or terminate your access to the Service if you violate these Terms or engage in any unlawful activities. You may also terminate your account at any time by contacting us.<br><br>
 
-    7. Privacy
-    Your use of the Service is also governed by our Privacy Policy, which outlines how we collect, use, and protect your personal data. Please review our Privacy Policy to understand how your information is handled.
+10. Disclaimer of Warranties<br>
+The Service is provided "as is" without any warranties of any kind, either express or implied. We do not guarantee that the Service will be uninterrupted or error-free. You use the Service at your own risk.<br><br>
 
-    8. Prohibited Activities
-    You agree not to:
+11. Limitation of Liability<br>
+In no event shall ProjMan or its affiliates be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or in connection with your use of the Service.<br><br>
 
-    Violate any applicable laws, regulations, or third-party rights.
-    Engage in any activity that could harm the Service or other users.
-    Use the Service for any illegal or unauthorized purpose, including but not limited to spamming, hacking, or distributing malware.
-    Attempt to reverse-engineer, decompile, or disassemble the Service.
+12. Indemnification<br>
+You agree to indemnify and hold harmless ProjMan, its affiliates, employees, and partners from any claims, damages, losses, liabilities, or expenses arising from your use of the Service or violation of these Terms.<br><br>
 
-    9. Termination
-    We reserve the right to suspend or terminate your access to the Service if you violate these Terms or engage in any unlawful activities. You may also terminate your account at any time by contacting us.
+13. Governing Law<br>
+These Terms shall be governed by and construed in accordance with the laws of your jurisdiction, without regard to its conflict of law principles. Any disputes arising from these Terms shall be resolved in the courts of [Your jurisdiction].<br><br>
 
-    10. Disclaimer of Warranties
-    The Service is provided "as is" without any warranties of any kind, either express or implied. We do not guarantee that the Service will be uninterrupted or error-free. You use the Service at your own risk.
-
-    11. Limitation of Liability
-    In no event shall ProjMan or its affiliates be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or in connection with your use of the Service.
-
-    12. Indemnification
-    You agree to indemnify and hold harmless ProjMan, its affiliates, employees, and partners from any claims, damages, losses, liabilities, or expenses arising from your use of the Service or violation of these Terms.
-
-    13. Governing Law
-    These Terms shall be governed by and construed in accordance with the laws of [Your jurisdiction], without regard to its conflict of law principles. Any disputes arising from these Terms shall be resolved in the courts of [Your jurisdiction].
-
-    14. Changes to the Terms
-    We may update these Terms at any time. You will be notified of any material changes, and your continued use of the Service after such changes will constitute your acceptance of the new Terms.
-  </textarea>
+14. Changes to the Terms<br>
+We may update these Terms at any time. You will be notified of any material changes, and your continued use of the Service after such changes will constitute your acceptance of the new Terms.<br><br>
+</ScrollArea>
 
   <!-- Terms Agreement Checkbox -->
   <div v-if="showErrors.agreeTerms" class="text-red-500 text-sm">This field is required</div>
@@ -388,6 +381,7 @@ import { AkPerson } from '@kalimahapps/vue-icons';
 import { CiCalendarDate } from '@kalimahapps/vue-icons';
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 import VueCal from 'vue-cal';
 import { getCSRFToken } from "@/store/auth";
@@ -401,7 +395,8 @@ export default {
     AkPerson,
     CiCalendarDate,
     VueCal,
-    Input
+    Input,
+    ScrollArea
   },
   props: {
     text: {

@@ -24,7 +24,7 @@
 Click on an archived project and press Unarchive.</DialogDescription>
         </DialogHeader>
          <Select v-model="selectedProject">
-            <SelectTrigger class="w-[180px]">
+            <SelectTrigger class="w-flex">
               <SelectValue placeholder="Select an archived project" />
             </SelectTrigger>
             <SelectContent>
