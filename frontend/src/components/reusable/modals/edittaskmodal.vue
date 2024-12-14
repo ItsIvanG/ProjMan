@@ -199,18 +199,28 @@ const handleSubmit = async () => {
     console.error('No task ID selected.');
     return;
   }
+
   try {
     const response = await getAPI.put(`/tasks/edit/${selectedTaskId.value}/`, formData);
     console.log('Task updated:', response.data);
-    toast({
-  title: 'Task Edited',
-  description: 'The task has been updated successfully.',
-});
 
-// Ensure any previously lingering toasts are cleared after 3 seconds
-setTimeout(() => {
-  // This can trigger any toast cleanup if needed
-}, 3000);
+    // Conditionally set the toast message based on the user role
+    if (userRole.value === 'Member') {
+      toast({
+        title: 'Report Progress',
+        description: 'Your progress has been reported successfully.',
+      });
+    } else {
+      toast({
+        title: 'Task Edited',
+        description: 'The task has been updated successfully.',
+      });
+    }
+
+    // Ensure any previously lingering toasts are cleared after 3 seconds
+    setTimeout(() => {
+      // This can trigger any toast cleanup if needed
+    }, 1000);
 
     // Update the task in the local store or state
     if (taskStore.task && selectedTaskId.value === taskStore.task.task_id) {
@@ -222,5 +232,6 @@ setTimeout(() => {
     console.error('Error updating task:', error);
   }
 };
+
 
 </script>

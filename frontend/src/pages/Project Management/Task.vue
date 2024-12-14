@@ -55,7 +55,7 @@ import {
   } from '@/components/ui/dialog';
   import { Input } from '@/components/ui/input';
   import { Label } from '@/components/ui/label';
-  import { PlusCircle , Check } from 'lucide-vue-next';
+  import { PlusCircle , List , ArrowUpDown, Users,  CaseSensitive , Circle,CircleCheckBig, CircleX, CircleAlert, ArrowDown , ArrowUp , ArrowRight , ArrowUpRight,LayoutList, CalendarClock     } from 'lucide-vue-next';
   import { useToast } from '@/components/ui/toast/use-toast'
 
 const { toast } = useToast()
@@ -147,7 +147,7 @@ const getSprintVariant = (sprint: string) => {
 const getPriorityVariant = (priority: string) => {
   switch (priority.toLowerCase()) {
     case 'high':
-      return 'destructive';
+      return 'high';
     case 'medium':
       return 'medium';
     case 'low':
@@ -311,13 +311,26 @@ setTimeout(() => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Tasks</TableHead>
-                <TableHead>Features</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead class="hidden md:table-cell">Assigned</TableHead>
-                <TableHead class="hidden md:table-cell">Sprint</TableHead>
-                <TableHead class="hidden md:table-cell">Priority</TableHead>
-                <TableHead class="hidden md:table-cell">Deadline</TableHead>
+                <TableHead>
+    Tasks
+
+</TableHead>
+
+
+                <TableHead>
+                  <div class="flex items-center">
+    <LayoutList class="mr-2 h-4 w-4" />
+                  Features </div></TableHead>
+                <TableHead>  <div class="flex items-center">
+    <Circle class="mr-2 h-4 w-4" />Status</div></TableHead>
+                <TableHead class="hidden md:table-cell">  <div class="flex items-center">
+    <Users class="mr-2 h-4 w-4" />Assigned</div></TableHead>
+                <TableHead class="hidden md:table-cell">  <div class="flex items-center">
+    <List class="mr-2 h-4 w-4" />Sprint</div></TableHead>
+                <TableHead class="hidden md:table-cell">  <div class="flex items-center">
+    <ArrowUpDown class="mr-2 h-4 w-4" />Priority</div></TableHead>
+                <TableHead class="hidden md:table-cell">  <div class="flex items-center">
+    <CalendarClock  class="mr-2 h-4 w-4" />Deadline</div></TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -327,10 +340,22 @@ setTimeout(() => {
                   <TableCell>{{task.task_code}}</TableCell>
                   <TableCell>{{ task.features }}</TableCell>
                   <TableCell>
-                    <Badge :variant="getStatusVariant(task.status)">
-                      {{ task.status }}
-                    </Badge>
-                  </TableCell>
+  <Badge :variant="getStatusVariant(task.status)">
+    <template v-if="task.status.toLowerCase() === 'not started'">
+      <CircleAlert class="mr-2 h-4 w-4" /> {{ task.status }}
+    </template>
+    <template v-if="task.status.toLowerCase() === 'in progress'">
+      <Circle class="mr-2 h-4 w-4" /> {{ task.status }}
+    </template>
+    <template v-if="task.status.toLowerCase() === 'completed'">
+      <CircleCheckBig class="mr-2 h-4 w-4" /> {{ task.status }}
+    </template>
+    <template v-if="task.status.toLowerCase() === 'cancelled'">
+      <CircleX class="mr-2 h-4 w-4" /> {{ task.status }}
+    </template>
+  </Badge>
+</TableCell>
+
                   <TableCell>
   <Badge variant="outline">
     <template v-if="userRole !== 'Member'">
@@ -356,11 +381,24 @@ setTimeout(() => {
 </TableCell>
 
 
-                  <TableCell class="hidden md:table-cell">
+<TableCell class="hidden md:table-cell">
                     <Badge :variant="getPriorityVariant(task.priority)">
-                      {{ task.priority }}
-                    </Badge>
-                  </TableCell>
+    <template v-if="task.priority.toLowerCase() === 'low'">
+      <ArrowDown  class="mr-2 h-4 w-4" /> {{ task.priority }}
+    </template>
+    <template v-if="task.priority.toLowerCase() === 'medium'">
+      <ArrowRight  class="mr-2 h-4 w-4" /> {{ task.priority }}
+    </template>
+    <template v-if="task.priority.toLowerCase() === 'high'">
+      <ArrowUpRight  class="mr-2 h-4 w-4" /> {{ task.priority }}
+    </template>
+    <template v-if="task.priority.toLowerCase() === 'very high'">
+      <ArrowUp  class="mr-2 h-4 w-4" /> {{ task.priority }}
+    </template>
+  </Badge>
+</TableCell>
+
+                  
                   <TableCell class="hidden md:table-cell">
                     {{ task.deadline }}
                   </TableCell>
