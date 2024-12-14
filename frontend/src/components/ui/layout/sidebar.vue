@@ -104,6 +104,14 @@
                 </Button>
                 <Button
                   variant="ghost"
+                  :class="{ 'bg-accent text-accent-foreground': isActive('/sprint') }"
+                  class="w-full justify-start pl-8 text-sm"
+                  @click="navigateTo('/sprint')"
+                >
+                  Sprints
+                </Button>
+                <Button
+                  variant="ghost"
                   :class="{ 'bg-accent text-accent-foreground': isActive('/kanban') }"
                   class="w-full justify-start pl-8 text-sm"
                   @click="navigateTo('/kanban')"
@@ -153,9 +161,9 @@
             </Button>
             <Button
               variant="ghost"
-              :class="{ 'bg-accent text-accent-foreground': isActive('/help') }"
+              :class="{ 'bg-accent text-accent-foreground': isActive('/sharing') }"
               class="w-full justify-start"
-              @click="navigateTo('/help')"
+              @click="navigateTo('/sharing')"
             >
               <FolderSync class="mr-2 h-4 w-4" />
               File Sharing
@@ -165,7 +173,7 @@
       </div>
     </ScrollArea>
   </div>
-  <initialprojectmodal/>
+
 </template>
 
 <script setup>
@@ -207,7 +215,6 @@ import {
 import { useProjectListStore } from '@/store/projectListStore';
 
 import Archivedprojectsmodal from "@/components/reusable/modals/archivedprojectsmodal.vue";
-import Initialprojectmodal from "@/components/reusable/modals/initialprojectmodal.vue";
 
 
 const router = useRouter();
