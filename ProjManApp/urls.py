@@ -1,8 +1,5 @@
 from django.urls import path
 from . import views
-from .views import ProjectCreateView, ArchiveProjectView, UnarchiveProjectView
-from .views import TaskCreateView, TaskListView, TaskEditView, TaskAssignEditView
-from .views import UserListView, UserCreateView, UserUpdateView, UserIsActiveUpdateView
 from .views import *
 
 
@@ -31,4 +28,8 @@ urlpatterns = [
 
     # This handles updating a specific report by its ID
     path('reports/<int:report_id>/', ReportUpdateAPIView.as_view(), name='report-update'),
+    path('api/tasks/filter/', FilterTasksAPIView.as_view(), name='filter_tasks'),
+    path('api/tasks/completion-percentage/', TaskCompletionPercentageAPIView.as_view(),
+         name='task-completion-percentage'),
+
 ]

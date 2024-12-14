@@ -17,6 +17,7 @@ from rest_framework import status
 from .models import Project, Report
 from .serializers import ProjectSerializer, ReportSerializer
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 
 
 
@@ -290,3 +291,97 @@ class ReportUpdateAPIView(generics.UpdateAPIView):
         # Optionally associate with logged-in user
         # serializer.save(user=self.request.user)
         serializer.save()
+
+class FilterTasksAPIView(APIView):
+    """
+    API view to retrieve tasks by project_id, assignee_id,
+    and status = 'In Progress' OR 'Not Started'.
+    """
+    def get(self, request, *args, **kwargs):
+        project_id = self.request.query_params.get('project_id')
+        assignee_id = self.request.query_params.get('assignee_id')
+
+        # Ensure parameters are provided
+        if not project_id or not assignee_id:
+            return Response(
+                {"error": "Both project_id and assignee_id are required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            tasks = Task.objects.filter(
+                project_id=project_id,
+                assignee_id=assignee_id
+            ).filter(
+                Q(status="In Progress") | Q(status="Not started")
+            )
+            serializer = TaskSerializer(tasks, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {"error": f"An error occurred: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class TaskCompletionPercentageAPIView(APIView):
+    """
+    API view to get the percentage of tasks with status 'Completed'
+    compared to tasks with non-completed status for a given project.
+    """
+
+    def get(self, request, *args, **kwargs):
+        # Get the project_id from query params
+        project_id = self.request.query_params.get('project_id')
+
+        # Ensure the project_id is provided
+        if not project_id:
+            return Response(
+                {"error": "project_id is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            # Get the total number of tasks for the given project_id
+            total_tasks = Task.objects.filter(project_id=project_id).count()
+
+            # Count the tasks with status 'Completed' for the given project_id
+            completed_tasks = Task.objects.filter(project_id=project_id, status="Completed").count()
+            cancelled = Task.objects.filter(project_id=project_id, status="Cancelled").count()
+            ongoing = Task.objects.filter(project_id=project_id, status="In Progress").count()
+            not_started = Task.objects.filter(project_id=project_id, status="Not started").count()
+
+
+            total_tasks -= cancelled
+            # Calculate non-completed tasks
+            non_completed_tasks = total_tasks - completed_tasks
+
+            # Avoid division by zero
+            if total_tasks == 0:
+                return Response(
+                    {"error": "No tasks available in this project to calculate percentages."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Calculate the percentages
+            completed_percentage = (completed_tasks / total_tasks) * 100
+            non_completed_percentage = (non_completed_tasks / total_tasks) * 100
+
+            # Prepare the response data
+            data = {
+                "completed_percentage": completed_percentage,
+                "non_completed_percentage": non_completed_percentage,
+                "total_tasks": total_tasks,
+                "completed" : completed_tasks,
+                "ongoing" : ongoing,
+                "not_started": not_started,
+            }
+
+            return Response(data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            print(e)
+            return Response(
+                {"error": f"An error occurred: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

@@ -1,12 +1,13 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { getAPI } from '@/axios';
 
 export const useAllTasksStore = defineStore('allTasksStore', () => {
   const allTasks = ref<any[]>([]); // To store all tasks for a project
 
+
   // Fetch tasks based on project ID and status
-  const fetchTasks = async (projectId: number, status: string | null) => {
+  const fetchTasks = async (projectId: number, status: string | null, userId:number | null) => {
     try {
       let url = `/tasks/${projectId}/`;
       if (status) {
@@ -14,6 +15,7 @@ export const useAllTasksStore = defineStore('allTasksStore', () => {
       }
       const response = await getAPI.get(url);
       allTasks.value = response.data; // Update the tasks list in the store
+
       console.log('Fetched tasks:', response.data);
     } catch (error) {
       console.error("Failed to fetch tasks:", error);
@@ -34,6 +36,7 @@ export const useAllTasksStore = defineStore('allTasksStore', () => {
       allTasks.value.push(updatedTask);
     }
   };
+
 
   return {
     allTasks,

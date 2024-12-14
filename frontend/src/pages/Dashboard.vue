@@ -1,4 +1,4 @@
-<script setup> 
+<script setup lang="ts">
 import { useAuthStore } from '../store/auth'
 import {CardDescription, CardHeader, CardTitle, Card, CardContent, CardFooter} from "@/components/ui/card";
 import {Separator} from "@/components/ui/separator/";
@@ -15,7 +15,7 @@ import ProjectModal from '@/components/reusable/modals/editprojectmodal.vue';
 import Archiveprojectmodal from "@/components/reusable/modals/archiveprojectmodal.vue";
 import router from "@/router";
 import  popupproject  from '@/components/reusable/modals/popupproject.vue'
-import {Table, TableHead, TableHeader, TableRow} from "@/components/ui/table";
+import {Table, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 
 
 const projectStore = useProjectStore();
@@ -26,6 +26,7 @@ const projectStore = useProjectStore();
 const authStore = useAuthStore()
 
 const userRole = computed(() => authStore.user?.role);
+const userId = computed(() => authStore.user?.id);
 
 const user = ref(null);
 //
@@ -44,18 +45,45 @@ if(!authStore.isAuthenticated){
   console.log("not logged in! going to login");
   router.push("/login");
 }
+const projectId = computed(() => projectStore.project_id);
+
+
+
+const loading = ref(false); // Loading state
+const error = ref<string | null>(null); // Error messag
+
+const filteredTasks = ref([]);
+
+const fetchTasks = async (projectId: number, assigneeId: number) => {
+  loading.value = true;
+  error.value = null; // Reset error
+
+  try {
+    const response = await getAPI.get('/api/tasks/filter/', {
+      params: {
+        project_id: projectId,
+        assignee_id: assigneeId,
+      },
+    });
+
+    console.log("Filtered tasks success: ",response.data);
+    filteredTasks.value = response.data; // Update tasks with API response
+  } catch (err: any) {
+    error.value = err.response?.data?.error || 'Failed to fetch tasks.';
+  } finally {
+    loading.value = false;
+  }
+};
+
+
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { format, differenceInDays, parseISO, eachDayOfInterval } from "date-fns";
+import {Label} from "@/components/ui/label";
 
 // State
 const startDate = ref("2024-12-01");
 const endDate = ref("2024-12-15");
 
-const tasks = ref([
-  { name: "Design Wireframes", start: "2024-12-02", end: "2024-12-05" },
-  { name: "Develop Backend", start: "2024-12-06", end: "2024-12-12" },
-  { name: "Testing", start: "2024-12-10", end: "2024-12-14" },
-]);
 
 const days = ref([]);
 
@@ -68,6 +96,11 @@ const generateDays = () => {
   );
 };
 
+const tasks = ref([
+  { name: "Design Wireframes", start: "2024-12-02", end: "2024-12-05" },
+  { name: "Develop Backend", start: "2024-12-06", end: "2024-12-12" },
+  { name: "Testing", start: "2024-12-10", end: "2024-12-14" },
+]);
 // Compute Task Bar Styles
 const getTaskBarStyle = (task) => {
   const totalDays = days.value.length;
@@ -82,6 +115,48 @@ const getTaskBarStyle = (task) => {
 
 // Initial Load
 generateDays();
+
+interface TaskData {
+  completed_percentage: number;
+  non_completed_percentage: number;
+  total_tasks: number;
+  completed: number;
+  ongoing :number;
+  not_started: number;
+}
+
+const taskData = ref<TaskData>({
+  completed_percentage: 0,
+  non_completed_percentage: 0,
+  total_tasks: 0,
+  completed: 0,
+  ongoing: 0,
+  not_started: 0
+});
+
+const errorMessage = ref<string>("");
+
+
+const getTaskCompletionPercentage = async () => {
+  try {
+    const response = await getAPI.get(`/api/tasks/completion-percentage/`, {
+      params: { project_id: projectId.value }
+    });
+    taskData.value = response.data;  // Update the task data
+    console.log("taskdata: ",response.data)
+  } catch (error: any) {
+    errorMessage.value = error.response?.data?.error || "An error occurred while fetching data.";
+  }
+};
+
+watchEffect(() => {
+  const id = projectId.value;
+  if (id) {
+    fetchTasks(id,authStore.user?.id)
+    getTaskCompletionPercentage()
+  }
+});
+
 </script>
 
 
@@ -133,11 +208,10 @@ generateDays();
         <CardTitle>
           Project Progress
         </CardTitle>
-
-        33%
+        {{Math.round(taskData.completed_percentage)}}%
       </CardHeader>
       <CardContent>
-        <Progress :model-value="33" />
+        <Progress :model-value=taskData.completed_percentage />
 
       </CardContent>
    </Card>
@@ -164,7 +238,7 @@ generateDays();
       </CardHeader>
       <CardContent>
         <div class="text-2xl font-bold">
-          69
+          {{ taskData.not_started }}
         </div>
 
       </CardContent>
@@ -178,7 +252,7 @@ generateDays();
       </CardHeader>
       <CardContent>
         <div class="text-2xl font-bold">
-          69
+          {{ taskData.ongoing }}
         </div>
 
       </CardContent>
@@ -192,45 +266,18 @@ generateDays();
       </CardHeader>
       <CardContent>
         <div class="text-2xl font-bold">
-          69
+         {{ taskData.completed }}
         </div>
 
       </CardContent>
    </Card>
 </div>
      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
- <Card class="md:col-span-2 col-span-1">
-      <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle>
-          Your ongoing tasks
-        </CardTitle>
-        <CalendarClock />
-      </CardHeader>
-      <CardContent>
-    <Table >
-            <TableHeader>
-              <TableRow>
-                <TableHead>
-                Tasks
-            </TableHead>
-            <TableHead>
-                  <div class="flex items-center">
-
-                  Features </div></TableHead>
-                <TableHead>
-                  <div>
-                 Deadline</div></TableHead>
-              </TableRow>
-            </TableHeader>
-    </Table>
-      </CardContent>
-   </Card>
-<!--Gantt Chart-->
+       <!--Gantt Chart-->
 
     <Card class="md:col-span-4 col-span-1">
        <CardHeader>
         <CardTitle>Gantt Chart</CardTitle>
-        <CardDescription>Manage your project timelines visually.</CardDescription>
       </CardHeader>
       <CardContent>
         <!-- Date Range Picker -->
@@ -265,7 +312,7 @@ generateDays();
         <div class="overflow-x-auto">
           <div class="min-w-[800px]">
             <!-- Chart Header -->
-            <div class="flex items-center bg-secondary text-sm font-medium">
+            <div class="flex items-center outline text-sm font-medium">
               <div class="w-40 px-4 py-2 border-r">Task</div>
               <div class="flex-1 grid" :style="{ gridTemplateColumns: `repeat(${days.length}, 1fr)` }">
                 <div
@@ -306,6 +353,44 @@ generateDays();
         </div>
       </CardContent>
     </Card>
+<!--       Ongoing tasks-->
+ <Card class="md:col-span-2 col-span-1">
+      <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle>
+          Your ongoing tasks
+        </CardTitle>
+       <div class=" flex justify-end">
+          <Button size="sm" variant="outline" class="mr-3" @click="router.push('/task')">
+          View All
+        </Button>
+        <CalendarClock />
+       </div>
+      </CardHeader>
+      <CardContent>
+    <Table >
+            <TableHeader>
+              <TableRow>
+                <TableHead>
+                Tasks
+            </TableHead>
+            <TableHead>
+                  <div class="flex items-center">
+
+                  Features </div></TableHead>
+                <TableHead>
+                  <div>
+                 Deadline</div></TableHead>
+              </TableRow>
+              <TableRow v-for="task in filteredTasks">
+                <TableCell>{{task.task_code}}</TableCell>
+                <TableCell>{{ task.features }}</TableCell>
+                <TableCell>{{ task.deadline }}</TableCell>
+              </TableRow>
+            </TableHeader>
+    </Table>
+      </CardContent>
+   </Card>
+
   </div>
 
 
