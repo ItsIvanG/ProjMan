@@ -55,7 +55,7 @@ import {
   } from '@/components/ui/dialog';
   import { Input } from '@/components/ui/input';
   import { Label } from '@/components/ui/label';
-  import { PlusCircle , Check } from 'lucide-vue-next';
+  import { PlusCircle , List , ArrowUpDown, Users,  CaseSensitive , Circle,CircleCheckBig, CircleX, CircleAlert, ArrowDown , ArrowUp , ArrowRight , ArrowUpRight,LayoutList, CalendarClock     } from 'lucide-vue-next';
   import { useToast } from '@/components/ui/toast/use-toast'
 
 const { toast } = useToast()
@@ -147,7 +147,7 @@ const getSprintVariant = (sprint: string) => {
 const getPriorityVariant = (priority: string) => {
   switch (priority.toLowerCase()) {
     case 'high':
-      return 'destructive';
+      return 'high';
     case 'medium':
       return 'medium';
     case 'low':
@@ -174,6 +174,7 @@ const fetchMembers = async (managerId: number) => {
   }
 };
 const authStore = useAuthStore();
+const userRole = computed(() => authStore.user?.role);
 const managerId  = computed(() => authStore.user?.manager_id);
 watchEffect(() => {
   const managerIdValue = managerId.value;
@@ -301,7 +302,7 @@ setTimeout(() => {
             <DropdownMenuItem @click="applyStatusFilter('Cancelled')">Cancelled</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-<AddTask />
+        <AddTask v-if="userRole !== 'Member'" />
       </div>
     </div>
     <TabsContent value="all">
@@ -310,13 +311,26 @@ setTimeout(() => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Tasks</TableHead>
-                <TableHead>Features</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead class="hidden md:table-cell">Assigned</TableHead>
-                <TableHead class="hidden md:table-cell">Sprint</TableHead>
-                <TableHead class="hidden md:table-cell">Priority</TableHead>
-                <TableHead class="hidden md:table-cell">Deadline</TableHead>
+                <TableHead>
+    Tasks
+
+</TableHead>
+
+
+                <TableHead>
+                  <div class="flex items-center">
+    <LayoutList class="mr-2 h-4 w-4" />
+                  Features </div></TableHead>
+                <TableHead>  <div class="flex items-center">
+    <Circle class="mr-2 h-4 w-4" />Status</div></TableHead>
+                <TableHead class="hidden md:table-cell">  <div class="flex items-center">
+    <Users class="mr-2 h-4 w-4" />Assigned</div></TableHead>
+                <TableHead class="hidden md:table-cell">  <div class="flex items-center">
+    <List class="mr-2 h-4 w-4" />Sprint</div></TableHead>
+                <TableHead class="hidden md:table-cell">  <div class="flex items-center">
+    <ArrowUpDown class="mr-2 h-4 w-4" />Priority</div></TableHead>
+                <TableHead class="hidden md:table-cell">  <div class="flex items-center">
+    <CalendarClock  class="mr-2 h-4 w-4" />Deadline</div></TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -326,21 +340,39 @@ setTimeout(() => {
                   <TableCell>{{task.task_code}}</TableCell>
                   <TableCell>{{ task.features }}</TableCell>
                   <TableCell>
-                    <Badge :variant="getStatusVariant(task.status)">
-                      {{ task.status }}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">
-        <a
-          href="#"
-          @click.prevent="openDialog"
-          @click="taskStore.setTask(task)"
-        >
-        {{ task.assignee || 'Assign Member' }}
-        </a>
-      </Badge>
+  <Badge :variant="getStatusVariant(task.status)">
+    <template v-if="task.status.toLowerCase() === 'not started'">
+      <CircleAlert class="mr-2 h-4 w-4" /> {{ task.status }}
+    </template>
+    <template v-if="task.status.toLowerCase() === 'in progress'">
+      <Circle class="mr-2 h-4 w-4" /> {{ task.status }}
+    </template>
+    <template v-if="task.status.toLowerCase() === 'completed'">
+      <CircleCheckBig class="mr-2 h-4 w-4" /> {{ task.status }}
+    </template>
+    <template v-if="task.status.toLowerCase() === 'cancelled'">
+      <CircleX class="mr-2 h-4 w-4" /> {{ task.status }}
+    </template>
+  </Badge>
 </TableCell>
+
+                  <TableCell>
+  <Badge variant="outline">
+    <template v-if="userRole !== 'Member'">
+      <a
+        href="#"
+        @click.prevent="openDialog"
+        @click="taskStore.setTask(task)"
+      >
+        {{ task.assignee || 'Assign Member' }}
+      </a>
+    </template>
+    <template v-else>
+      <span>{{ task.assignee || 'Assign Member' }}</span>
+    </template>
+  </Badge>
+</TableCell>
+
 
                   <TableCell class="hidden md:table-cell">
   <Badge :variant="getSprintVariant('Sprint ' + task.sprint)">
@@ -349,11 +381,24 @@ setTimeout(() => {
 </TableCell>
 
 
-                  <TableCell class="hidden md:table-cell">
+<TableCell class="hidden md:table-cell">
                     <Badge :variant="getPriorityVariant(task.priority)">
-                      {{ task.priority }}
-                    </Badge>
-                  </TableCell>
+    <template v-if="task.priority.toLowerCase() === 'low'">
+      <ArrowDown  class="mr-2 h-4 w-4" /> {{ task.priority }}
+    </template>
+    <template v-if="task.priority.toLowerCase() === 'medium'">
+      <ArrowRight  class="mr-2 h-4 w-4" /> {{ task.priority }}
+    </template>
+    <template v-if="task.priority.toLowerCase() === 'high'">
+      <ArrowUpRight  class="mr-2 h-4 w-4" /> {{ task.priority }}
+    </template>
+    <template v-if="task.priority.toLowerCase() === 'very high'">
+      <ArrowUp  class="mr-2 h-4 w-4" /> {{ task.priority }}
+    </template>
+  </Badge>
+</TableCell>
+
+                  
                   <TableCell class="hidden md:table-cell">
                     {{ task.deadline }}
                   </TableCell>
@@ -376,13 +421,19 @@ setTimeout(() => {
                 </TableRow>
               </template>
               <template v-else>
-  <TableRow>
-    <TableCell colspan="8" class="text-center">  
-      <p class="text-sm text-muted-foreground">
+                <TableRow>
+  <TableCell colspan="8" class="text-center">  
+    <p class="text-sm text-muted-foreground">
+      <template v-if="userRole === 'Member'">
+        No task available. Contact the project manager to add a new task.
+      </template>
+      <template v-else>
         No task available. Add a new task to get started.
-      </p>
-    </TableCell>
-  </TableRow>
+      </template>
+    </p>
+  </TableCell>
+</TableRow>
+
 </template>
             </TableBody>
           </Table>

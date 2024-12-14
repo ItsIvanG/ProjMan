@@ -136,14 +136,6 @@ const logout = async () => {
   }
 };
 
-const apps = [
-  { name: 'Sales', icon: ShoppingCart },
-  { name: 'Users', icon: Users },
-  { name: 'Inbox', icon: Inbox },
-  { name: 'Settings', icon: Settings },
-  { name: 'Billing', icon: CreditCard },
-  { name: 'Help', icon: HelpCircle },
-]
 // State Management
 const isNotificationOpen = ref(false);
 

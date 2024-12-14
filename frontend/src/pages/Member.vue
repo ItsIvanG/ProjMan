@@ -33,6 +33,8 @@ import { useUserListStore } from '@/store/userListStore';
 const userStore = useUserInfoStore();
 
 
+const userRole = computed(() => authStore.user?.role);
+
 const authStore = useAuthStore();
 const managerId  = computed(() => authStore.user?.manager_id);
 const userListStore = useUserListStore();
@@ -83,7 +85,9 @@ const getStatusVariant = (status: string) => {
   <Tabs default-value="all">
     <div class="flex items-center">
       <CardHeader>
-                <CardTitle>Member Management </CardTitle>
+        <CardTitle v-if="userRole !== 'Member'">Member Management</CardTitle>
+<CardTitle v-if="userRole === 'Member'">Project Member</CardTitle>
+
                 <CardDescription>
                   List of manager and member.
                 </CardDescription>
@@ -107,7 +111,7 @@ const getStatusVariant = (status: string) => {
             <DropdownMenuItem @click="filterStatus = 'Archived'">Archived</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Usermodal />
+        <Usermodal v-if="userRole !== 'Member'"/>
       </div>
     </div>
     
@@ -122,7 +126,7 @@ const getStatusVariant = (status: string) => {
                 <TableHead class="hidden md:table-cell">Role</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead class="hidden md:table-cell">Status</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead v-if="userRole !== 'Member'">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -143,7 +147,7 @@ const getStatusVariant = (status: string) => {
 </TableCell>
 
 
-                  <TableCell>
+                  <TableCell v-if="userRole !== 'Member'">
                     <DropdownMenu>
                       <DropdownMenuTrigger as-child>
                         <Button

@@ -13,13 +13,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = ['project_id', 'project_name', 'project_description', 'user', 'manager_id']
 
 
-from .models import Report
 
-class ReportSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Report
-        fields = ['report_id', 'user', 'report_datetime']
-        read_only_fields = ['report_id', 'report_datetime']
 
 
 from .models import Task
