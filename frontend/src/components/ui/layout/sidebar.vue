@@ -165,7 +165,7 @@
       </div>
     </ScrollArea>
   </div>
-  <initialprojectmodal/>
+<!--  <initialprojectmodal/>-->
 </template>
 
 <script setup>
@@ -207,7 +207,6 @@ import {
 import { useProjectListStore } from '@/store/projectListStore';
 
 import Archivedprojectsmodal from "@/components/reusable/modals/archivedprojectsmodal.vue";
-import Initialprojectmodal from "@/components/reusable/modals/initialprojectmodal.vue";
 
 
 const router = useRouter();
