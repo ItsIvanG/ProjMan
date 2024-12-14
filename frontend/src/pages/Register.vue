@@ -1,11 +1,13 @@
 <template xmlns="http://www.w3.org/1999/html">
-  <div :class="[isDarkMode ? 'dark' : 'light', 'flex items-center justify-end min-h-screen']">
-    <div class="w-1/2 flex items-center justify-center">
-    </div>
 
-  <div class="max-w-[600px] w-full h-[820px] border p-6 rounded-lg shadow-md overflow-auto mr-20">
+  <div class="grid lg:grid-cols-2">
+    <div class="bg-primary-foreground">
+
+    </div>
+    <div class="p-[100px] min-h-screen ">
+      <div class=" w-full border p-6 rounded-lg shadow-md align-middle max-h-screen">
     <!-- Title and Theme Toggle -->
-      <div class="flex flex-col justify-center items-center mb-8">
+      <div class="flex flex-col justify-center items-center  mb-8">
         <h3 class="text-3xl font-bold text-center">Register Your Account</h3>
       </div>
 
@@ -190,49 +192,50 @@
   </div>
 
   <!-- Birthday Input -->
-  <div class="relative">
-    <div class="flex items-center justify-between mb-2">
-      <label for="birthday" class="block font-bold">Birthday</label>
-      <div v-if="showErrors.birthday" class="text-red-500 text-sm">This field is required</div>
-    </div>
-    <div class="relative">
-      <Input
-        v-model="formData.birthday"
-        id="birthday"
-        type="date"
-        class="border rounded-md w-full h-10 px-2 focus:outline-none focus:ring-2"
-        required
-        ref="birthdayInput"
-      />
-      <span
-        class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
-        @click="toggleDatePicker"
-      >
-        <CiCalendarDate/>
-      </span>
-    </div>
-  </div>
+<!--  <div class="relative">-->
+<!--    <div class="flex items-center justify-between mb-2">-->
+<!--      <label for="birthday" class="block font-bold">Birthday</label>-->
+<!--      <div v-if="showErrors.birthday" class="text-red-500 text-sm">This field is required</div>-->
+<!--    </div>-->
+<!--    <div class="relative">-->
+<!--      <Input-->
+<!--        v-model="formData.birthday"-->
+<!--        id="birthday"-->
+<!--        type="date"-->
+<!--        class="border rounded-md w-full h-10 px-2 focus:outline-none focus:ring-2"-->
+<!--        required-->
+<!--        ref="birthdayInput"-->
+<!--      />-->
+<!--      <span-->
+<!--        class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"-->
+<!--        @click="toggleDatePicker"-->
+<!--      >-->
+<!--        <CiCalendarDate/>-->
+<!--      </span>-->
+<!--    </div>-->
+<!--  </div>-->
 
           <!-- Gender Input -->
-          <div class="relative">
-            <div class="flex items-center justify-between mb-2">
-              <label for="gender" class="block font-bold">Gender</label>
-              <div v-if="showErrors.gender" class="text-red-500 text-sm">This field is required</div>
-            </div>
-            <select
-              v-model="formData.gender"
-              id="gender"
-              :class="darkMode ? 'w-full border border-white rounded p-2 bg-black text-white' : 'w-full border border-black rounded p-2 bg-white text-black'"
-              required
-            >
-              <option value="">Select</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
+<!--          <div class="relative">-->
+<!--            <div class="flex items-center justify-between mb-2">-->
+<!--              <label for="gender" class="block font-bold">Gender</label>-->
+<!--              <div v-if="showErrors.gender" class="text-red-500 text-sm">This field is required</div>-->
+<!--            </div>-->
+<!--            <select-->
+<!--              v-model="formData.gender"-->
+<!--              id="gender"-->
+<!--              :class="darkMode ? 'w-full border border-white rounded p-2 bg-black text-white' : 'w-full border border-black rounded p-2 bg-white text-black'"-->
+<!--              required-->
+<!--            >-->
+<!--              <option value="">Select</option>-->
+<!--              <option value="Male">Male</option>-->
+<!--              <option value="Female">Female</option>-->
+<!--              <option value="Other">Other</option>-->
+<!--            </select>-->
+<!--          </div>-->
         </div>
       </div>
+
 
 <div v-if="currentStep === 2" class="space-y-4">
   <!-- Terms and Conditions Label -->
@@ -243,7 +246,7 @@
   </label>
 
   <!-- Terms and Conditions Text Area -->
-  <ScrollArea class="h-[500px] w-flex rounded-md border p-4">
+  <ScrollArea class="h-[300px] w-flex rounded-md border p-4">
 Welcome to ProjMan!
 <br><br>
 These terms and conditions ("Terms") govern your access to and use of the ProjMan website and services ("Services"). By using our website, you agree to comply with and be bound by these Terms. If you do not agree with these Terms, please do not use the Services.<br>
@@ -352,12 +355,13 @@ We may update these Terms at any time. You will be notified of any material chan
   >
     Back
   </Button>
-
+<p></p>
   <Button
     v-if="currentStep < steps.length"
     @click="nextStep"
-    class="px-4 py-2 border rounded"
+    class="px-4 py-2 border rounded  "
     :disabled="isNextDisabled"
+    variant="default"
   >
     Next
   </Button>
@@ -371,7 +375,9 @@ We may update these Terms at any time. You will be notified of any material chan
   </Button>
 </div>
     </div>
-  </div>
+        </div>
+    </div>
+
 </template>
 
 <script>
@@ -382,6 +388,15 @@ import { CiCalendarDate } from '@kalimahapps/vue-icons';
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 
 import VueCal from 'vue-cal';
 import { getCSRFToken } from "@/store/auth";
@@ -396,7 +411,8 @@ export default {
     CiCalendarDate,
     VueCal,
     Input,
-    ScrollArea
+    ScrollArea,
+      Button
   },
   props: {
     text: {
@@ -576,8 +592,8 @@ return regex.test(password);
           "username",
           "password",
           "confirmPassword",
-          "birthday",
-          "gender",
+          // "birthday",
+          // "gender",
         ].forEach((field) => {
           this.validateField(field);
           if (

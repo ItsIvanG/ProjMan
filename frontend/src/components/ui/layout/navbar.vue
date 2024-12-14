@@ -2,12 +2,7 @@
   <header class="fixed top-0 left-0 right-0 z-40 w-full border-b bg-background">
     <div class="flex h-16 items-center justify-between px-4 md:px-6">
       <!-- Logo Section -->
-      <div class="flex items-center space-x-2">
-        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
-          <span class="text-lg font-bold text-primary-foreground">PM</span>
-        </div>
-        <span class="hidden text-xl font-semibold sm:inline-block">Projman</span>
-      </div>
+     <projmanlogo class="ml-10"/>
 
       <!-- Right Section for Larger Screens -->
       <div class="hidden md:flex md:flex-1 md:items-center md:justify-end md:space-x-4">
@@ -76,7 +71,7 @@
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>{{ userName}}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem @click="navigateTo('/profile')">Profile</DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -89,7 +84,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import {ref, onMounted, computed} from 'vue';
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/store/auth'
 import { Button } from '@/components/ui/button'
@@ -111,7 +106,8 @@ import { useColorMode } from '@vueuse/core'
 
 
 ;
-import NotificationsModal from '@/components/ui/layout/notif.vue'; // Ensure the path is correct
+import NotificationsModal from '@/components/ui/layout/notif.vue';
+import Projmanlogo from "@/components/reusable/projmanlogo.vue"; // Ensure the path is correct
 
 // Router and Store
 const router = useRouter();
@@ -135,6 +131,8 @@ const logout = async () => {
     console.error('Logout failed:', error);
   }
 };
+
+const userName = computed(() => authStore.user?.username);
 
 // State Management
 const isNotificationOpen = ref(false);

@@ -65,6 +65,7 @@ def user(request):
             'role': request.user.role, 
             'is_active': request.user.is_active,
             'manager_id': request.user.manager_id,
+            'username': request.user.username,
         }
         return JsonResponse(user_data)
     return JsonResponse(

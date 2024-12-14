@@ -10,7 +10,7 @@ import Report from "./pages/Report.vue";
 import Task from "./pages/Project Management/Task.vue";
 import Gantt from "./pages/Project Management/Gantt.vue";
 import Kanban from "./pages/Project Management/Kanban.vue";
-import Notifications from "./pages/Notifications.vue";
+import Profile from "./pages/Profile.vue";
 
 
 
@@ -64,6 +64,11 @@ const routes = [
         path: '/forgotpass',
         name: 'notification',
         component: forgotpass
+    },
+        {
+        path: '/profile',
+        name: 'profile',
+        component: Profile
     }
 
 ]

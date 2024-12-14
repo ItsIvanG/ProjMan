@@ -26,6 +26,7 @@
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "vee-validate": "^4.14.7",
+    "vite-svg-loader": "^5.1.0",
     "vue": "^3.5.13",
     "vue-cal": "^4.10.0",
     "vue-router": "^4.5.0",

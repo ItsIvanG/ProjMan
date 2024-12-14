@@ -1,8 +1,13 @@
 <template>
-  <div class="flex items-center justify-right min-h-screen">
-    <Card class="max-w-[500px] w-full h-[700px] p-6 rounded-lg shadow-md overflow-auto ml-[850px]">
-      <CardHeader class="text-center mt-10">
-        <CardTitle class="text-2xl mt">Welcome Back!</CardTitle>
+  <div class="grid lg:grid-cols-2">
+    <div class="bg-primary-foreground">
+
+    </div>
+<div class="flex items-center  min-h-screen p-[100px]">
+    <Card class=" w-full p-6 rounded-lg shadow-md overflow-auto  ">
+      <CardHeader class="text-center items-center">
+             <projmanlogo/>
+
         <CardDescription>
           Kindly enter your account details.
         </CardDescription>
@@ -66,19 +71,19 @@
         <div v-if="error" class="text-red-500 text-sm">
           {{ error }}
         </div>
-                  <!-- Separator with "Sign in with" -->
-          <div class="justify-center relative flex items-center mx-2 ">
-            <span class="text-sm px-2 py-1">or</span>
-          </div>
+<!--                  &lt;!&ndash; Separator with "Sign in with" &ndash;&gt;-->
+<!--          <div class="justify-center relative flex items-center mx-2 ">-->
+<!--            <span class="text-sm px-2 py-1">or</span>-->
+<!--          </div>-->
 
-          <!-- Google Sign-In Button -->
-          <Button
-            class="w-full flex items-center justify-center mt-2"
-            @click="googleSignIn"
-          >
-            <span class="mr-2"><DeGoogleOriginal /></span>
-            <span>Continue with Google</span>
-          </Button>
+<!--          &lt;!&ndash; Google Sign-In Button &ndash;&gt;-->
+<!--          <Button-->
+<!--            class="w-full flex items-center justify-center mt-2"-->
+<!--            @click="googleSignIn"-->
+<!--          >-->
+<!--            <span class="mr-2"><DeGoogleOriginal /></span>-->
+<!--            <span>Continue with Google</span>-->
+<!--          </Button>-->
 
 
         <p>
@@ -94,6 +99,8 @@
       </CardFooter>
     </Card>
   </div>
+  </div>
+
 </template>
 
 <script>
@@ -111,6 +118,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "../store/auth";
+import Projmanlogo from "@/components/reusable/projmanlogo.vue";
 
 
 export default {
@@ -178,6 +186,7 @@ export default {
     },
   },
   components: {
+    Projmanlogo,
     AkEyeClosed,
     AkEyeOpen,
     Button,
