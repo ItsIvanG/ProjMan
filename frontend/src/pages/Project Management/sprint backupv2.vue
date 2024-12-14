@@ -70,6 +70,20 @@ import { useAllTasksStore } from '@/store/allTasksStore';
 const taskStore = useTaskStore();
 const allTasksStore = useAllTasksStore();
 
+const groupedTasks = computed(() => {
+  const grouped: Record<string, any[]> = {};
+  
+  allTasksStore.allTasks.forEach((task) => {
+    const sprint = `Sprint ${task.sprint}`;
+    if (!grouped[sprint]) {
+      grouped[sprint] = [];
+    }
+    grouped[sprint].push(task);
+  });
+  
+  return grouped;
+});
+
   const selectedStatus = ref<string | null>(null);
 const projectStore = useProjectStore();
 const projectId = computed(() => projectStore.project_id);
@@ -310,114 +324,20 @@ setTimeout(() => {
         <CardContent>
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>
-    Tasks
-
-</TableHead>
-
-
-                <TableHead>
-                  <div class="flex items-center">
-    <LayoutList class="mr-2 h-4 w-4" />
-                  Features </div></TableHead>
-                <TableHead>  <div class="flex items-center">
-    <Circle class="mr-2 h-4 w-4" />Status</div></TableHead>
-                <TableHead class="hidden md:table-cell">  <div class="flex items-center">
-    <Users class="mr-2 h-4 w-4" />Assigned</div></TableHead>
-                <TableHead class="hidden md:table-cell">  <div class="flex items-center">
-    <List class="mr-2 h-4 w-4" />Sprint</div></TableHead>
-                <TableHead class="hidden md:table-cell">  <div class="flex items-center">
-    <ArrowUpDown class="mr-2 h-4 w-4" />Priority</div></TableHead>
-                <TableHead class="hidden md:table-cell">  <div class="flex items-center">
-    <CalendarClock  class="mr-2 h-4 w-4" />Deadline</div></TableHead>
-                <TableHead>Actions</TableHead>
+              <TableRow v-for="task in allTasksStore.allTasks" :key="task.id">
+            
+                <TableHead>  <Badge :variant="getSprintVariant('Sprint ' + task.sprint)">
+    Sprint {{ task.sprint }}
+  </Badge> </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               <template v-if="allTasksStore.allTasks.length">
               <TableRow v-for="task in allTasksStore.allTasks" :key="task.id">
-                  <TableCell>{{task.task_code}}</TableCell>
-                  <TableCell>{{ task.features }}</TableCell>
-                  <TableCell>
-  <Badge :variant="getStatusVariant(task.status)">
-    <template v-if="task.status.toLowerCase() === 'not started'">
-      <CircleAlert class="mr-2 h-4 w-4" /> {{ task.status }}
-    </template>
-    <template v-if="task.status.toLowerCase() === 'in progress'">
-      <Circle class="mr-2 h-4 w-4" /> {{ task.status }}
-    </template>
-    <template v-if="task.status.toLowerCase() === 'completed'">
-      <CircleCheckBig class="mr-2 h-4 w-4" /> {{ task.status }}
-    </template>
-    <template v-if="task.status.toLowerCase() === 'cancelled'">
-      <CircleX class="mr-2 h-4 w-4" /> {{ task.status }}
-    </template>
-  </Badge>
+
+
+                  <TableCell class="hidden md:table-cell"> {{ task.features }}
 </TableCell>
-
-                  <TableCell>
-  <Badge variant="outline">
-    <template v-if="userRole !== 'Member'">
-      <a
-        href="#"
-        @click.prevent="openDialog"
-        @click="taskStore.setTask(task)"
-      >
-        {{ task.assignee || 'Assign Member' }}
-      </a>
-    </template>
-    <template v-else>
-      <span>{{ task.assignee || 'Assign Member' }}</span>
-    </template>
-  </Badge>
-</TableCell>
-
-
-                  <TableCell class="hidden md:table-cell">
-  <Badge :variant="getSprintVariant('Sprint ' + task.sprint)">
-    Sprint {{ task.sprint }}
-  </Badge>
-</TableCell>
-
-
-<TableCell class="hidden md:table-cell">
-                    <Badge :variant="getPriorityVariant(task.priority)">
-    <template v-if="task.priority.toLowerCase() === 'low'">
-      <ArrowDown  class="mr-2 h-4 w-4" /> {{ task.priority }}
-    </template>
-    <template v-if="task.priority.toLowerCase() === 'medium'">
-      <ArrowRight  class="mr-2 h-4 w-4" /> {{ task.priority }}
-    </template>
-    <template v-if="task.priority.toLowerCase() === 'high'">
-      <ArrowUpRight  class="mr-2 h-4 w-4" /> {{ task.priority }}
-    </template>
-    <template v-if="task.priority.toLowerCase() === 'very high'">
-      <ArrowUp  class="mr-2 h-4 w-4" /> {{ task.priority }}
-    </template>
-  </Badge>
-</TableCell>
-
-                  
-                  <TableCell class="hidden md:table-cell">
-                    {{ task.deadline }}
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger as-child>
-                        <Button
-                          aria-haspopup="true"
-                          size="icon"
-                          variant="ghost"
-                          @click="taskStore.setTask(task)"
-                        >
-                          <MoreHorizontal class="h-4 w-4" />
-                          <span class="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <EditTask />
-                    </DropdownMenu>
-                  </TableCell>
                 </TableRow>
               </template>
               <template v-else>

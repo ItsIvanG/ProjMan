@@ -4,8 +4,10 @@
       <div class="space-y-4 py-4">
         <div class="px-3 mb-8">
           <h2 class="mb-2 px-4 text-sm font-semibold tracking-tight text-muted-foreground">
-            Project
-          </h2>
+  <template v-if="userRole !== 'Member'">Project Management</template>
+  <template v-if="userRole === 'Member'">Project</template>
+</h2>
+
           <div class="space-y-4">
             <DropdownMenu>
               <!-- Dropdown Trigger -->
@@ -48,8 +50,8 @@
 
                 <!-- Create New Project Button -->
                 <DropdownMenuSeparator class="my-2 border-t border-gray-100" />
-                <ProjectModal class="my-2"/>
-                <archivedprojectsmodal />
+                <ProjectModal class="my-2" v-if="userRole !== 'Member'"/>
+                <archivedprojectsmodal v-if="userRole !== 'Member'"/>
 
 
               </DropdownMenuContent>
@@ -81,10 +83,12 @@
               <CollapsibleTrigger 
                 class="flex w-full items-center justify-between rounded-md px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
               >
-                <div class="flex items-center">
-                  <File class="mr-4 h-4 w-4" />
-                  Project Management
-                </div>
+              <div class="flex items-center">
+  <File class="mr-4 h-4 w-4" />
+  <template v-if="userRole !== 'Member'">Task Management</template>
+  <template v-if="userRole === 'Member'">Task Overview</template>
+</div>
+
                 <ChevronDown 
                   class="h-4 w-4 shrink-0 transition-transform duration-200 ease-in-out group-data-[state=open]:rotate-180" 
                 />
@@ -119,14 +123,16 @@
 
             <!-- Member Management -->
             <Button
-              variant="ghost"
-              :class="{ 'bg-accent text-accent-foreground': isActive('/member') }"
-              class="w-full justify-start"
-              @click="navigateTo('/member')"
-            >
-              <Users class="mr-2 h-4 w-4" />
-              Member Management
-            </Button>
+  variant="ghost"
+  :class="{ 'bg-accent text-accent-foreground': isActive('/member') }"
+  class="w-full justify-start"
+  @click="navigateTo('/member')"
+>
+  <Users class="mr-2 h-4 w-4" />
+  <template v-if="userRole !== 'Member'">Member Management</template>
+  <template v-if="userRole === 'Member'">Members List</template>
+</Button>
+
           </div>
         </div>
 
@@ -151,8 +157,8 @@
               class="w-full justify-start"
               @click="navigateTo('/help')"
             >
-              <HelpCircle class="mr-2 h-4 w-4" />
-              Placeholder
+              <FolderSync class="mr-2 h-4 w-4" />
+              File Sharing
             </Button>
           </div>
         </div>
@@ -196,7 +202,9 @@ import {
   HelpCircle,
   LayoutDashboard,
   Users,
+  FolderSync
 } from 'lucide-vue-next';
+import { useProjectListStore } from '@/store/projectListStore';
 
 import Archivedprojectsmodal from "@/components/reusable/modals/archivedprojectsmodal.vue";
 import Initialprojectmodal from "@/components/reusable/modals/initialprojectmodal.vue";
@@ -208,7 +216,7 @@ const projects = computed(() => projectListStore.projects);
 const selectedProject = computed(() => projectListStore.selectedProject);
 const archivedProjects = ref([]);
 
-
+const userRole = computed(() => authStore.user?.role);
 
 // Access the authentication store
 const authStore = useAuthStore();
@@ -216,6 +224,7 @@ const projectStore = useProjectStore();
 
 
 const projectListStore = useProjectListStore();
+projectListStore.clearSelectedProject(null);
 
 // Computed user ID
 const userId = computed(() => authStore.user?.manager_id);
@@ -253,6 +262,13 @@ const selectProject = (project) => {
   projectStore.setProject(project); // Update the global project store
   console.log('Selected project:', project);
 };
+
+watchEffect(() => {
+  if (selectedProject.value) {
+    projectStore.setProject(selectedProject.value); // Sync selected project with the global store
+    console.log('Updated selected project:', selectedProject.value);
+  }
+});
 
 // Function for navigation
 const navigateTo = (path) => {
