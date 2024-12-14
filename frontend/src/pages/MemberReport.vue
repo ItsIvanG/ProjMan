@@ -24,12 +24,12 @@
         </DropdownMenu>
 
         <!-- Print Report Button with Imported Style -->
-        <Button
+        <button
           @click="printReport"
           class="px-3 py-1 border rounded w-32 text-left text-sm flex justify-center items-center"
         >
           Print Report
-        </Button>
+        </button>
       </div>
     </div>
 
@@ -45,7 +45,7 @@
         <div class="flex mb-2 items-center justify-between">
           <div class="w-full bg-gray-200 rounded-full h-2.5">
             <div
-              class="h-2.5 rounded-full"
+              class="h-2.5 rounded-full bg-gray-700"
               :style="{ width: progressPercentage + '%' }"
             ></div>
           </div>
@@ -97,12 +97,10 @@
 
       <h4 class="text-lg font-semibold mt-6 mb-2">Actionable Insights</h4>
       <h5 class="font-semibold">Areas for Improvement:</h5>
-
       <ul class="list-disc pl-5">
         <li>Improve task completion speed</li>
         <li>Reduce time spent on low priority tasks</li>
       </ul>
-
       <h5 class="font-semibold mt-4">Next Steps:</h5>
       <ul class="list-disc pl-5">
         <li>Focus on completing pending tasks</li>
