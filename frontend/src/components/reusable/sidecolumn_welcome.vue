@@ -7,8 +7,8 @@
                  width="80px"
           height="80px"
           class="fill-foreground "/>
-         <p class="text-4xl	 ml-5">
-           ProjMan</p>
+<!--         <p class="text-4xl	 ml-5">-->
+<!--           ProjMan</p>-->
           </span>
        <p class="text-6xl font-bold py-10">What will you get done today?</p>
 

@@ -59,7 +59,7 @@ class AssignTaskSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'name', 'role', 'manager', 'is_active']
+        fields = '__all__'
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -67,7 +67,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'name', 'role', 'manager', 'is_active', 'password']
+        fields = ['id', 'username', 'email', 'name', 'role', 'manager', 'is_active', 'password', 'profile_picture']
 
     def create(self, validated_data):
         # Hash the password before saving the user

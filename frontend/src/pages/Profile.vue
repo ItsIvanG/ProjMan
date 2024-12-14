@@ -1,13 +1,18 @@
 <template>
-  <div class="user-profile">
+  <div class="user-profile px-[100px]">
     <form @submit.prevent="handleSubmit">
       <!-- Aligned Containers: Profile and Email/Name -->
-      <div class="aligned-container">
+      <div class="grid-cols-3 grid gap-4 mb-5">
         <!-- Profile Container -->
-        <div class="box-container profile-container">
-          <h1>Profile Photo</h1>
-          <h4>Set a new profile picture for your account.</h4>
-          <div class="profile-picture-container" @click="triggerFileInput">
+        <Card class="col-span-1">
+          <CardHeader>
+             <CardTitle>Profile Picture</CardTitle>
+          <CardDescription>Set a new profile picture for your account.</CardDescription>
+
+          </CardHeader>
+          <CardContent>
+            <div class="flex justify-center">
+               <div class="profile-picture-container w-[100px] h-[100px] " @click="triggerFileInput" >
             <img
               v-if="user.profilePicture"
               :src="user.profilePicture"
@@ -20,31 +25,26 @@
             <input type="file" id="profile-picture" @change="handleFileChange" hidden />
           </div>
 
-          <!-- Username Display -->
-           <div class="username-display">
-             <input
-                 type="text"
-                 v-model="user.username"
-                 placeholder="@username"
-                 class="username-input"
-             />
-           </div>
+            </div>
 
-          <!-- Button Container for Save and Delete -->
-          <div class="button-container">
-            <Button variant="destructive">
 
-              Delete
-            </Button>
-            <button type="button" class="primary-button">Save</button>
-          </div>
-        </div>
+          </CardContent>
+          <CardFooter>
+             <Button variant="destructive">Delete</Button>
+            <Button class="ml-3">Save</Button>
+          </CardFooter>
+
+        </Card>
 
         <!-- Email and Name Container -->
-        <div class="box-container email-name-container">
-           <h1>Profile Information</h1>
-           <h4>Update your account's profile name and email address.</h4>
-          <div class="form-group">
+        <Card class="col-span-2">
+          <CardHeader>
+             <CardTitle>Profile Information</CardTitle>
+           <CardDescription>Update your account's profile name, username and email address.</CardDescription>
+
+          </CardHeader>
+          <CardContent>
+             <div class="form-group">
             <Label for="name">Name:</Label>
             <Input
               type="text"
@@ -62,15 +62,31 @@
 
             />
           </div>
-          <button type="button" class="primary-button">Save</button>
-        </div>
+                        <Label for="email">Username:</Label>
+
+              <Input
+                 type="text"
+                 v-model="user.username"
+                 placeholder="@username"
+                 class="username-input"
+             />
+          </CardContent>
+
+          <CardFooter>
+                      <Button >Save</Button>
+          </CardFooter>
+        </Card>
       </div>
 
       <!-- Password Change Container -->
-      <div class="box-container password-change-container">
-        <h1>Change Password</h1>
-        <h4>Keep your account safe by choosing a strong, random password.</h4>
-        <div class="form-group">
+      <Card class="mb-5" >
+        <CardHeader>
+           <CardTitle>Change Password</CardTitle>
+        <CardDescription>Keep your account safe by choosing a strong, random password.</CardDescription>
+
+        </CardHeader>
+        <CardContent>
+           <div class="form-group">
           <Label for="oldpass">Current Password:</Label>
           <Input
             type="password"
@@ -97,132 +113,193 @@
             v-model="confirmPassword"
           />
         </div>
-        <Button type="button" class="primary-button">Save</Button>
-      </div>
+        </CardContent>
+       <CardFooter>
+                 <Button type="button" class="primary-button" @click="handleSubmitPass">Save</Button>
+       </CardFooter>
+      </Card>
 
       <!-- Delete Account Container -->
-      <div class="delete-account-container">
-        <Label>Delete Account</Label>
-        <p class="delete-description">
-          If you want to delete your account, click the button below. Note that this action cannot be undone.
-        </p>
-        <Button type="button" @click="deleteAccount" class="secondary-button">Delete Account</Button>
-      </div>
+      <Card class="border border-destructive">
+        <CardHeader>
+            <CardTitle>Delete Account</CardTitle>
+            <CardDescription>
+              If you want to delete your account, click the button below. Note that this action cannot be undone.
+            </CardDescription>
+        </CardHeader>
+        <CardFooter>
+          <Button type="button" @click="deleteAccount" variant="destructive">Delete Account</Button>
+        </CardFooter>
+      </Card>
+
     </form>
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import {computed, ref, onMounted} from "vue";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardTitle,
+  CardContent,
+  CardHeader,
+  CardFooter,
+  CardDescription,
+} from "@/components/ui/card";
+import {useAuthStore} from "@/store/auth.ts";
+import {getAPI} from "@/axios.ts";
 
-import {Button } from "@/components/ui/button";
-import {Input} from "@/components/ui/input";
-import {Label} from "@/components/ui/label";
+interface User {
+  name?: string;
+  email?: string;
+  username?: string;
+  role?: string;
+  profile_picture?: string | null;
+  password?: string;
+}
 
-export default {
-  data() {
-    return {
-      user: {
-        name: '',
-        email: '',
-        profilePicture: null,
-      },
-      oldPassword: '',
-      newPassword: '',
-      confirmPassword: '',
-    };
-  },
-  components:{
-    Button,
-    Input,
-    Label,
-  },
-  methods: {
-    handleFileChange(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.user.profilePicture = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    },
-    triggerFileInput() {
-      document.getElementById('profile-picture').click();
-    },
-    deleteProfilePicture() {
-      if (confirm('Are you sure you want to delete your profile picture?')) {
-        this.user.profilePicture = null;
-      }
-    },
-    async handleSubmit() {
-      if (this.newPassword && this.newPassword !== this.confirmPassword) {
-        alert("New passwords do not match!");
-        return;
-      }
 
-      alert('Profile updated (simulated)!');
-      console.log('Updated user data:', this.user);
+// Reactive state
+const user = ref<User>({
+  name: "",
+  email: "",
+});
 
-      this.oldPassword = '';
-      this.newPassword = '';
-      this.confirmPassword = '';
-    },
-    deleteAccount() {
-      if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
-        alert('Account deleted (simulated)!');
-        console.log('User account deleted');
-        this.user = {};
-      }
-    },
-  },
+const oldPassword = ref("");
+const newPassword = ref("");
+const confirmPassword = ref("");
+
+
+
+// Methods
+
+
+const updateUserNameAndEmail = async (userId: number, data: UpdateUserData): Promise<void> => {
+  try {
+    console.log("trying to update usern: ",user.value.name);
+     if (!user.value.name || !user.value.email) {
+    alert("Name and email fields are required!");
+    return;
+  }
+
+    await getAPI.put(`api/userprofile/${userId}/`, data);
+  } catch (error) {
+    console.error("Error updating name and email:", error);
+    throw error;
+  }
 };
+
+const updateUserPassword = async (userId: number, data: UpdatePasswordData): Promise<void> => {
+  try {
+    await getAPI.put(`api/updatepass/${userId}/`, data);
+  } catch (error) {
+    console.error("Error updating password:", error);
+    throw error;
+  }
+};
+
+
+const handleFileChange = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e: ProgressEvent<FileReader>) => {
+      user.value.profilePicture = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+const triggerFileInput = () => {
+  const fileInput = document.getElementById("profile-picture") as HTMLInputElement;
+  if (fileInput) {
+    fileInput.click();
+  }
+};
+
+const deleteProfilePicture = () => {
+  if (confirm("Are you sure you want to delete your profile picture?")) {
+    user.value.profilePicture = null;
+  }
+};
+
+const handleSubmit = async () => {
+
+  await updateUserNameAndEmail(userId.value,{name: user.value.name, email: user.value.email, username: user.value.username});
+  alert("User details updated!");
+};
+
+const handleSubmitPass = async () => {
+  if (newPassword.value && newPassword.value !== confirmPassword.value) {
+    alert("New passwords do not match!");
+    return;
+
+  }
+ if (!oldPassword.value || !newPassword.value || !confirmPassword.value) {
+    alert("All fields are required!");
+    return;
+  }
+
+  if (newPassword.value !== confirmPassword.value) {
+    alert("New password and confirmation do not match!");
+    return;
+  }
+
+  try {
+    await updateUserPassword(userId.value, {
+      oldPassword: oldPassword.value,
+      newPassword: newPassword.value,
+    });
+    alert("Password updated successfully!");
+    oldPassword.value = "";
+    newPassword.value = "";
+    confirmPassword.value = "";
+  } catch (error) {
+    alert("Failed to update password. Please ensure your old password is correct.");
+    console.error(error);
+  }
+};
+
+
+const deleteAccount = () => {
+  if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+    alert("Account deleted (simulated)!");
+    console.log("User account deleted");
+    user.value = { name: "", email: "", profilePicture: null };
+  }
+};
+const authStore = useAuthStore();
+
+const userId = computed(() => authStore.user?.id);
+
+const getUserById = async (userId: number): Promise<User> => {
+  try {
+    console.log("trying to fetch profile by ID: ",userId);
+    const response = await getAPI.get(`/api/userprofile/${userId}/`);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    throw error;
+  }
+};
+onMounted(async () => {
+  try {
+    user.value = await getUserById(userId.value);
+  } catch (error) {
+    console.error("Failed to load user:", error);
+  }
+});
+
 </script>
 
+
 <style scoped>
-.user-profile {
-  max-width: 1200px;
-  margin: 20px auto;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.aligned-container {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
-}
-
-.box-container {
-  padding: 20px;
-  border-radius: 10px;
-  border: 1px;
-  border-style: solid;
-  width: 100%;
-}
-
-.profile-container {
-  flex: 1;
-  text-align: center;
-}
-
-.email-name-container {
-  flex: 2;
-}
-
-.password-change-container,
-.delete-account-container {
-  margin-top: 20px;
-}
-
-.profile-picture-container {
-  position: relative;
-  width: 100px;
-  height: 100px;
-  margin: 0 auto 20px;
-  cursor: pointer;
-}
 
 .profile-picture {
   width: 100%;
@@ -230,123 +307,6 @@ export default {
   border-radius: 50%;
   object-fit: cover;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.person-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 5px;
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background-color: #f0f0f0;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-label {
-  margin-top: 15px;
-  margin-bottom: 5px;
-  display: block;
-}
-
-input {
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 7px;
-  width: 80%;
-  font-size: 14px;
-  transition: border-color 0.3s;
-}
-
-input:focus {
-  border-color: #101010;
-  outline: none;
-}
-
-.primary-button,
-.secondary-button {
-  padding: 6px 25px;
-  font-size: 14px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  display: block;
-  margin-top: 10px;
-}
-
-.primary-button {
-  background-color: #101010;
-  color: white;
-  border: none;
-}
-
-.primary-button:hover {
-  background-color: #202020;
-}
-
-.secondary-button {
-  padding: 6px 20px;
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-}
-
-.secondary-button:hover {
-  background-color: #c0392b;
-}
-
-.delete-account-container {
-  margin-top: 20px;
-  padding: 20px;
-  border-radius: 10px;
-  background-color: #fff3f3;
-  border: 1px solid #e74c3c;
-}
-
-.delete-description {
-  margin-bottom: 10px;
-  font-size: 16px;
-  color: #e74c3c;
-}
-
-h1{
-  font-weight: bold;
-  font-size: 24px;
-}
-
-h4{
-  font-size: 16px;
-  color: lightslategrey;
-}
-
-.button-container {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-
-.username-display {
-  margin-top: 10px;
-  font-size: 16px;
-  color: #101010;
-}
-
-.username-input {
-  border: none;
-  outline: none;
-  border-bottom: 1px solid #ccc;
-  font-size: 16px;
-  color: #101010;
-  width: auto;
-}
-
-.username-input::placeholder {
-  color: #aaa;
 }
 
 </style>

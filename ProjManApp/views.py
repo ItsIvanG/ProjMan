@@ -7,8 +7,8 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
-from rest_framework.exceptions import NotFound
-
+from rest_framework.exceptions import NotFound,ValidationError
+from django.contrib.auth.hashers import make_password, check_password
 from .forms import CreateUserForm
 
 from rest_framework.views import APIView
@@ -358,10 +358,20 @@ class TaskCompletionPercentageAPIView(APIView):
 
             # Avoid division by zero
             if total_tasks == 0:
-                return Response(
-                    {"error": "No tasks available in this project to calculate percentages."},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+                data = {
+                    "completed_percentage": 0,
+                    "non_completed_percentage": 0,
+                    "total_tasks": 0,
+                    "completed": 0,
+                    "ongoing": 0,
+                    "not_started": 0,
+                }
+
+                return Response(data, status=status.HTTP_200_OK)
+                # return Response(
+                #     {"error": "No tasks available in this project to calculate percentages."},
+                #     status=status.HTTP_400_BAD_REQUEST
+                # )
 
             # Calculate the percentages
             completed_percentage = (completed_tasks / total_tasks) * 100
@@ -461,3 +471,62 @@ class UserByManagerAPIView(APIView):
                 {"error": f"An error occurred: {str(e)}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+class UserDetailView(APIView):
+
+    def get(self, request, user_id, *args, **kwargs):
+        try:
+            # Fetch the user by ID
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            raise NotFound(detail="User not found.")
+
+        # Serialize the user data
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
+    def put(self, request, user_id, *args, **kwargs):
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            raise NotFound(detail="User not found.")
+
+        # Validate and update fields
+        data = request.data
+        allowed_fields = ["name", "email", "username", "role", "profile_picture", "password"]
+
+        for field, value in data.items():
+            if field not in allowed_fields:
+                raise ValidationError(f"{field} is not a valid field for updating.")
+
+            if field == "password":
+                # Hash the new password before saving
+                user.password = make_password(value)
+            else:
+                setattr(user, field, value)
+
+        user.save()
+
+        # Serialize updated user data
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class UpdatePasswordView(APIView):
+
+
+    def put(self, request, user_id):
+        user = User.objects.get(id=user_id)
+
+        old_password = request.data.get('oldPassword')
+        new_password = request.data.get('newPassword')
+
+        if not old_password or not new_password:
+            raise ValidationError({"detail": "Both old and new passwords are required."})
+
+        if not check_password(old_password, user.password):
+            raise ValidationError({"detail": "Old password is incorrect."})
+
+        user.password = make_password(new_password)
+        user.save()
+
+        return Response({"detail": "Password updated successfully."})
