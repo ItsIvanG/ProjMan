@@ -80,6 +80,16 @@
 
             <!-- Deadline Date Picker -->
             <div class="grid gap-2">
+              <Label for="deadline">Start date</Label>
+              <Input
+                id="deadline"
+                type="date"
+                v-model="formData.start_date"
+                required
+              />
+            </div>
+
+             <div class="grid gap-2">
               <Label for="deadline">Deadline</Label>
               <Input
                 id="deadline"
@@ -89,6 +99,8 @@
               />
             </div>
           </div>
+
+
 
           <DialogFooter>
             <Button type="submit" class="mt-6 w-full sm:w-auto">
@@ -129,6 +141,7 @@ const formData = reactive({
   status: '',
   priority: '',
   deadline: '',
+  start_date:'',
 });
 
 // Dialog state
@@ -155,6 +168,7 @@ const handleSubmit = async () => {
       project: projectId.value,
       priority: formData.priority,
       deadline: formData.deadline,
+      start_date: formData.start_date,
     });
 
     toast({

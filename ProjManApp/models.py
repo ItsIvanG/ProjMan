@@ -1,4 +1,4 @@
-from datetime import timezone
+from django.utils import timezone
 
 from django.db import models
 from django.contrib.auth.models import UserManager, AbstractUser, PermissionsMixin
@@ -119,12 +119,15 @@ class Task(models.Model):
     )
     sprint = models.IntegerField(blank=True, null=True)  
     priority = models.CharField(max_length=50, blank=False)  
-    deadline = models.DateField(blank=False)  
+    deadline = models.DateField(blank=False)
+    start_date = models.DateField(blank=False)
+
     project = models.ForeignKey(
         'Project',  
         on_delete=models.CASCADE,  
         related_name='tasks',  
     )
+
 
     def save(self, *args, **kwargs):
         if not self.task_code:

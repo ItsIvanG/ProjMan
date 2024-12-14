@@ -1,14 +1,14 @@
 <template xmlns="http://www.w3.org/1999/html">
 
   <div class="grid lg:grid-cols-2">
-    <div class="bg-primary-foreground">
-
+    <div class="bg-secondary min-h-full  flex flex-col">
+    <sidecolumn_welcome/>
     </div>
     <div class="p-[100px] min-h-screen ">
       <div class=" w-full border p-6 rounded-lg shadow-md align-middle max-h-screen">
     <!-- Title and Theme Toggle -->
       <div class="flex flex-col justify-center items-center  mb-8">
-        <h3 class="text-3xl font-bold text-center">Register Your Account</h3>
+        <h3 class="text-3xl font-bold text-center">Create an account</h3>
       </div>
 
     <div class="flex justify-between items-right mb-4">
@@ -400,9 +400,11 @@ import {
 
 import VueCal from 'vue-cal';
 import { getCSRFToken } from "@/store/auth";
+import Sidecolumn_welcome from "@/components/reusable/sidecolumn_welcome.vue";
 
 export default {
   components: {
+    Sidecolumn_welcome,
     Textarea,
     AkEyeClosed,
     AkEyeOpen,

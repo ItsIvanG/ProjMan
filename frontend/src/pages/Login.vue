@@ -1,7 +1,7 @@
 <template>
   <div class="grid lg:grid-cols-2">
-    <div class="bg-primary-foreground">
-
+    <div class="bg-secondary min-h-full  flex flex-col">
+    <sidecolumn_welcome/>
     </div>
 <div class="flex items-center  min-h-screen p-[100px]">
     <Card class=" w-full p-6 rounded-lg shadow-md overflow-auto  ">
@@ -119,6 +119,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "../store/auth";
 import Projmanlogo from "@/components/reusable/projmanlogo.vue";
+import Sidecolumn_welcome from "@/components/reusable/sidecolumn_welcome.vue";
 
 
 export default {
@@ -186,6 +187,7 @@ export default {
     },
   },
   components: {
+    Sidecolumn_welcome,
     Projmanlogo,
     AkEyeClosed,
     AkEyeOpen,
