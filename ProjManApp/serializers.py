@@ -49,8 +49,8 @@ class AssignTaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ['task_id', 'task_code', 'features', 'status', 'assignee', 'assignee_id', 'sprint', 'priority', 'deadline', 'project']
-        read_only_fields = ['task_id', 'task_code', 'features', 'status', 'assignee', 'sprint', 'priority', 'deadline', 'project']
+        fields = ['task_id', 'task_code', 'features', 'status', 'assignee', 'assignee_id', 'sprint', 'priority', 'deadline', 'project', 'start_date']
+        read_only_fields = ['task_id', 'task_code', 'features', 'status', 'assignee', 'sprint', 'priority', 'deadline', 'project','start_date']
 
     def get_assignee(self, obj):
         # Assuming 'name' is the field you want to show from the assignee (user model)

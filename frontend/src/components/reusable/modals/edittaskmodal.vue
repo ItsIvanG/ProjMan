@@ -103,7 +103,16 @@
                 </SelectContent>
               </Select>
             </div>
-
+<!-- Start date Date Picker -->
+            <div class="grid gap-2" v-if="userRole !== 'Member'">
+              <Label for="deadline">Start date</Label>
+              <Input
+                id="start_date"
+                type="date"
+                v-model="formData.start_date"
+                required
+              />
+            </div>
             <!-- Deadline Date Picker -->
             <div class="grid gap-2" v-if="userRole !== 'Member'">
               <Label for="deadline">Deadline</Label>
@@ -163,6 +172,7 @@ const formData = reactive({
   status: '',
   priority: '',
   deadline: '',
+  start_date:'',
 });
 
 // Function to open the dialog
@@ -180,6 +190,7 @@ const openDialog = () => {
     formData.status = task.status || '';
     formData.priority = task.priority || '';
     formData.deadline = task.deadline || '';
+        formData.start_date = task.start_date || '';
     formData.task_id = task.task_id || '';
     formData.task_code = task.task_code || '';
     formData.project = task.project || '';
