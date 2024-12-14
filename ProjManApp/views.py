@@ -7,13 +7,15 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
+from rest_framework.exceptions import NotFound
+
 from .forms import CreateUserForm
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Project
-from .serializers import ProjectSerializer
+from .models import Project, Report
+from .serializers import ProjectSerializer, ReportSerializer
 from django.shortcuts import get_object_or_404
 
 
@@ -72,6 +74,7 @@ def user(request):
 
 @require_http_methods(['POST'])
 def register(request):
+
     data = json.loads(request.body.decode('utf-8'))
     form = CreateUserForm(data)
     if form.is_valid():
@@ -266,3 +269,23 @@ class UserIsActiveUpdateView(generics.UpdateAPIView):
     def get_object(self):
         # Fetch the user object based on the ID in the URL
         return self.get_queryset().get(id=self.kwargs['pk'])
+
+
+class ReportListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Report.objects.all()
+    serializer_class = ReportSerializer
+
+class ReportUpdateAPIView(generics.UpdateAPIView):
+    queryset = Report.objects.all()
+    serializer_class = ReportSerializer
+
+    def get_object(self):
+        try:
+            return Report.objects.get(report_id=self.kwargs['report_id'])
+        except Report.DoesNotExist:
+            raise NotFound(detail="Report not found.")
+
+    def perform_update(self, serializer):
+        # Optionally associate with logged-in user
+        # serializer.save(user=self.request.user)
+        serializer.save()

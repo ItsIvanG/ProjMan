@@ -6,7 +6,7 @@
     @click="viewArchivedProjects"
   >
     <!-- Full-Length Button with Icon -->
-    <Button variant="outline" class="w-full flex items-center px-4 py-2">
+    <Button variant="outline" class="w-full flex items-center start-0">
       <!-- Icon -->
       <Archive class="h-5 w-5 mr-2" />
       <!-- Button Text -->
@@ -17,14 +17,14 @@
     <!-- Dialog -->
     <Dialog v-model:open="isDialogOpen" @close="closeDialog">
       <!-- Updated DialogContent size -->
-      <DialogContent class="max-w-[600px]">
+      <DialogContent>
         <DialogHeader>
                     <DialogTitle class="text-2xl font-bold">Archived Projects</DialogTitle>
           <DialogDescription class=" text-lg">
 Click on an archived project and press Unarchive.</DialogDescription>
         </DialogHeader>
          <Select v-model="selectedProject">
-            <SelectTrigger class="w-[180px]">
+            <SelectTrigger >
               <SelectValue placeholder="Select an archived project" />
             </SelectTrigger>
             <SelectContent>

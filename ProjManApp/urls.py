@@ -1,8 +1,6 @@
 from django.urls import path
 from . import views
-from .views import ProjectCreateView, ArchiveProjectView, UnarchiveProjectView
-from .views import TaskCreateView, TaskListView, TaskEditView, TaskAssignEditView
-from .views import UserListView, UserCreateView, UserUpdateView, UserIsActiveUpdateView
+from .views import *
 
 
 
@@ -26,5 +24,9 @@ urlpatterns = [
     path('api/projects/archive/<int:project_id>/', ArchiveProjectView.as_view(), name='archive_project'),
     path('projects/archives/<int:manager_id>/', ArchiveProjectView.as_view(), name='archived-projects'),
     path('api/projects/unarchive/<int:project_id>/', UnarchiveProjectView.as_view(), name='archive_project'),
+    # This handles listing and creating reports
+    path('reports/create_report/', ReportListCreateAPIView.as_view(), name='report-list-create'),
 
+    # This handles updating a specific report by its ID
+    path('reports/<int:report_id>/', ReportUpdateAPIView.as_view(), name='report-update'),
 ]
