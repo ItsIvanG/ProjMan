@@ -183,6 +183,10 @@ watchEffect(() => {
   }
 });
 
+const isAssignee = (task: any) => {
+  return task.assignee === authStore.user?.name;
+};
+
 // Selected member
 const selectedMember = ref(null);
 
@@ -270,6 +274,7 @@ setTimeout(() => {
 
 
 
+
 </script>
 
 
@@ -333,7 +338,10 @@ setTimeout(() => {
     <CalendarClock  class="mr-2 h-4 w-4" />Start date</div></TableHead>
                 <TableHead class="hidden md:table-cell">  <div class="flex items-center">
     <CalendarClock  class="mr-2 h-4 w-4" />Deadline</div></TableHead>
-                <TableHead>Actions</TableHead>
+    <TableHead v-if="allTasksStore.allTasks.some(task => isAssignee(task) || userRole === 'Manager')">
+  <TableHead>Actions</TableHead>
+</TableHead>
+
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -410,6 +418,7 @@ setTimeout(() => {
                     <DropdownMenu>
                       <DropdownMenuTrigger as-child>
                         <Button
+                        v-if="(isAssignee(task) || userRole === 'Manager')"
                           aria-haspopup="true"
                           size="icon"
                           variant="ghost"

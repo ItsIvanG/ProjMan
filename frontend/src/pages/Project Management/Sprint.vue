@@ -288,122 +288,129 @@ setTimeout(() => {
 
 
 <template>
-  <Tabs default-value="all">
-    <div class="flex items-center">
-      <CardHeader>
-                <CardTitle>{{ projectStore.project_name }} </CardTitle>
-                <CardDescription>
-                  {{ projectStore.project_description }}
-                </CardDescription>
-              </CardHeader>
-      <div class="ml-auto flex items-center gap-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger as-child>
-            <Button variant="outline" size="sm" class="h-7 gap-1">
-              <ListFilter class="h-3.5 w-3.5" />
-              <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                Filter
-              </span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem @click="applyStatusFilter('')">All</DropdownMenuItem>
-            <DropdownMenuItem @click="applyStatusFilter('Not started')">Not Started</DropdownMenuItem>
-            <DropdownMenuItem @click="applyStatusFilter('In Progress')">In Progress</DropdownMenuItem>
-            <DropdownMenuItem @click="applyStatusFilter('Completed')">Completed</DropdownMenuItem>
-            <DropdownMenuItem @click="applyStatusFilter('Cancelled')">Cancelled</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <AddTask v-if="userRole !== 'Member'" />
+    <Tabs default-value="all">
+      <div class="flex items-center">
+        <CardHeader>
+          <CardTitle>{{ projectStore.project_name }}</CardTitle>
+          <CardDescription>
+            {{ projectStore.project_description }}
+          </CardDescription>
+        </CardHeader>
+        <div class="ml-auto flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+              <Button variant="outline" size="sm" class="h-7 gap-1">
+                <ListFilter class="h-3.5 w-3.5" />
+                <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                  Filter
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem @click="applyStatusFilter('')">All</DropdownMenuItem>
+              <DropdownMenuItem @click="applyStatusFilter('Not started')">Not Started</DropdownMenuItem>
+              <DropdownMenuItem @click="applyStatusFilter('In Progress')">In Progress</DropdownMenuItem>
+              <DropdownMenuItem @click="applyStatusFilter('Completed')">Completed</DropdownMenuItem>
+              <DropdownMenuItem @click="applyStatusFilter('Cancelled')">Cancelled</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <AddTask v-if="userRole !== 'Member'" />
+        </div>
       </div>
-    </div>
-    <TabsContent value="all">
-      <Card>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow v-for="task in allTasksStore.allTasks" :key="task.id">
-            
-                <TableHead>  <Badge :variant="getSprintVariant('Sprint ' + task.sprint)">
-    Sprint {{ task.sprint }}
-  </Badge> </TableHead>
+      <TabsContent value="all" >
+  <div v-if="Object.keys(groupedTasks).length" class="flex flex-wrap gap-6">
+    <!-- Render each sprint as a section -->
+    <div
+      v-for="(tasks, sprint) in groupedTasks"
+      :key="sprint"
+      class="flex-1 min-w-[300px] max-w-[calc(33%-1rem)] bg-background shadow-lg rounded-lg overflow-hidden"
+    >
+      <!-- Sprint Card -->
+      <Card class="h-full">
+        <!-- Sprint Header -->
+        <CardHeader class="py-4 px-6">
+  <Badge 
+    :variant="getSprintVariant(sprint)" 
+    class="flex items-center justify-center text-md px-2 py-1 font-medium"
+  >
+    {{ sprint }}
+  </Badge>
+</CardHeader>
+
+
+        <!-- Card Content -->
+        <CardContent class="p-4">
+          <Table class="w-full border-collapse">
+            <TableHeader class="border-b">
+              <TableRow>
+                <TableHead>
+    Tasks
+
+</TableHead>
+                <TableHead>
+                  <div class="flex items-center">
+    <LayoutList class="mr-2 h-4 w-4" />
+                  Features </div></TableHead>
+                <TableHead>  <div class="flex items-center">
+    <Circle class="mr-2 h-4 w-4" />Status</div></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              <template v-if="allTasksStore.allTasks.length">
-              <TableRow v-for="task in allTasksStore.allTasks" :key="task.id">
-
-
-                  <TableCell class="hidden md:table-cell"> {{ task.features }}
+              <!-- Tasks for the current sprint -->
+              <TableRow
+                v-for="task in tasks"
+                :key="task.id"
+                class="hover:bg-muted transition-colors"
+              >
+              <TableCell>{{task.task_code}}</TableCell>
+                <TableCell class="py-2 px-4 text-sm text-foreground">
+                  {{ task.features }}
+                </TableCell>
+                <TableCell>
+  <Badge :variant="getStatusVariant(task.status)">
+    <template v-if="task.status.toLowerCase() === 'not started'">
+      <CircleAlert class="mr-2 h-4 w-4" /> {{ task.status }}
+    </template>
+    <template v-if="task.status.toLowerCase() === 'in progress'">
+      <Circle class="mr-2 h-4 w-4" /> {{ task.status }}
+    </template>
+    <template v-if="task.status.toLowerCase() === 'completed'">
+      <CircleCheckBig class="mr-2 h-4 w-4" /> {{ task.status }}
+    </template>
+    <template v-if="task.status.toLowerCase() === 'cancelled'">
+      <CircleX class="mr-2 h-4 w-4" /> {{ task.status }}
+    </template>
+  </Badge>
 </TableCell>
-                </TableRow>
-              </template>
-              <template v-else>
-                <TableRow>
-  <TableCell colspan="8" class="text-center">  
-    <p class="text-sm text-muted-foreground">
-      <template v-if="userRole === 'Member'">
-        No task available. Contact the project manager to add a new task.
-      </template>
-      <template v-else>
-        No task available. Add a new task to get started.
-      </template>
-    </p>
-  </TableCell>
-</TableRow>
-
-</template>
+              </TableRow>
             </TableBody>
           </Table>
         </CardContent>
       </Card>
-    </TabsContent>
-  </Tabs>
-        <!-- Dialog for Task Editing -->
-        <Dialog v-model:open="isDialogOpen" @close="closeDialog">
-        <DialogContent >
-          <DialogHeader>
-            <DialogTitle class="text-2xl font-bold">Assign Task</DialogTitle>
-            <DialogDescription class="text-md">
-              Fill out the form below to assign the task. Provide the necessary details and click "Save changes."
-            </DialogDescription>
-          </DialogHeader>
-  
-          <form @submit.prevent="handleSubmit">
-  <div class="grid gap-4 py-4 sm:grid-cols-1 md:grid-cols-2">
-    <!-- Assign Member input -->
-    <div class="grid gap-2 md:col-span-2">
-      <Label for="assignee_id">Assign Member</Label>
-      <Select v-model="formData.assignee_id" aria-label="Select Member">
-        <SelectTrigger>
-          <SelectValue 
-            :placeholder="selectedMember?.label || 'Select Member'" 
-          />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem 
-            v-for="(member, index) in members" 
-            :key="member.value" 
-            :value="member.value"
-          >
-            {{ member.label }}
-          </SelectItem>
-        </SelectContent>
-      </Select>
     </div>
   </div>
-  <DialogFooter>
-    <Button type="submit" class="mt-6 w-full sm:w-auto">
-      <PlusCircle class="mr-2 h-4 w-4" />
-      Save changes
-    </Button>
-  </DialogFooter>
-</form>
+
+  <!-- No Tasks Fallback -->
+  <template v-else>
+    <Card class="text-center shadow-lg rounded-lg p-6 bg-muted">
+      <CardContent>
+        <p class="text-sm text-muted-foreground">
+          <template v-if="userRole === 'Member'">
+            No tasks available. Contact the project manager to add tasks.
+          </template>
+          <template v-else>
+            No tasks available. Add a new task to get started.
+          </template>
+        </p>
+      </CardContent>
+    </Card>
+  </template>
+</TabsContent>
 
 
-
-        </DialogContent>
-      </Dialog>
-</template>
+    </Tabs>
+  
+  </template>
+  

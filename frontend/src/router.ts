@@ -12,6 +12,10 @@ import Gantt from "./pages/Project Management/Gantt.vue";
 import Kanban from "./pages/Project Management/Kanban.vue";
 import Profile from "./pages/Profile.vue";
 
+import Sprint from "./pages/Project Management/Sprint.vue";
+import Sharing from "./pages/Sharing.vue";
+import Notifications from "./pages/Notifications.vue";
+
 
 
 const routes = [
@@ -44,6 +48,16 @@ const routes = [
         path: '/gantt',
         name: 'gantt',
         component: Gantt
+    },
+    {
+        path: '/sprint',
+        name: 'sprint',
+        component: Sprint
+    },
+    {
+        path: '/sharing',
+        name: 'sharing',
+        component: Sharing
     },
     {
         path: '/login',
