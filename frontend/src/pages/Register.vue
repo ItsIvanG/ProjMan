@@ -657,8 +657,8 @@ return regex.test(password);
 
     const data = await response.json();
     if (data.success) {
-      alert("Registration successful! Redirecting to dashboard...");
-      this.$router.push("/dashboard"); // Redirect to dashboard
+      alert("Registration successful! Redirecting to login...");
+      this.$router.push("/login"); // Redirect to dashboard
     } else {
       alert("Registration failed: " + (data.error || "Unknown error"));
     }
