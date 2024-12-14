@@ -174,6 +174,7 @@ const fetchMembers = async (managerId: number) => {
   }
 };
 const authStore = useAuthStore();
+const userRole = computed(() => authStore.user?.role);
 const managerId  = computed(() => authStore.user?.manager_id);
 watchEffect(() => {
   const managerIdValue = managerId.value;
@@ -301,7 +302,7 @@ setTimeout(() => {
             <DropdownMenuItem @click="applyStatusFilter('Cancelled')">Cancelled</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-<AddTask />
+        <AddTask v-if="userRole !== 'Member'" />
       </div>
     </div>
     <TabsContent value="all">
@@ -331,16 +332,22 @@ setTimeout(() => {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">
-        <a
-          href="#"
-          @click.prevent="openDialog"
-          @click="taskStore.setTask(task)"
-        >
+  <Badge variant="outline">
+    <template v-if="userRole !== 'Member'">
+      <a
+        href="#"
+        @click.prevent="openDialog"
+        @click="taskStore.setTask(task)"
+      >
         {{ task.assignee || 'Assign Member' }}
-        </a>
-      </Badge>
+      </a>
+    </template>
+    <template v-else>
+      <span>{{ task.assignee || 'Assign Member' }}</span>
+    </template>
+  </Badge>
 </TableCell>
+
 
                   <TableCell class="hidden md:table-cell">
   <Badge :variant="getSprintVariant('Sprint ' + task.sprint)">
@@ -376,13 +383,19 @@ setTimeout(() => {
                 </TableRow>
               </template>
               <template v-else>
-  <TableRow>
-    <TableCell colspan="8" class="text-center">  
-      <p class="text-sm text-muted-foreground">
+                <TableRow>
+  <TableCell colspan="8" class="text-center">  
+    <p class="text-sm text-muted-foreground">
+      <template v-if="userRole === 'Member'">
+        No task available. Contact the project manager to add a new task.
+      </template>
+      <template v-else>
         No task available. Add a new task to get started.
-      </p>
-    </TableCell>
-  </TableRow>
+      </template>
+    </p>
+  </TableCell>
+</TableRow>
+
 </template>
             </TableBody>
           </Table>

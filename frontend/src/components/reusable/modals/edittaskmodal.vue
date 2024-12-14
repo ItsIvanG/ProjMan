@@ -3,23 +3,38 @@
     <!-- Dropdown menu for actions -->
     <DropdownMenuContent align="end">
       <DropdownMenuLabel>Actions</DropdownMenuLabel>
-      <DropdownMenuItem @click="openDialog">Edit</DropdownMenuItem>
+      <DropdownMenuItem v-if="userRole === 'Member'" @click="openDialog">
+        Update Status
+  </DropdownMenuItem>
+  <DropdownMenuItem v-else @click="openDialog">
+    Edit
+  </DropdownMenuItem>
     </DropdownMenuContent>
 
     <!-- Dialog for Task Editing -->
     <Dialog v-model:open="isDialogOpen" @close="closeDialog">
-      <DialogContent class="max-w-2xl">
+      <DialogContent :class="{'max-w-2xl': userRole !== 'Member'}">
         <DialogHeader>
-          <DialogTitle class="text-2xl font-bold">Edit Task</DialogTitle>
-          <DialogDescription class="text-lg">
-            Fill out the form below to edit the task. Provide the necessary details and click "Save changes."
-          </DialogDescription>
-        </DialogHeader>
+  <DialogTitle class="text-2xl font-bold" v-if="userRole !== 'Member'">
+    Edit Task
+  </DialogTitle>
+  <DialogTitle class="text-2xl font-bold" v-if="userRole === 'Member'">
+    Report Progress
+  </DialogTitle>
+
+  <DialogDescription class="text-lg" v-if="userRole !== 'Member'">
+    Fill out the form below to edit the task. Provide the necessary details and click "Save changes."
+  </DialogDescription>
+  <DialogDescription class="text-lg" v-if="userRole === 'Member'">
+    Provide an update on the task progress. Select the status and click "Save changes."
+  </DialogDescription>
+</DialogHeader>
+
 
         <form @submit.prevent="handleSubmit">
-          <div class="grid gap-4 py-4 sm:grid-cols-1 md:grid-cols-2">
+           <div class="grid gap-4 py-4 sm:grid-cols-1 md:grid-cols-2">
             <!-- Feature input should stay in one column -->
-            <div class="grid gap-2 md:col-span-2">
+            <div class="grid gap-2 md:col-span-2" v-if="userRole !== 'Member'">
               <Label for="features">Features</Label>
               <Input
                 id="features"
@@ -30,7 +45,7 @@
             </div>
 
             <!-- Sprint input -->
-            <div class="grid gap-2">
+            <div class="grid gap-2" v-if="userRole !== 'Member'">
               <Label for="sprint">Sprint</Label>
               <Input
                 id="sprint"
@@ -42,23 +57,39 @@
             </div>
 
             <!-- Status Select -->
-            <div class="grid gap-2">
-              <Label for="status">Status</Label>
-              <Select v-model="formData.status">
-                <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Not started">Not started</SelectItem>
-                  <SelectItem value="In Progress">In Progress</SelectItem>
-                  <SelectItem value="Completed">Completed</SelectItem>
-                  <SelectItem value="Cancelled">Cancelled</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <div class="grid gap-2 md:col-span-2" v-if="userRole === 'Member'" >
+  <Label for="status">Status</Label>
+  <Select v-model="formData.status">
+    <SelectTrigger>
+      <SelectValue placeholder="Select status" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="Not started">Not started</SelectItem>
+      <SelectItem value="In Progress">In Progress</SelectItem>
+      <SelectItem value="Completed">Completed</SelectItem>
+      <SelectItem value="Cancelled">Cancelled</SelectItem>
+    </SelectContent>
+  </Select>
+</div>
+
+<div class="grid gap-2" v-else>
+  <Label for="status">Status</Label>
+  <Select v-model="formData.status">
+    <SelectTrigger>
+      <SelectValue placeholder="Select status" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="Not started">Not started</SelectItem>
+      <SelectItem value="In Progress">In Progress</SelectItem>
+      <SelectItem value="Completed">Completed</SelectItem>
+      <SelectItem value="Cancelled">Cancelled</SelectItem>
+    </SelectContent>
+  </Select>
+</div>
+
 
             <!-- Priority Select -->
-            <div class="grid gap-2">
+            <div class="grid gap-2" v-if="userRole !== 'Member'">
               <Label for="priority">Priority</Label>
               <Select v-model="formData.priority">
                 <SelectTrigger>
@@ -74,7 +105,7 @@
             </div>
 
             <!-- Deadline Date Picker -->
-            <div class="grid gap-2">
+            <div class="grid gap-2" v-if="userRole !== 'Member'">
               <Label for="deadline">Deadline</Label>
               <Input
                 id="deadline"
@@ -109,6 +140,10 @@ import { PlusCircle } from 'lucide-vue-next';
 import { getAPI } from '@/axios';
 import { useTaskStore } from '@/store/taskStore';
 import { useToast } from '@/components/ui/toast/use-toast'
+import { useAuthStore } from '@/store/auth'
+const authStore = useAuthStore()
+
+const userRole = computed(() => authStore.user?.role);
 
 const { toast } = useToast()
 

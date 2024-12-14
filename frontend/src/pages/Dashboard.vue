@@ -1,4 +1,4 @@
-<script setup>
+<script setup> 
 import { useAuthStore } from '../store/auth'
 import {CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {Separator} from "@/components/ui/separator/";
@@ -11,6 +11,8 @@ import {Button} from "@/components/ui/button/";
 import {Pencil,Trash} from "lucide-vue-next";
 import ProjectModal from '@/components/reusable/modals/editprojectmodal.vue';
 import Archiveprojectmodal from "@/components/reusable/modals/archiveprojectmodal.vue";
+import  popupproject  from '@/components/reusable/modals/popupproject.vue'
+
 
 const projectStore = useProjectStore();
 
@@ -18,6 +20,8 @@ const projectStore = useProjectStore();
 
 
 const authStore = useAuthStore()
+
+const userRole = computed(() => authStore.user?.role);
 
 const user = ref(null);
 //
@@ -37,18 +41,30 @@ const user = ref(null);
 
 
 <template>
+  <popupproject v-if="userRole === 'Manager' && !projectStore.project_id" />
+
   <div >
      <div class="flex items-center">
-      <CardHeader>
-        <CardTitle>{{ projectStore?.project_name || 'Select Project' }} Dashboard </CardTitle>
+      <CardHeader v-if="projectStore?.project_name">
+        <CardTitle>{{ projectStore?.project_name }} Dashboard</CardTitle>
         <CardDescription>
           View overall project progress and edit project settings.
         </CardDescription>
       </CardHeader>
+        <CardHeader v-else>
+          <CardTitle>No Project Available</CardTitle>
+        <CardDescription>
+          Add a new project to get started.
+        </CardDescription>
+       
+
+      </CardHeader>
        <div class="ml-auto flex items-center gap-2">
 
-         <ProjectModal />
-          <Archiveprojectmodal />
+        <ProjectModal v-if="userRole !== 'Member' && (userRole !== 'Manager' || projectStore.project_id)" />
+<Archiveprojectmodal v-if="userRole !== 'Member' && (userRole !== 'Manager' || projectStore.project_id)" />
+
+
     </div>
      </div>
 

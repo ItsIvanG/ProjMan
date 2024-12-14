@@ -21,11 +21,16 @@ export const useProjectListStore = defineStore('projectListStore', () => {
     selectedProject.value = project;
   };
 
+  const clearSelectedProject = (project) => {
+    selectedProject.value = null;
+  };
+
   return {
     projects,
     selectedProject,
     setProjects,
     addProject,
     setSelectedProject,
+    clearSelectedProject
   };
 });
