@@ -4,8 +4,10 @@
       <div class="space-y-4 py-4">
         <div class="px-3 mb-8">
           <h2 class="mb-2 px-4 text-sm font-semibold tracking-tight text-muted-foreground">
-            Project
-          </h2>
+  <template v-if="userRole !== 'Member'">Project Management</template>
+  <template v-if="userRole === 'Member'">Project</template>
+</h2>
+
           <div class="space-y-4">
             <DropdownMenu>
               <!-- Dropdown Trigger -->
@@ -48,8 +50,8 @@
 
                 <!-- Create New Project Button -->
                 <DropdownMenuSeparator class="my-2 border-t border-gray-100" />
-                <ProjectModal class="my-2"/>
-                <archivedprojectsmodal />
+                <ProjectModal class="my-2" v-if="userRole !== 'Member'"/>
+                <archivedprojectsmodal v-if="userRole !== 'Member'"/>
 
 
               </DropdownMenuContent>
