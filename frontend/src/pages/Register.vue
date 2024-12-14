@@ -85,17 +85,31 @@ export default {
           }),
           credentials: "include",
         });
-        const data = await response.json();
-        if (response.ok) {
-          this.success = "Registration successful! Redirecting to login...";
-          setTimeout(() => {
-            this.$router.push("/login");
-          }, 1000);
-        } else {
-          this.error = data.error || "Registration failed.";
-        }
-      } catch (err) {
-        this.error = "An error occurred during registration: " + err;
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      console.error("Registration failed:", errorMessage);
+      alert("An error occurred during registration: " + errorMessage);
+      return;
+    }
+
+    const data = await response.json();
+    if (data.success) {
+      alert("Registration successful! Redirecting to login...");
+      this.$router.push("/login"); // Redirect to dashboard
+    } else {
+      alert("Registration failed: " + (data.error || "Unknown error"));
+    }
+  } catch (err) {
+    console.error("An error occurred during registration:", err);
+    alert("An error occurred during registration: " + err.message);
+  }
+},
+    toggleDatePicker() {
+      // Trigger the native date picker by clicking the input field programmatically
+      const input = this.$refs.birthdayInput;
+      if (input) {
+        input.showPicker();
       }
     },
   },

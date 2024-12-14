@@ -159,6 +159,7 @@
       </div>
     </ScrollArea>
   </div>
+  <initialprojectmodal/>
 </template>
 
 <script setup>
@@ -198,6 +199,7 @@ import {
 } from 'lucide-vue-next';
 
 import Archivedprojectsmodal from "@/components/reusable/modals/archivedprojectsmodal.vue";
+import Initialprojectmodal from "@/components/reusable/modals/initialprojectmodal.vue";
 
 
 const router = useRouter();

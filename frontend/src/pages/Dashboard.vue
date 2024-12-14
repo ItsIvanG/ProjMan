@@ -11,6 +11,7 @@ import {Button} from "@/components/ui/button/";
 import {Pencil,Trash} from "lucide-vue-next";
 import ProjectModal from '@/components/reusable/modals/editprojectmodal.vue';
 import Archiveprojectmodal from "@/components/reusable/modals/archiveprojectmodal.vue";
+import router from "@/router";
 
 const projectStore = useProjectStore();
 
@@ -32,6 +33,10 @@ const user = ref(null);
 //   }
 // );
 
+if(!authStore.isAuthenticated){
+  console.log("not logged in! going to login");
+  router.push("/login");
+}
 
 </script>
 
