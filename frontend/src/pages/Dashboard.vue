@@ -354,7 +354,7 @@ watchEffect(() => {
             <!-- Chart Rows -->
             <div v-for="(task, index) in tasks" :key="index" class="flex items-center text-sm">
               <!-- Task Name -->
-              <div class="w-40 px-4 py-2 border-r bg-background z-10">
+              <div class="w-40 px-4 py-2 border-r bg-card z-10">
                 {{ task.features }}
               </div>
               <!-- Timeline -->

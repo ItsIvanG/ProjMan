@@ -5,7 +5,7 @@
         <logoSVG
           width="30px"
           height="30px"
-          class="fill-primary "
+          class="fill-foreground "
 
         />
         <span class="ml-3">ProjMan</span>
