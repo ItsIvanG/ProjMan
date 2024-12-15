@@ -289,3 +289,23 @@ class ReportUpdateAPIView(generics.UpdateAPIView):
         # Optionally associate with logged-in user
         # serializer.save(user=self.request.user)
         serializer.save()
+
+from rest_framework import generics
+from .models import File
+from .serializers import FileSerializer
+
+class FileCreateAPIView(generics.CreateAPIView):
+    queryset = File.objects.all()
+    serializer_class = FileSerializer
+
+class FileListByProjectAPIView(generics.ListAPIView):
+    """
+    API view to list all files associated with a specific project ID.
+    """
+    serializer_class = FileSerializer
+
+    def get_queryset(self):
+        # Get the project ID from the URL query parameters
+        project_id = self.kwargs['project_id']
+        return File.objects.filter(project_id=project_id)
+

@@ -4,6 +4,8 @@ from .views import ProjectCreateView, ArchiveProjectView, UnarchiveProjectView
 from .views import TaskCreateView, TaskListView, TaskEditView, TaskAssignEditView
 from .views import UserListView, UserCreateView, UserUpdateView, UserIsActiveUpdateView
 from .views import *
+from django.conf.urls.static import static
+from django.conf import settings
 
 
 urlpatterns = [
@@ -28,7 +30,8 @@ urlpatterns = [
     path('api/projects/unarchive/<int:project_id>/', UnarchiveProjectView.as_view(), name='archive_project'),
     # This handles listing and creating reports
     path('reports/create_report/', ReportListCreateAPIView.as_view(), name='report-list-create'),
-
+    path('files/create/', FileCreateAPIView.as_view(), name='file-create'),
+    path('files/project/<int:project_id>/', FileListByProjectAPIView.as_view(), name='file-list-by-project'),
     # This handles updating a specific report by its ID
     path('reports/<int:report_id>/', ReportUpdateAPIView.as_view(), name='report-update'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

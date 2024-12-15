@@ -108,3 +108,42 @@ class UserIsActiveUpdateSerializer(serializers.ModelSerializer):
         instance.is_active = validated_data.get('is_active', instance.is_active)
         instance.save()
         return instance
+    
+import os
+from django.conf import settings
+from rest_framework import serializers
+from .models import File
+
+class FileSerializer(serializers.ModelSerializer):
+    # Adding project_name, user_name, and user_role to the serialized data
+    project_name = serializers.CharField(source='project.project_name', read_only=True)
+    user_name = serializers.CharField(source='user.name', read_only=True)
+    user_role = serializers.CharField(source='user.role', read_only=True)
+    share_name = serializers.CharField(source='share_id.name', read_only=True, allow_null=True)
+
+    class Meta:
+        model = File
+        fields = ['file_id', 'user', 'project', 'filename', 'share_id', 'project_name', 'user_name', 'user_role', 'share_name']
+
+    def create(self, validated_data):
+        uploaded_file = validated_data.pop('filename')  # Extract the file content
+        project = validated_data['project']
+
+        # Define the directory and file path
+        directory = os.path.join(settings.MEDIA_ROOT, 'uploaded_files', project.project_name)
+        file_path = os.path.join(directory, uploaded_file.name)
+
+        # Ensure the directory exists
+        os.makedirs(directory, exist_ok=True)
+
+        # Save the file content manually
+        with open(file_path, 'wb') as f:
+            for chunk in uploaded_file.chunks():
+                f.write(chunk)
+
+        # Update the `filename` field with the relative path to the file
+        validated_data['filename'] = os.path.relpath(file_path, settings.MEDIA_ROOT)
+        return super().create(validated_data)
+
+
+
