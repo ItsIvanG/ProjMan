@@ -103,6 +103,15 @@
                   All Tasks
                 </Button>
                 <Button
+                  v-if="userRole !== 'Manager'"
+                  variant="ghost"
+                  :class="{ 'bg-accent text-accent-foreground': isActive('/own-task') }"
+                  class="w-full justify-start pl-8 text-sm"
+                  @click="navigateTo('/own-task')"
+                >
+                  Assigned Task
+                </Button>
+                <Button
                   variant="ghost"
                   :class="{ 'bg-accent text-accent-foreground': isActive('/sprint') }"
                   class="w-full justify-start pl-8 text-sm"

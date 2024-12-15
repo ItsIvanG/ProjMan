@@ -344,7 +344,7 @@ setTimeout(() => {
             </TableHeader>
             <TableBody>
               <template v-if="allTasksStore.allTasks.length">
-              <TableRow v-for="task in allTasksStore.allTasks" :key="task.id " >
+              <TableRow v-for="task in allTasksStore.allTasks.filter(isAssignee)" :key="task.id " >
                   <TableCell>{{task.task_code}}</TableCell>
                   <TableCell>{{ task.features }}</TableCell>
                   <TableCell>
