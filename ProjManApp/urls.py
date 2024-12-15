@@ -40,6 +40,7 @@ urlpatterns = [
 
     path('api/deletepicture/<int:user_id>/', DeleteProfilePictureView.as_view(),
          name='delete-profile-picture'),
+    path('user/<int:user_id>/delete/', DeleteUserView.as_view(), name='delete-user'),
 
 ]
 

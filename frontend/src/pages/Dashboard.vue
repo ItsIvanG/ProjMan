@@ -7,8 +7,6 @@ import {Input} from "@/components/ui/input/";
 import {useProjectStore} from "@/store/project.ts";
 import {computed, onMounted, ref, watch, watchEffect} from "vue";
 import {getAPI} from "@/axios.ts";
-import {useColorMode} from "@vueuse/core";
-import {useRouter} from "vue-router";
 import {Button} from "@/components/ui/button/";
 import {File, Archive, Check, Users, Circle, LayoutList, ArrowUpDown, CalendarClock, List} from "lucide-vue-next";
 import ProjectModal from '@/components/reusable/modals/editprojectmodal.vue';

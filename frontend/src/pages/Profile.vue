@@ -119,12 +119,35 @@
             </CardDescription>
         </CardHeader>
         <CardFooter>
-          <Button type="button" @click="deleteAccount" variant="destructive">Delete Account</Button>
+          <Button type="button" @click="showDeleteDialog" variant="destructive">Delete Account</Button>
         </CardFooter>
       </Card>
 
     </form>
   </div>
+
+  <Dialog v-model:open="isDeleteDialog" @close="closeDialog">
+      <!-- Updated DialogContent size -->
+      <DialogContent class="max-w-[600px]">
+        <DialogHeader>
+          <DialogTitle class="text-2xl font-bold">Delete Account?</DialogTitle>
+          <DialogDescription class=" text-lg">
+          Are you sure you want to delete your account? If you are a project manager, This will permanently delete all associated projects and its members. This action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter>
+          <Button type="button" @click="closeDialog" class="w-full sm:w-auto" variant="outline">
+            Cancel
+          </Button>
+          <Button type="button" @click="deleteUser" class="w-full sm:w-auto" variant="destructive">
+            <Trash class="mr-2 h-4 w-4" />
+            Delete
+          </Button>
+
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
 </template>
 
 <script setup lang="ts">
@@ -145,7 +168,16 @@ import {getAPI} from "@/axios.ts";
 
 import { useToast } from '@/components/ui/toast/use-toast'
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
-import {SquareUser} from "lucide-vue-next";
+import {Trash, SquareUser} from "lucide-vue-next";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
+import router from "@/router.ts";
 const { toast } = useToast()
 
 interface User {
@@ -214,12 +246,6 @@ const handleFileChange = (event: Event) => {
   }
 };
 
-const triggerFileInput = () => {
-  const fileInput = document.getElementById("profile-picture") as HTMLInputElement;
-  if (fileInput) {
-    fileInput.click();
-  }
-};
 
 
 
@@ -278,15 +304,9 @@ const handleSubmitPass = async () => {
   }
 };
 
-
-const deleteAccount = () => {
-  if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
-    alert("Account deleted (simulated)!");
-    console.log("User account deleted");
-    user.value = { name: "", email: "", profilePicture: null };
-  }
-};
 const authStore = useAuthStore();
+
+
 
 const userId = computed(() => authStore.user?.id);
 
@@ -345,6 +365,27 @@ const deleteProfilePicture = () => {
 const profilePictureUrl = computed(() =>
   user.value.profile_picture ? `http://localhost:8000/${user.value.profile_picture}` : null
 );
+
+const deleteUser = async () => {
+  try {
+    const response = getAPI.delete(`user/${userId.value}/delete/`);
+    console.log(response.data.detail); // Success message
+    router.push('/login');
+  } catch (error: any) {
+    console.error(error.response?.data?.detail || "An error occurred.");
+     router.push('/login');
+  }
+};
+
+const isDeleteDialog = ref(false);
+
+const closeDialog = () => {
+  isDeleteDialog.value = false;
+};
+
+const showDeleteDialog = () =>{
+  isDeleteDialog.value = true;
+}
 
 onMounted(async () => {
   try {

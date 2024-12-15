@@ -49,7 +49,7 @@ class User(AbstractUser, PermissionsMixin):
     # Managers have a reference to their managed members
     manager = models.ForeignKey(
         'self',  # Points back to the User model
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         related_name='members',
         null=True,
         blank=True,

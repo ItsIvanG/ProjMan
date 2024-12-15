@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
-from rest_framework.exceptions import NotFound,ValidationError
+from rest_framework.exceptions import NotFound, ValidationError, PermissionDenied
 from django.contrib.auth.hashers import make_password, check_password
 from .forms import CreateUserForm
 
@@ -579,3 +579,21 @@ class DeleteProfilePictureView(APIView):
         user.save()
 
         return Response({"detail": "Profile picture deleted successfully."}, status=status.HTTP_200_OK)
+
+class DeleteUserView(APIView):
+    """
+    API View to delete a user based on user_id.
+    Only authorized personnel (e.g., admins) can perform this action.
+    """
+
+    def delete(self, request, user_id, *args, **kwargs):
+        try:
+            # Fetch the user by ID
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            raise NotFound(detail="User not found.")
+
+        # Delete the user
+        user.delete()
+
+        return Response({"detail": "User deleted successfully."}, status=status.HTTP_200_OK)

@@ -62,7 +62,7 @@
 
         </div>
 
-        <div class="px-3 mb-8">
+        <div class="px-3 mb-8" v-if="projectStore.project_id">
           <h2 class="mb-2 px-4 text-sm font-semibold tracking-tight text-muted-foreground">
             Overview
           </h2>
@@ -142,10 +142,10 @@
 </Button>
 
           </div>
-        </div>
+
 
         <!-- Resources Section -->
-        <div class="px-3">
+        <div class="mt-8">
           <h2 class="mb-2 px-4 text-sm font-semibold tracking-tight text-muted-foreground">
             Resources
           </h2>
@@ -171,6 +171,7 @@
           </div>
         </div>
       </div>
+         </div>
     </ScrollArea>
   </div>
 <!--  <initialprojectmodal/>-->

@@ -215,7 +215,10 @@ const isLoginDialog = ref(false);
 const showLogoutDialog = () => {
   isLoginDialog.value = true;
 
+};
 
+const closeDialog = () => {
+  isLoginDialog.value = false;
 };
 
 onMounted(async () => {
