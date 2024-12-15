@@ -64,7 +64,7 @@
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" class="relative h-8 w-8 rounded-full">
               <Avatar class="h-8 w-8">
-                <AvatarImage src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/340px-Default_pfp.svg.png" alt="@shadcn" />
+                <AvatarImage :src="profilePictureUrl" alt="@shadcn" />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
               
@@ -83,7 +83,7 @@
   </header>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {ref, onMounted, computed} from 'vue';
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/store/auth'
@@ -107,7 +107,8 @@ import { useColorMode } from '@vueuse/core'
 
 ;
 import NotificationsModal from '@/components/ui/layout/notif.vue';
-import Projmanlogo from "@/components/reusable/projmanlogo.vue"; // Ensure the path is correct
+import Projmanlogo from "@/components/reusable/projmanlogo.vue";
+import {getAPI} from "@/axios.ts"; // Ensure the path is correct
 
 // Router and Store
 const router = useRouter();
@@ -117,11 +118,6 @@ const mode = useColorMode()
 
 
 const user = ref(null);
-
-onMounted(async () => {
-  await authStore.fetchUser();
-  user.value = authStore.user;
-});
 
 const logout = async () => {
   try {
@@ -145,6 +141,49 @@ const toggleNotifications = () => {
 const navigateTo = (path) => {
   router.push(path);
 };
+
+const userId = computed(() => authStore.user?.id);
+
+interface User {
+  name?: string;
+  email?: string;
+  username?: string;
+  role?: string;
+  profile_picture?: string | null;
+  password?: string;
+}
+
+
+// Reactive state
+const userfields = ref<User>({
+  name: "",
+  email: "",
+  profile_picture: "",
+});
+
+
+const getUserFieldsById = async (userId: number): Promise<User> => {
+  try {
+    console.log("trying to fetch profile by ID: ",userId);
+    const response = await getAPI.get(`/api/userprofile/${userId}/`);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    throw error;
+  }
+};
+
+const profilePictureUrl = computed(() =>
+  userfields.value.profile_picture ? `http://localhost:8000/${userfields.value.profile_picture}` : null
+);
+
+onMounted(async () => {
+  await authStore.fetchUser();
+  user.value = authStore.user;
+  userfields.value = await getUserFieldsById(userId.value);
+  console.log("navbar picture URL: ",profilePictureUrl.value);
+});
 
 </script>
 

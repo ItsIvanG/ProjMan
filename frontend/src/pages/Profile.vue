@@ -20,17 +20,20 @@
               class="profile-picture"
             />
             <span v-else class="person-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#101010" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"/><path d="M20 20c0-4.42-3.58-8-8-8s-8 3.58-8 8"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="#101010" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"/><path d="M20 20c0-4.42-3.58-8-8-8s-8 3.58-8 8"/></svg>
             </span>
-            <input type="file" id="profile-picture" @change="handleFileChange" hidden />
+<!--            <input type="file" id="profile-picture" @change="handleFileChange" hidden />-->
+
           </div>
 
             </div>
-
+                   <div class=" mt-5 " >
+                    <Input id="picture"  @change="handleFileChange" type="file" class="text-muted-foreground" />
+                  </div>
 
           </CardContent>
           <CardFooter>
-             <Button variant="destructive">Delete</Button>
+             <Button  @click="deleteProfilePicture" variant="destructive">Delete</Button>
             <Button  @click="uploadProfilePicture" class="ml-3">Save</Button>
           </CardFooter>
 
@@ -227,14 +230,16 @@ const triggerFileInput = () => {
 
 const deleteProfilePicture = () => {
   if (confirm("Are you sure you want to delete your profile picture?")) {
-    user.value.profilePicture = null;
+    user.value.profilePicture = "";
+    profilePicture.value = "";
+    uploadProfilePicture();
   }
 };
 
 const handleSubmit = async () => {
 
   await updateUserNameAndEmail(userId.value,{name: user.value.name, email: user.value.email, username: user.value.username});
-  alert("User details updated!");
+  // alert("User details updated!");
 };
 
 const handleSubmitPass = async () => {
@@ -293,10 +298,10 @@ const getUserById = async (userId: number): Promise<User> => {
 };
 
 const uploadProfilePicture = async () => {
-  if (!profilePicture.value) {
-    alert("Please select a profile picture to upload.");
-    return;
-  }
+  // if (!profilePicture.value) {
+  //   alert("Please select a profile picture to upload.");
+  //   return;
+  // }
 
   const formData = new FormData();
   formData.append("profile_picture", profilePicture.value);
@@ -312,6 +317,7 @@ const uploadProfilePicture = async () => {
       }
     );
     alert("Profile picture uploaded successfully!");
+    window.location.reload();
     console.log("Uploaded profile picture:", response.data);
   } catch (error) {
     console.error("Error uploading profile picture:", error);

@@ -304,8 +304,8 @@ class FilterTasksAPIView(APIView):
         # Ensure parameters are provided
         if not project_id or not assignee_id:
             return Response(
-                {"error": "Both project_id and assignee_id are required."},
-                status=status.HTTP_400_BAD_REQUEST
+                {"null"},
+               status=status.HTTP_200_OK
             )
 
         try:

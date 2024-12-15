@@ -249,6 +249,8 @@ const fetchProjects = async () => {
       // Set the first project as the default selected
       if (projects.value.length > 0) {
         projectListStore.setSelectedProject(response.data[0]);
+      } else{
+        projectStore.clearProject();
       }
     }
   } catch (error) {
