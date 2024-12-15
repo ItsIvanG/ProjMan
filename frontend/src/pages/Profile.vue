@@ -14,8 +14,8 @@
             <div class="flex justify-center">
                <div class="profile-picture-container w-[100px] h-[100px] " @click="triggerFileInput" >
             <img
-              v-if="user.profilePicture"
-              :src="user.profilePicture"
+              v-if="user.profile_picture"
+              :src="profilePictureUrl"
               alt="Profile Preview"
               class="profile-picture"
             />
@@ -31,7 +31,7 @@
           </CardContent>
           <CardFooter>
              <Button variant="destructive">Delete</Button>
-            <Button class="ml-3">Save</Button>
+            <Button  @click="uploadProfilePicture" class="ml-3">Save</Button>
           </CardFooter>
 
         </Card>
@@ -166,6 +166,7 @@ interface User {
 const user = ref<User>({
   name: "",
   email: "",
+  profile_picture: "",
 });
 
 const oldPassword = ref("");
@@ -201,6 +202,7 @@ const updateUserPassword = async (userId: number, data: UpdatePasswordData): Pro
   }
 };
 
+const profilePicture = ref<File | null>(null);
 
 const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -208,6 +210,7 @@ const handleFileChange = (event: Event) => {
 
   if (file) {
     const reader = new FileReader();
+    profilePicture.value = file;
     reader.onload = (e: ProgressEvent<FileReader>) => {
       user.value.profilePicture = e.target?.result as string;
     };
@@ -288,6 +291,38 @@ const getUserById = async (userId: number): Promise<User> => {
     throw error;
   }
 };
+
+const uploadProfilePicture = async () => {
+  if (!profilePicture.value) {
+    alert("Please select a profile picture to upload.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("profile_picture", profilePicture.value);
+
+  try {
+    const response = getAPI.post(
+      `api/uploadpicture/${userId.value}/`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    alert("Profile picture uploaded successfully!");
+    console.log("Uploaded profile picture:", response.data);
+  } catch (error) {
+    console.error("Error uploading profile picture:", error);
+    alert("Failed to upload profile picture.");
+  }
+};
+
+const profilePictureUrl = computed(() =>
+  user.value.profile_picture ? `http://localhost:8000/${user.value.profile_picture}` : null
+);
+
 onMounted(async () => {
   try {
     user.value = await getUserById(userId.value);

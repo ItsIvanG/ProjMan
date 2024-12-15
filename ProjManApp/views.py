@@ -530,3 +530,21 @@ class UpdatePasswordView(APIView):
         user.save()
 
         return Response({"detail": "Password updated successfully."})
+
+class UploadProfilePictureView(APIView):
+
+    def post(self, request, user_id):
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            raise ValidationError({"detail": "User not found."})
+
+        if 'profile_picture' not in request.FILES:
+            raise ValidationError({"detail": "No profile picture uploaded."})
+
+        # Save the uploaded file
+        file = request.FILES['profile_picture']
+        user.profile_picture.save(file.name, file)
+        user.save()
+
+        return Response({"detail": "Profile picture uploaded successfully."})

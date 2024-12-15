@@ -2,7 +2,8 @@ from django.urls import path
 from . import views
 from .views import *
 
-
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
     path('api/set-csrf-token', views.set_csrf_token, name='set_csrf_token'),
     path('api/login', views.login_view, name='login'),
@@ -34,5 +35,10 @@ urlpatterns = [
     path('users/manager/<int:manager_id>/', UserByManagerAPIView.as_view(), name='users-by-manager'),
     path('api/userprofile/<int:user_id>/', UserDetailView.as_view(), name='user-detail'),
     path('api/updatepass/<int:user_id>/', UpdatePasswordView.as_view(), name='update-pass'),
+    path('api/uploadpicture/<int:user_id>/', UploadProfilePictureView.as_view(),
+         name='upload-profile-picture'),
 
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
