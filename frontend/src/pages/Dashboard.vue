@@ -175,7 +175,6 @@ const fetchTaskChart = async (projectId: number) => {
   }
 };
 
-const hideDashboard = ref();
 watchEffect(() => {
   const id = projectId.value;
   if (id) {
@@ -183,10 +182,6 @@ watchEffect(() => {
     getTaskCompletionPercentage()
     fetchTaskChart(projectId.value)
     fetchUsersByManager(projectStore.project_manager);
-    hideDashboard.value = false;
-  } else{
-        hideDashboard.value = true;
-
   }
 });
 
@@ -234,7 +229,7 @@ watchEffect(() => {
 <!--        </li>-->
 <!--      </ul>-->
 <!--    </div>-->
-  <div v-if="!hideDashboard">
+  <div v-if="projectStore.project_name">
 
  <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-4">
    <Card class="lg:col-span-4 md:col-span-2 col-span-1">

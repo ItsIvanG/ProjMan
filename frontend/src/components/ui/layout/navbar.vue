@@ -65,7 +65,7 @@
             <Button variant="ghost" size="icon" class="relative h-8 w-8 rounded-full">
               <Avatar class="h-8 w-8">
                 <AvatarImage :src="profilePictureUrl" alt="@shadcn" />
-                <AvatarFallback>CN</AvatarFallback>
+                <AvatarFallback><User/></AvatarFallback>
               </Avatar>
               
             </Button>
@@ -75,12 +75,35 @@
             <DropdownMenuSeparator />
             <DropdownMenuItem @click="navigateTo('/profile')">Profile</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem @click="logout">Log out</DropdownMenuItem>
+            <DropdownMenuItem @click="showLogoutDialog">Log out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
     </div>
   </header>
+
+    <Dialog v-model:open="isLoginDialog" @close="closeDialog">
+      <!-- Updated DialogContent size -->
+      <DialogContent class="max-w-[600px]">
+        <DialogHeader>
+          <DialogTitle class="text-2xl font-bold">Log out?</DialogTitle>
+          <DialogDescription class=" text-lg">
+           Are you sure you want to log out? You will be redirected to the login page.
+          </DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter>
+          <Button type="button" @click="closeDialog" class="w-full sm:w-auto" variant="outline">
+            Cancel
+          </Button>
+          <Button type="button" @click="logout" class="w-full sm:w-auto" variant="destructive">
+            <LogOut class="mr-2 h-4 w-4" />
+            Log out
+          </Button>
+
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
 </template>
 
 <script setup lang="ts">
@@ -100,7 +123,7 @@ import {
   DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { Bell, LayoutGrid, Menu, Search, ShoppingCart, Users, Inbox, Settings, CreditCard, HelpCircle } from 'lucide-vue-next'
+import {Bell, Search, Trash, User, LogOut} from 'lucide-vue-next'
 import { Icon } from '@iconify/vue'
 import { useColorMode } from '@vueuse/core'
 
@@ -108,7 +131,15 @@ import { useColorMode } from '@vueuse/core'
 ;
 import NotificationsModal from '@/components/ui/layout/notif.vue';
 import Projmanlogo from "@/components/reusable/projmanlogo.vue";
-import {getAPI} from "@/axios.ts"; // Ensure the path is correct
+import {getAPI} from "@/axios.ts";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog"; // Ensure the path is correct
 
 // Router and Store
 const router = useRouter();
@@ -177,6 +208,15 @@ const getUserFieldsById = async (userId: number): Promise<User> => {
 const profilePictureUrl = computed(() =>
   userfields.value.profile_picture ? `http://localhost:8000/${userfields.value.profile_picture}` : null
 );
+
+const isLoginDialog = ref(false);
+
+// Function to open dialog
+const showLogoutDialog = () => {
+  isLoginDialog.value = true;
+
+
+};
 
 onMounted(async () => {
   await authStore.fetchUser();

@@ -18,6 +18,8 @@ from .models import Project, Report
 from .serializers import ProjectSerializer, ReportSerializer
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
+import os
+from django.conf import settings
 
 
 
@@ -548,3 +550,32 @@ class UploadProfilePictureView(APIView):
         user.save()
 
         return Response({"detail": "Profile picture uploaded successfully."})
+
+
+class DeleteProfilePictureView(APIView):
+    """
+    API View to delete a user's profile picture.
+    """
+    def delete(self, request, user_id, *args, **kwargs):
+        try:
+            # Fetch the user by ID
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            raise NotFound(detail="User not found.")
+
+        # Check if the user has a profile picture
+        if not user.profile_picture:
+            return Response({"detail": "No profile picture to delete."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Get the file path
+        profile_picture_path = os.path.join(settings.MEDIA_ROOT, user.profile_picture.name)
+
+        # Delete the file if it exists
+        if os.path.exists(profile_picture_path):
+            os.remove(profile_picture_path)
+
+        # Remove the profile picture reference from the user model
+        user.profile_picture = None
+        user.save()
+
+        return Response({"detail": "Profile picture deleted successfully."}, status=status.HTTP_200_OK)

@@ -11,22 +11,10 @@
 
           </CardHeader>
           <CardContent>
-            <div class="flex justify-center">
-               <div class="profile-picture-container w-[100px] h-[100px] " @click="triggerFileInput" >
-            <img
-              v-if="user.profile_picture"
-              :src="profilePictureUrl"
-              alt="Profile Preview"
-              class="profile-picture"
-            />
-            <span v-else class="person-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="#101010" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"/><path d="M20 20c0-4.42-3.58-8-8-8s-8 3.58-8 8"/></svg>
-            </span>
-<!--            <input type="file" id="profile-picture" @change="handleFileChange" hidden />-->
-
-          </div>
-
-            </div>
+             <Avatar class="h-[100px] w-[100px]">
+                <AvatarImage :src="profilePictureUrl" alt="@shadcn" />
+                <AvatarFallback><SquareUser/></AvatarFallback>
+              </Avatar>
                    <div class=" mt-5 " >
                     <Input id="picture"  @change="handleFileChange" type="file" class="text-muted-foreground" />
                   </div>
@@ -155,6 +143,11 @@ import {
 import {useAuthStore} from "@/store/auth.ts";
 import {getAPI} from "@/axios.ts";
 
+import { useToast } from '@/components/ui/toast/use-toast'
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {SquareUser} from "lucide-vue-next";
+const { toast } = useToast()
+
 interface User {
   name?: string;
   email?: string;
@@ -228,33 +221,40 @@ const triggerFileInput = () => {
   }
 };
 
-const deleteProfilePicture = () => {
-  if (confirm("Are you sure you want to delete your profile picture?")) {
-    user.value.profilePicture = "";
-    profilePicture.value = "";
-    uploadProfilePicture();
-  }
-};
+
+
 
 const handleSubmit = async () => {
 
   await updateUserNameAndEmail(userId.value,{name: user.value.name, email: user.value.email, username: user.value.username});
+      toast({
+        title: 'Profile details updated!',
+      });
   // alert("User details updated!");
 };
 
 const handleSubmitPass = async () => {
   if (newPassword.value && newPassword.value !== confirmPassword.value) {
-    alert("New passwords do not match!");
+    toast({
+        title: 'Passwords do not match!',
+      variant: "destructive"
+      });
     return;
 
   }
  if (!oldPassword.value || !newPassword.value || !confirmPassword.value) {
-    alert("All fields are required!");
+      toast({
+        title: 'All password fields required!',
+      variant: "destructive"
+      });
     return;
   }
 
   if (newPassword.value !== confirmPassword.value) {
-    alert("New password and confirmation do not match!");
+    toast({
+        title: 'Passwords do not match!',
+      variant: "destructive"
+      });
     return;
   }
 
@@ -263,12 +263,17 @@ const handleSubmitPass = async () => {
       oldPassword: oldPassword.value,
       newPassword: newPassword.value,
     });
-    alert("Password updated successfully!");
+    toast({
+        title: 'Password updated!',
+      });
     oldPassword.value = "";
     newPassword.value = "";
     confirmPassword.value = "";
   } catch (error) {
-    alert("Failed to update password. Please ensure your old password is correct.");
+    toast({
+        title: 'Incorrect old password!',
+      variant: "destructive"
+      });
     console.error(error);
   }
 };
@@ -316,7 +321,10 @@ const uploadProfilePicture = async () => {
         },
       }
     );
-    alert("Profile picture uploaded successfully!");
+    // alert("Profile picture uploaded successfully!");
+    toast({
+        title: 'Profile picture uploaded successfully!',
+      });
     window.location.reload();
     console.log("Uploaded profile picture:", response.data);
   } catch (error) {
@@ -324,7 +332,16 @@ const uploadProfilePicture = async () => {
     alert("Failed to upload profile picture.");
   }
 };
+const deleteProfilePicture = () => {
+      try {
+      const response =  getAPI.delete(`api/deletepicture/${userId.value}/`);
+      window.location.reload();
+      console.log(response.data.detail); // Success message
+    } catch (error: any) {
+      console.error(error.response?.data?.detail || "An error occurred.");
 
+  }
+};
 const profilePictureUrl = computed(() =>
   user.value.profile_picture ? `http://localhost:8000/${user.value.profile_picture}` : null
 );

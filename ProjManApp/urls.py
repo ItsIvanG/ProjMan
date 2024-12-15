@@ -38,6 +38,9 @@ urlpatterns = [
     path('api/uploadpicture/<int:user_id>/', UploadProfilePictureView.as_view(),
          name='upload-profile-picture'),
 
+    path('api/deletepicture/<int:user_id>/', DeleteProfilePictureView.as_view(),
+         name='delete-profile-picture'),
+
 ]
 
 if settings.DEBUG:
