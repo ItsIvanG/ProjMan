@@ -597,3 +597,25 @@ class DeleteUserView(APIView):
         user.delete()
 
         return Response({"detail": "User deleted successfully."}, status=status.HTTP_200_OK)
+    
+from rest_framework import generics
+from .models import File
+from .serializers import FileSerializer
+
+class FileCreateAPIView(generics.CreateAPIView):
+    queryset = File.objects.all()
+    serializer_class = FileSerializer
+    
+
+class FileListByProjectAPIView(generics.ListAPIView):
+    """
+    API view to list all files associated with a specific project ID.
+    """
+    serializer_class = FileSerializer
+
+    def get_queryset(self):
+        # Get the project ID from the URL query parameters
+        project_id = self.kwargs['project_id']
+        return File.objects.filter(project_id=project_id)
+
+

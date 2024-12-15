@@ -8,6 +8,7 @@ import RegisterLegacy from "./pages/RegisterLegacy.vue";
 import Member from "./pages/Member.vue";
 import Report from "./pages/Report.vue";
 import Task from "./pages/Project Management/Task.vue";
+import OwnTask from "./pages/Project Management/Owntask.vue";
 import Gantt from "./pages/Project Management/Gantt.vue";
 import Kanban from "./pages/Project Management/Kanban.vue";
 import Profile from "./pages/Profile.vue";
@@ -28,6 +29,11 @@ const routes = [
         path: '/task',
         name: 'task',
         component: Task
+    },
+    {
+        path: '/own-task',
+        name: 'own-task',
+        component: OwnTask
     },
     {
         path: '/report',

@@ -143,3 +143,34 @@ class Report(models.Model):
     report_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     report_datetime = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+
+class File(models.Model):
+    file_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,  # Reference to the custom User model
+        on_delete=models.CASCADE,
+        related_name='files',  # Allow reverse lookup of files from the user
+    )
+    project = models.ForeignKey(
+        'Project',
+        on_delete=models.CASCADE,
+        related_name='files',
+    )
+    filename = models.FileField(upload_to='uploaded_files/', blank=False)
+    share_id = models.ForeignKey(
+        settings.AUTH_USER_MODEL,  # Reference to the custom User model
+        on_delete=models.SET_NULL,  # Do not delete files if the user is deleted
+        null=True,  # Allow null value
+        blank=True,  # Allow the field to be empty
+        related_name='shared_files',  # Allows reverse lookup for shared files
+    )
+    
+    def upload_to(self, filename):
+        return f"uploaded_files/{self.project.project_name}/{filename}"
+
+    filename = models.FileField(upload_to=upload_to, blank=False)
+
+    def __str__(self):
+        return str(self.filename)
+
