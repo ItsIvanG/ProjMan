@@ -144,6 +144,7 @@ class FileSerializer(serializers.ModelSerializer):
         # Update the `filename` field with the relative path to the file
         validated_data['filename'] = os.path.relpath(file_path, settings.MEDIA_ROOT)
         return super().create(validated_data)
+    
 
 
 

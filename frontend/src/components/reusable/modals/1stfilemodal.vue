@@ -1,88 +1,84 @@
 <template>
-  <div>
-    <!-- Button to Trigger Modal -->
-    <div class="flex justify-center m-5">
-      <Button size="sm" class="h-7 gap-1" @click="openDialog">
-        <PlusCircle class="h-3.5 w-3.5" />
-        <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
-          Add File
-        </span>
-      </Button>
-    </div>
-
-    <!-- Dialog for File Upload -->
-    <Dialog v-model:open="isDialogOpen" @close="closeDialog">
-      <DialogContent class="max-w-lg">
-        <DialogHeader>
-          <DialogTitle class="text-2xl font-bold">Add File</DialogTitle>
-          <DialogDescription class="text-lg">
-            Fill out the form below to add a new file. Provide the necessary details and click "Add File."
-          </DialogDescription>
-        </DialogHeader>
-
-        <form @submit.prevent="handleSubmit">
-          <div class="grid gap-4 py-4 sm:grid-cols-1 md:grid-cols-2">
-            <!-- File Input and Share Option placed side by side -->
-            <div class="flex gap-4 md:col-span-2">
-              <!-- File Input -->
-              <div class="flex-1">
-                <Label for="filename">Upload File</Label>
-                <Input
-                  id="filename"
-                  type="file"
-                  class="w-full file:text-muted-foreground"
-                  required
-                  @change="onFileChange"
-                />
+    <div>
+      <div class="flex justify-center mt-5">
+              <Button size="sm" class="h-7 gap-1" @click="openDialog">
+                <PlusCircle class="h-3.5 w-3.5" />
+                <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">Add File</span>
+              </Button>
+            </div>
+      <!-- Dialog for File Upload -->
+      <Dialog v-model:open="isDialogOpen" @close="closeDialog">
+        <DialogContent class="max-w-lg">
+          <DialogHeader>
+            <DialogTitle class="text-2xl font-bold">Add File</DialogTitle>
+            <DialogDescription class="text-lg">
+              Fill out the form below to add a new file. Provide the necessary details and click "Add File."
+            </DialogDescription>
+          </DialogHeader>
+  
+          <form @submit.prevent="handleSubmit">
+            <div class="grid gap-4 py-4 sm:grid-cols-1 md:grid-cols-2">
+              <!-- File Input and Share Option placed side by side -->
+              <div class="flex gap-4 md:col-span-2">
+                <!-- File Input -->
+                <div class="flex-1">
+                  <Label for="filename">Upload File</Label>
+                  <Input
+                    id="filename"
+                    type="file"
+                    class="w-full file:text-muted-foreground"
+                    required
+                    @change="onFileChange"
+                  />
+                </div>
+  
+                <!-- Share Option Select -->
+                <div class="flex-2"  v-if="userRole !== 'Member'">
+                  <Label for="share_option">Share Option</Label>
+                  <Select v-model="formData.shareOption" class="w-full">
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select sharing option" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="anyone">Anyone</SelectItem>
+                      <SelectItem value="share_with">Share with</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-
-              <!-- Share Option Select -->
-              <div class="flex-2" v-if="userRole !== 'Member'">
-                <Label for="share_option">Share Option</Label>
-                <Select v-model="formData.shareOption" class="w-full">
+  
+              <!-- Share with Select (Visible if "Share With" is selected) -->
+              <div v-if="formData.shareOption === 'share_with'&& userRole !== 'Member'" class="grid gap-3 md:col-span-2" >
+                <Label for="share_id">Share With</Label>
+                <Select v-model="formData.share_id" class="w-full">
                   <SelectTrigger>
-                    <SelectValue placeholder="Select sharing option" />
+                    <SelectValue placeholder="Select user to share with" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="anyone">Anyone</SelectItem>
-                    <SelectItem value="share_with">Share with</SelectItem>
+                    <!-- Render dynamic user options -->
+                    <SelectItem
+                      v-for="user in users"
+                      :key="user.id"
+                      :value="user.id"
+                    >
+                      {{ user.name }}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
-
-            <!-- Share with Select (Visible if "Share With" is selected) -->
-            <div v-if="formData.shareOption === 'share_with'&& userRole !== 'Member'" class="grid gap-3 md:col-span-2" >
-              <Label for="share_id">Share With</Label>
-              <Select v-model="formData.share_id" class="w-full">
-                <SelectTrigger>
-                  <SelectValue placeholder="Select user to share with" />
-                </SelectTrigger>
-                <SelectContent>
-                  <!-- Render dynamic user options -->
-                  <SelectItem
-                    v-for="user in users"
-                    :key="user.id"
-                    :value="user.id"
-                  >
-                    {{ user.name }}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button type="submit" class="mt-6 w-full sm:w-auto">
-              <PlusCircle class="mr-2 h-4 w-4" />
-              Add File
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  </div>
-</template>
+  
+            <DialogFooter>
+              <Button type="submit" class="mt-6 w-full sm:w-auto">
+                <PlusCircle class="mr-2 h-4 w-4" />
+                Add File
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </div>
+  </template>
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue';
 import { Button } from '@/components/ui/button';
@@ -192,4 +188,4 @@ const handleSubmit = async () => {
   }
 };
 </script>
-
+  

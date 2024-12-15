@@ -297,6 +297,7 @@ from .serializers import FileSerializer
 class FileCreateAPIView(generics.CreateAPIView):
     queryset = File.objects.all()
     serializer_class = FileSerializer
+    
 
 class FileListByProjectAPIView(generics.ListAPIView):
     """
