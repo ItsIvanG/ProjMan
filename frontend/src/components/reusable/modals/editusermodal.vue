@@ -2,7 +2,6 @@
   <div>
     <!-- Button to Trigger Modal -->
     <DropdownMenuContent align="end">
-      <DropdownMenuLabel>Actions</DropdownMenuLabel>
       <DropdownMenuItem @click="openDialog">Edit</DropdownMenuItem>
       <DropdownMenuItem 
         v-if="status" 

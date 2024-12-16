@@ -112,7 +112,7 @@ const downloadFile = (file: any) => {
           >
             <CardHeader class="flex items-center gap-4">
               <File class="w-16 h-16 text-gray-500" />
-              <CardTitle class="text-lg font-semibold">{{ file.filename }}</CardTitle>
+              <CardTitle class="text-lg font-semibold truncate max-w-[200px]">{{ file.filename }}</CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription class="text-sm text-gray-500">

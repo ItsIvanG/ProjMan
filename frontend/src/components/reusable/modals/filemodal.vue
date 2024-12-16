@@ -95,6 +95,9 @@ import { getAPI } from '@/axios';
 import { useProjectStore } from '@/store/project';
 import { useAuthStore } from '@/store/auth';
 import { useFileListStore } from '@/store/fileListStore';  // Pinia store
+import { useToast } from '@/components/ui/toast/use-toast'
+
+const { toast } = useToast()
 
 const projectStore = useProjectStore();
 const projectId = computed(() => projectStore.project_id);
@@ -183,7 +186,15 @@ const handleSubmit = async () => {
 
     // Update Pinia store with the newly uploaded file
     fileListStore.addFile(processedFile);  // Add the newly uploaded file to the Pinia store
+    toast({
+  title: 'File Uploaded',
+  description: 'The file have been uploaded successfully.',
+});
 
+// Ensure any previously lingering toasts are cleared after 3 seconds
+setTimeout(() => {
+  // This can trigger any toast cleanup if needed
+}, 3000);
     // Handle success
     closeDialog();
     console.log('File uploaded successfully:', response.data);

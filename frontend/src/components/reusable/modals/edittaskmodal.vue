@@ -2,7 +2,7 @@
   <div>
     <!-- Dropdown menu for actions -->
     <DropdownMenuContent align="end">
-      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+  
       <DropdownMenuItem v-if="userRole === 'Member'" @click="openDialog">
         Update Status
   </DropdownMenuItem>
