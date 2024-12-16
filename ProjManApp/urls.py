@@ -44,6 +44,9 @@ urlpatterns = [
     path('api/deletepicture/<int:user_id>/', DeleteProfilePictureView.as_view(),
          name='delete-profile-picture'),
     path('user/<int:user_id>/delete/', DeleteUserView.as_view(), name='delete-user'),
-
+    path('api/add-log/', AddLogAPIView.as_view(), name='add-log'),
+    path('api/logs/<int:project>/', LogAPIView.as_view(), name='add-log'),
+    path('api/notifications/', NotificationListCreate.as_view(), name='notification-list-create'),
+    path('api/notifications/<int:notification_id>/', NotificationListCreate.as_view(), name='notification-delete'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

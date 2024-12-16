@@ -4,43 +4,43 @@
     <div class="bg-secondary min-h-full  flex flex-col">
     <sidecolumn_welcome/>
     </div>
-    <div class="p-[100px] min-h-screen ">
-      <div class=" w-full border p-6 rounded-lg shadow-md align-middle max-h-screen">
+    <div class="p-[100px] h-screen flex items-center  ">
+      <div class=" w-full border p-6 rounded-lg  shadow-md  ">
     <!-- Title and Theme Toggle -->
-      <div class="flex flex-col justify-center items-center  mb-8">
+      <div class="flex flex-col  items-center  mb-8">
         <h3 class="text-3xl font-bold text-center">Create an account</h3>
       </div>
 
-    <div class="flex justify-between items-right mb-4">
-      <div
-        v-for="(step, index) in steps"
-        :key="index"
-        class="flex flex-col items-center space-x-2"
-      >
-        <!-- Step number -->
-        <div
-          :class="{
-            'bg-gray-500 text-white': currentStep !== index + 1,
-            'bg-gray-300 text-gray-700': currentStep === index + 1 && !isDarkMode,
-            'bg-gray-700 text-gray-300': currentStep === index + 1 && isDarkMode,
-          }"
-          class="w-8 h-8 flex items-center justify-center rounded-full font-bold"
-        >
-          {{ index + 1 }}
-        </div>
-        <!-- Step Title -->
-        <div
-          :class="{
-            'text-gray-300': currentStep !== index + 1,
-            'text-gray-300': currentStep === index + 1 && !isDarkMode,
-            'text-gray-500': currentStep === index + 1 && isDarkMode,
-          }"
-          class="text-sm font-semibold"
-        >
-          {{ step }}
-          </div>
-        </div>
-      </div>
+<!--    <div class="flex justify-between items-right mb-4">-->
+<!--      <div-->
+<!--        v-for="(step, index) in steps"-->
+<!--        :key="index"-->
+<!--        class="flex flex-col items-center space-x-2"-->
+<!--      >-->
+<!--        &lt;!&ndash; Step number &ndash;&gt;-->
+<!--        <div-->
+<!--          :class="{-->
+<!--            'bg-gray-500 text-white': currentStep !== index + 1,-->
+<!--            'bg-gray-300 text-gray-700': currentStep === index + 1 && !isDarkMode,-->
+<!--            'bg-gray-700 text-gray-300': currentStep === index + 1 && isDarkMode,-->
+<!--          }"-->
+<!--          class="w-8 h-8 flex items-center justify-center rounded-full font-bold"-->
+<!--        >-->
+<!--          {{ index + 1 }}-->
+<!--        </div>-->
+<!--        &lt;!&ndash; Step Title &ndash;&gt;-->
+<!--        <div-->
+<!--          :class="{-->
+<!--            'text-gray-300': currentStep !== index + 1,-->
+<!--            'text-gray-300': currentStep === index + 1 && !isDarkMode,-->
+<!--            'text-gray-500': currentStep === index + 1 && isDarkMode,-->
+<!--          }"-->
+<!--          class="text-sm font-semibold"-->
+<!--        >-->
+<!--          {{ step }}-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
 
       <!-- Form Content -->
 <div v-if="currentStep === 1" class="grid grid-cols-1">
@@ -355,9 +355,10 @@ We may update these Terms at any time. You will be notified of any material chan
   >
     Back
   </Button>
+  <Button variant="outline" v-else @click="router.push('/login')">Back to Log in</Button>
 <p></p>
   <Button
-    v-if="currentStep < steps.length"
+    v-if="currentStep < 2"
     @click="nextStep"
     class="px-4 py-2 border rounded  "
     :disabled="isNextDisabled"
@@ -367,7 +368,7 @@ We may update these Terms at any time. You will be notified of any material chan
   </Button>
 
   <Button
-    v-if="currentStep === steps.length"
+    v-if="currentStep === 2"
     @click="register"
     class="px-4 py-2 border rounded"
   >
@@ -379,314 +380,273 @@ We may update these Terms at any time. You will be notified of any material chan
     </div>
 
 </template>
+<script setup lang="ts">
+import { ref, reactive, computed, watch } from "vue";
+import { useRouter } from "vue-router";
+import { AkEyeClosed, AkEyeOpen, IoOutlineMail, AkPerson, CiCalendarDate } from "@kalimahapps/vue-icons";
+import { Input  } from "@/components/ui/input";
+import { Textarea  } from "@/components/ui/textarea";
+import { ScrollArea  } from "@/components/ui/scroll-area";
+import { Button  } from "@/components/ui/button";
 
-<script>
-import { AkEyeClosed, AkEyeOpen } from "@kalimahapps/vue-icons";
-import { IoOutlineMail } from '@kalimahapps/vue-icons';
-import { AkPerson } from '@kalimahapps/vue-icons';
-import { CiCalendarDate } from '@kalimahapps/vue-icons';
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-
-import VueCal from 'vue-cal';
-import { getCSRFToken } from "@/store/auth";
+import {toast} from "@/components/ui/toast";
 import Sidecolumn_welcome from "@/components/reusable/sidecolumn_welcome.vue";
+import { getCSRFToken } from "@/store/auth";
 
-export default {
-  components: {
-    Sidecolumn_welcome,
-    Textarea,
-    AkEyeClosed,
-    AkEyeOpen,
-    IoOutlineMail,
-    AkPerson,
-    CiCalendarDate,
-    VueCal,
-    Input,
-    ScrollArea,
-      Button
+// Props
+defineProps({
+  text: {
+    type: String,
+    required: true,
   },
-  props: {
-    text: {
-      type: String,
-      required: true,
-    },
-    maxLength: {
-      type: Number,
-      default: 100,
-    },
+  maxLength: {
+    type: Number,
+    default: 100,
   },
+});
 
-  data() {
-    return {
-      currentStep: 1,
-      steps: ["Account Setup", "Terms and Conditions", "Upload Image"],
-      formData: {
-        firstName: '',
-        email: "",
-        username: "",
-        password: "",
-        confirmPassword: "",
-        birthday: "",
-        gender: "",
-        agreeTerms: false,
-        profilePicture: null,
-        isExpanded: false,
-      },
+// Router
+const router = useRouter();
 
-      showErrors: {
-        firstName: false,
-        lastName: false,
-        email: false,
-        username: false,
-        password: false,
-        confirmPassword: false,
-        birthday: false,
-        gender: false,
-        agreeTerms: false,
-        profilePicture: false,
-      },
+// Data
+const currentStep = ref(1);
+const steps = ["Account Setup", "Terms and Conditions", "Upload Image"];
+const formData = reactive({
+  firstName: "",
+  email: "",
+  username: "",
+  password: "",
+  confirmPassword: "",
+  birthday: "",
+  gender: "",
+  agreeTerms: false,
+  profilePicture: null as string | null,
+  isExpanded: false,
+});
+const showErrors = reactive({
+  firstName: false,
+  email: false,
+  username: false,
+  password: false,
+  confirmPassword: false,
+  birthday: false,
+  gender: false,
+  agreeTerms: false,
+  profilePicture: false,
+});
+const passwordInvalid = ref(false);
+const passwordMismatch = ref(false);
+const isFieldTouched = reactive({
+  firstName: false,
+  email: false,
+  username: false,
+  password: false,
+  confirmPassword: false,
+  birthday: false,
+  gender: false,
+  agreeTerms: false,
+});
+const showDatePicker = ref(false);
+const showPassword = ref(false);
+const showConfirmPassword = ref(false);
+const isDarkMode = ref(false);
 
-      passwordInvalid: false,
-      passwordMismatch: false,
+// Computed
+const isTruncatable = computed(() => text.length > maxLength);
+const truncatedText = computed(() =>
+  isTruncatable.value ? text.slice(0, maxLength) + "..." : text
+);
+const fullText = computed(() => text);
 
-      isFieldTouched: {
-        firstName: false,
-        lastName: false,
-        email: false,
-        username: false,
-        password: false,
-        confirmPassword: false,
-        birthday: false,
-        gender: false,
-        agreeTerms: false,
-      },
-      showDatePicker: false,
-      showPassword: false,
-      showConfirmPassword: false,
+// Watchers
+watch(
+  () => formData.firstName,
+  (value) => {
+    if (isFieldTouched.firstName) {
+      showErrors.firstName = !value || value.trim().length === 0;
+    }
+  }
+);
+watch(
+  () => formData.email,
+  (value) => {
+    if (isFieldTouched.email) {
+      showErrors.email = !value;
+    }
+  }
+);
+watch(
+  () => formData.password,
+  (value) => {
+    if (isFieldTouched.password) {
+      showErrors.password = !value;
+      passwordInvalid.value = !validatePassword(value);
+    }
+  }
+);
+watch(
+  () => formData.confirmPassword,
+  (value) => {
+    if (isFieldTouched.confirmPassword) {
+      showErrors.confirmPassword = !value;
+      passwordMismatch.value = value !== formData.password;
+    }
+  }
+);
+
+// Methods
+const validatePassword = (password: string) => {
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+  return regex.test(password);
+};
+
+const validateField = (field: keyof typeof formData) => {
+  isFieldTouched[field] = true;
+  if (!formData[field]) {
+    showErrors[field] = true;
+  } else {
+    showErrors[field] = false;
+    if (field === "password") {
+      passwordInvalid.value = !validatePassword(formData.password);
+    }
+    if (field === "confirmPassword") {
+      passwordMismatch.value = formData.password !== formData.confirmPassword;
+    }
+  }
+};
+
+const handleFileUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      formData.profilePicture = e.target?.result as string;
+      showErrors.profilePicture = false;
+      profilePicture.value = file;
     };
-  },
-  computed: {
-    isTruncatable() {
-      return this.text.length > this.maxLength;
-    },
-    truncatedText() {
-      return this.isTruncatable
-        ? this.text.slice(0, this.maxLength) + "..."
-        : this.text;
-    },
-    fullText() {
-      return this.text;
-    },
-  },
-  watch: {
-    "formData.firstName"(value) {
-      if (this.isFieldTouched.firstName) {
-        this.showErrors.firstName = !value || value.trim().length === 0;
-      }
-    },
-    "formData.email"(value) {
-      if (this.isFieldTouched.email) {
-        this.showErrors.email = !value;
-      }
-    },
-    "formData.username"(value) {
-      if (this.isFieldTouched.username) {
-        this.showErrors.username = !value;
-      }
-    },
-    "formData.password"(value) {
-      if (this.isFieldTouched.password) {
-        this.showErrors.password = !value;
-        this.passwordInvalid = !this.validatePassword(value);
-      }
-    },
-    "formData.confirmPassword"(value) {
-      if (this.isFieldTouched.confirmPassword) {
-        this.showErrors.confirmPassword = !value;
-        this.passwordMismatch = value !== this.formData.password;
-      }
-    },
-    "formData.birthday"(value) {
-      if (this.isFieldTouched.birthday) {
-        this.showErrors.birthday = !value;
-      }
-    },
-    "formData.gender"(value) {
-      if (this.isFieldTouched.gender) {
-        this.showErrors.gender = !value;
-      }
-    },
-    "formData.agreeTerms"(value) {
-      if (this.isFieldTouched.agreeTerms) {
-        this.showErrors.agreeTerms = !value;
-      }
-    },
-  },
-  methods: {
-    computed: {
-    themeClasses() {
-      return this.isDarkMode ? 'bg-black text-white' : 'bg-white text-black';
-    },
-  },
-    togglePassword(field) {
-      this[field] = !this[field];
-      if (field === "password") {
-        this.showPassword = !this.showPassword;
-      } else if (field === "confirmPassword") {
-        this.showConfirmPassword = !this.showConfirmPassword;
-      }
-    },
-    validateField(field) {
-      this.isFieldTouched[field] = true;
-      if (!this.formData[field]) {
-        this.showErrors[field] = true;
-      } else {
-        this.showErrors[field] = false;
-        if (field === "password") {
-          this.passwordInvalid = !this.validatePassword(this.formData.password);
-        }
-        if (field === "confirmPassword") {
-          this.passwordMismatch =
-            this.formData.password !== this.formData.confirmPassword;
-        }
-      }
-    },
-    validatePassword(password) {
-const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
-return regex.test(password);
-    },
-    handleFileUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.formData.profilePicture = e.target.result; // Set the image URL as the preview
-          this.showErrors.profilePicture = false;
-        };
-        reader.readAsDataURL(file);
-      } else {
-        this.showErrors.profilePicture = true;
-      }
-    },
+    reader.readAsDataURL(file);
+  } else {
+    showErrors.profilePicture = true;
+  }
+};
 
-    toggleTheme() {
-      this.isDarkMode = !this.isDarkMode;
-    },
-
-    nextStep() {
-      // Validate current step fields before proceeding
-      let valid = true;
-      if (this.currentStep === 1) {
-        [
-          "firstName",
-          "email",
-          "username",
-          "password",
-          "confirmPassword",
-          // "birthday",
-          // "gender",
-        ].forEach((field) => {
-          this.validateField(field);
-          if (
-            this.showErrors[field] ||
-            this.passwordInvalid ||
-            this.passwordMismatch
-          ) {
-            valid = false;
-          }
-        });
-      } else if (this.currentStep === 2) {
-        this.validateField("agreeTerms");
-        if (this.showErrors.agreeTerms) valid = false;
+const nextStep = () => {
+  let valid = true;
+  if (currentStep.value === 1) {
+    ["firstName", "email", "username", "password", "confirmPassword"].forEach((field) => {
+      validateField(field as keyof typeof formData);
+      if (
+        showErrors[field as keyof typeof formData] ||
+        passwordInvalid.value ||
+        passwordMismatch.value
+      ) {
+        valid = false;
       }
-      if (valid) this.currentStep++;
-    },
-    prevStep() {
-      this.currentStep--;
-    },
-    toggleText() {
-      this.isExpanded = !this.isExpanded;
-    },
+    });
+  } else if (currentStep.value === 2) {
+    validateField("agreeTerms");
+    if (showErrors.agreeTerms) valid = false;
+    return;
+  }
+  if (valid) currentStep.value++;
+};
 
-    async register() {
-      try {
-        // // Validate all fields before making the request
-        // let valid = true;
-        // Object.keys(this.formData).forEach((field) => {
-        //   // Skip profilePicture since it's handled differently
-        //   if (field !== 'profilePicture') {
-        //     const fieldValid = this.validateField(field);
-        //     if (!fieldValid || this.showErrors[field]) valid = false;
-        //   }
-        // });
-        //
-        // // Also check if profilePicture is provided if it's required
-        // if (!this.formData.profilePicture) {
-        //   this.showErrors.profilePicture = true;
-        //   valid = false;
-        // }
-        //
-        // if (!valid) {
-        //   alert("Please fill in all required fields correctly.");
-        //   return;
-        // }
-    console.log("trying register with csrf: "+getCSRFToken());
-    // Make the API request
-     const response = await fetch("http://localhost:8000/api/register", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCSRFToken(),
-          },
+const prevStep = () => {
+  currentStep.value--;
+};
+
+
+
+const profilePicture = ref<File | null>(null);
+
+const handleError = (error: any) => {
+  try {
+    // Parse the error response if it's a stringified JSON
+    const parsedError = JSON.parse(error.error);
+
+    // Get the first error message for 'email' or 'username'
+    const emailError = parsedError.email ? parsedError.email[0].message : null;
+    const usernameError = parsedError.username ? parsedError.username[0].message : null;
+
+    // Choose which error to show. In this case, I'll prioritize email over username.
+    const errorMessage = emailError || usernameError || 'Unknown error occurred';
+
+    // Display error toast
+    toast({
+      title: 'Error',
+      description: errorMessage,
+    });
+  } catch (err) {
+    // Fallback in case the error is not in the expected format
+    console.error('Error parsing error message:', err);
+    toast({
+      title: 'Error',
+      description: 'An unknown error occurred.',
+    });
+  }
+};
+const register = async () => {
+  let valid = true;
+      validateField("agreeTerms");
+    if (showErrors.agreeTerms) return;
+  try {
+    console.log("trying to upload formdataPicture: ", formData.profilePicture);
+    const response = await fetch("http://localhost:8000/api/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCSRFToken(),
+      },
       body: JSON.stringify({
-        name: this.formData.firstName,
-        email: this.formData.email,
-        username: this.formData.username,
-        password: this.formData.password,
-        // birthday: this.formData.birthday,
-        // gender: this.formData.gender,
-        // profilePicture: this.formData.profilePicture,
-       }),
-          credentials: "include",
-        });
+        name: formData.firstName,
+        email: formData.email,
+        username: formData.username,
+        password: formData.password,
+      }),
+      credentials: "include",
+    });
 
     if (!response.ok) {
       const errorMessage = await response.text();
-      console.error("Registration failed:", errorMessage);
-      alert("An error occurred during registration: " + errorMessage);
+               console.log(errorMessage);
+      toast({
+      variant:"destructive",
+      title:"An error occurred during registration: Email invalid or username already exists."
+    });
+
       return;
     }
 
     const data = await response.json();
     if (data.success) {
-      alert("Registration successful! Redirecting to login...");
-      this.$router.push("/login"); // Redirect to dashboard
+       toast({title: "Registration successful! Redirecting to login..."});
+      router.push("/login");
     } else {
-      alert("Registration failed: " + (data.error || "Unknown error"));
+      toast({title: "Registration failed: " + (data.error || "Unknown error")});
     }
   } catch (err) {
-    console.error("An error occurred during registration:", err);
-    alert("An error occurred during registration: " + err.message);
+    console.log(err);
+    toast({title: "An error occurred during registration: " + (err as Error).message});
   }
-},
-    toggleDatePicker() {
-      // Trigger the native date picker by clicking the input field programmatically
-      const input = this.$refs.birthdayInput;
-      if (input) {
-        input.showPicker();
-      }
-    }
-   },
 };
+
+const togglePassword = (field: "showPassword" | "showConfirmPassword") => {
+  if (field === "showPassword") {
+    showPassword.value = !showPassword.value;
+  } else if (field === "showConfirmPassword") {
+    showConfirmPassword.value = !showConfirmPassword.value;
+  }
+};
+
+const toggleTheme = () => {
+  isDarkMode.value = !isDarkMode.value;
+};
+
+const toggleDatePicker = () => {
+  const input = document.querySelector<HTMLInputElement>("#birthdayInput");
+  input?.showPicker();
+};
+
+
 </script>

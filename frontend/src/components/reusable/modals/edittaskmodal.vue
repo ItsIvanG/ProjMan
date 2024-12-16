@@ -34,7 +34,7 @@
         <form @submit.prevent="handleSubmit">
            <div class="grid gap-4 py-4 sm:grid-cols-1 md:grid-cols-2">
             <!-- Feature input should stay in one column -->
-            <div class="grid gap-2 md:col-span-2" v-if="userRole !== 'Member'">
+            <div class="grid gap-2" v-if="userRole !== 'Member'">
               <Label for="features">Features</Label>
               <Input
                 id="features"
@@ -58,34 +58,34 @@
 
             <!-- Status Select -->
             <div class="grid gap-2 md:col-span-2" v-if="userRole === 'Member'" >
-  <Label for="status">Status</Label>
-  <Select v-model="formData.status">
-    <SelectTrigger>
-      <SelectValue placeholder="Select status" />
-    </SelectTrigger>
-    <SelectContent>
-      <SelectItem value="Not started">Not started</SelectItem>
-      <SelectItem value="In Progress">In Progress</SelectItem>
-      <SelectItem value="Completed">Completed</SelectItem>
-      <SelectItem value="Cancelled">Cancelled</SelectItem>
-    </SelectContent>
-  </Select>
-</div>
+              <Label for="status">Status</Label>
+              <Select v-model="formData.status">
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Not started">Not started</SelectItem>
+                  <SelectItem value="In Progress">In Progress</SelectItem>
+                  <SelectItem value="Completed">Completed</SelectItem>
+                  <SelectItem value="Cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-<div class="grid gap-2" v-else>
-  <Label for="status">Status</Label>
-  <Select v-model="formData.status">
-    <SelectTrigger>
-      <SelectValue placeholder="Select status" />
-    </SelectTrigger>
-    <SelectContent>
-      <SelectItem value="Not started">Not started</SelectItem>
-      <SelectItem value="In Progress">In Progress</SelectItem>
-      <SelectItem value="Completed">Completed</SelectItem>
-      <SelectItem value="Cancelled">Cancelled</SelectItem>
-    </SelectContent>
-  </Select>
-</div>
+            <div class="grid gap-2" v-else>
+              <Label for="status">Status</Label>
+              <Select v-model="formData.status">
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Not started">Not started</SelectItem>
+                  <SelectItem value="In Progress">In Progress</SelectItem>
+                  <SelectItem value="Completed">Completed</SelectItem>
+                  <SelectItem value="Cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
 
             <!-- Priority Select -->
@@ -123,8 +123,11 @@
                 required
               />
             </div>
-          </div>
 
+
+
+
+   </div>
           <DialogFooter>
             <Button type="submit" class="mt-6 w-full sm:w-auto">
               <PlusCircle class="mr-2 h-4 w-4" />
@@ -150,14 +153,19 @@ import { getAPI } from '@/axios';
 import { useTaskStore } from '@/store/taskStore';
 import { useToast } from '@/components/ui/toast/use-toast'
 import { useAuthStore } from '@/store/auth'
+import { useProjectStore } from '@/store/project.ts'
+import {RangeCalendar} from "@/components/ui/range-calendar";
 const authStore = useAuthStore()
 
 const userRole = computed(() => authStore.user?.role);
 
 const { toast } = useToast()
-
+const projectStore = useProjectStore();
 const taskStore = useTaskStore();
 const selectedTaskId = computed(() => taskStore.task?.task_id); // Added null safety
+
+const selectedTaskCode = computed(() => taskStore.task?.task_code); // Added null safety
+
 
 
 
@@ -191,6 +199,7 @@ const openDialog = () => {
     formData.priority = task.priority || '';
     formData.deadline = task.deadline || '';
         formData.start_date = task.start_date || '';
+
     formData.task_id = task.task_id || '';
     formData.task_code = task.task_code || '';
     formData.project = task.project || '';
@@ -203,9 +212,22 @@ const openDialog = () => {
 const closeDialog = () => {
   isDialogOpen.value = false;
 };
-
+  const userId = computed(() => authStore.user?.id);
 // Function to handle form submission for editing the task
 const handleSubmit = async () => {
+     // Convert the start_date and deadline to Date objects for comparison
+  const startDate = new Date(formData.start_date);
+  const deadlineDate = new Date(formData.deadline);
+
+  // Check if the deadline is after the start date
+  if (deadlineDate <= startDate) {
+    toast({
+      title: 'Invalid Dates',
+      description: 'The deadline must be after the start date.',
+      variant: 'destructive',
+    });
+    return;  // Prevent form submission if validation fails
+  }
   if (!selectedTaskId.value) {
     console.error('No task ID selected.');
     return;
@@ -221,6 +243,24 @@ const handleSubmit = async () => {
         title: 'Report Progress',
         description: 'Your progress has been reported successfully.',
       });
+
+         const logResponse =  getAPI.post(
+      "/api/add-log/",
+      {
+              log_user_created: userId.value,
+              log_content: "Set "+selectedTaskCode.value+" status to "+formData.status,
+              log_user_concern: null,
+              log_project: projectStore?.project_id
+            });
+
+               const logNotif = await getAPI.post(
+      "/api/notifications/",
+      {
+              notification_user_created: userId.value,
+              notification_content: "Set " + selectedTaskCode.value+  " status to "+formData.status+".",
+              notification_user_concern: projectStore?.project_manager,
+              notification_project: projectStore?.project_id
+            });
     } else {
       toast({
         title: 'Task Edited',

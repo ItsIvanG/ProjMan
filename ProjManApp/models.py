@@ -89,6 +89,9 @@ class User(AbstractUser, PermissionsMixin):
     def get_short_name(self):
         return self.name or self.username
 
+    def get_profile_picture(self):
+        return self.profile_picture
+
 
 class Project(models.Model):
     project_id = models.AutoField(primary_key=True)  # Auto-increment ID
@@ -143,6 +146,61 @@ class Report(models.Model):
     report_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     report_datetime = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+
+class Log(models.Model):
+    log_id = models.AutoField(primary_key=True)
+    log_datetime = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    log_content = models.TextField(blank=True, null=True)
+    log_user_created = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="logs_created",
+        help_text="User who created the log",
+        null=True,
+    )
+    log_user_concern = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="logs_concern",
+        help_text="User who the log concerns",
+        null=True,
+        blank=True,
+    )
+    log_project = models.ForeignKey(
+        'Project',  # Reference the Project model
+        on_delete=models.CASCADE,  # Delete logs when the project is deleted
+        related_name="logs",  # Allows reverse access: project.logs.all()
+        null=True,  # Allow logs to exist without a project (optional)
+        blank=True,  # Allow forms to leave this blank (optional)
+    )
+
+
+class Notification(models.Model):
+    notification_id = models.AutoField(primary_key=True)
+    notification_datetime = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    notification_content = models.TextField(blank=True, null=True)
+    notification_user_created = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="notif_created",
+        help_text="User who created the notif",
+        null=True,
+    )
+    notification_user_concern = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="notif_concern",
+        help_text="User who the notif concerns",
+        null=True,
+        blank=True,
+    )
+    notification_project = models.ForeignKey(
+        'Project',  # Reference the Project model
+        on_delete=models.CASCADE,  # Delete logs when the project is deleted
+        null=True,  # Allow logs to exist without a project (optional)
+        blank=True,  # Allow forms to leave this blank (optional)
+    )
 
 
 class File(models.Model):

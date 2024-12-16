@@ -51,17 +51,17 @@
       </div>
 
       <!-- Remember Me and Forgot Password -->
-      <div class="flex items-center justify-between text-sm">
-        <div class="flex items-center">
-          <input
-            id="remember"
-            type="checkbox"
-            v-model="rememberMe"
-          />
-          <label for="remember">Remember Me</label>
-        </div>
-        <router-link to="/forgotpass" class=" hover:underline">Forgot Password?</router-link>
-      </div>
+<!--      <div class="flex items-center justify-between text-sm">-->
+<!--        <div class="flex items-center">-->
+<!--          <input-->
+<!--            id="remember"-->
+<!--            type="checkbox"-->
+<!--            v-model="rememberMe"-->
+<!--          />-->
+<!--          <label for="remember">Remember Me</label>-->
+<!--        </div>-->
+<!--        <router-link to="/forgotpass" class=" hover:underline">Forgot Password?</router-link>-->
+<!--      </div>-->
     </CardContent>
       <CardFooter class="flex flex-col gap-4">
         <!-- Login Button -->
@@ -146,7 +146,7 @@ export default {
       this.showErrors.identifier = !this.validateIdentifier(value);
     },
     password(value) {
-      this.showErrors.password = value.length < 8;
+      this.showErrors.password = value.length < 1;
     },
   },
   methods: {
@@ -162,7 +162,7 @@ export default {
     async login() {
       // Validate fields before submission
       this.showErrors.identifier = !this.validateIdentifier(this.identifier);
-      this.showErrors.password = this.password.length < 8;
+      this.showErrors.password = this.password.length < 1;
 
       if (this.showErrors.identifier || this.showErrors.password) {
         this.error = "Please fix the highlighted fields.";

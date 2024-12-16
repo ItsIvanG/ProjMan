@@ -16,7 +16,7 @@
                 <AvatarFallback><SquareUser/></AvatarFallback>
               </Avatar>
                    <div class=" mt-5 " >
-                    <Input id="picture"  @change="handleFileChange" type="file" class="text-muted-foreground" />
+                    <Input id="picture"  @change="handleFileChange" type="file" class="file-input file:text-muted-foreground" />
                   </div>
 
           </CardContent>
@@ -164,7 +164,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import {useAuthStore} from "@/store/auth.ts";
-import {getAPI} from "@/axios.ts";
+import {getAPI} from "@/axios";
 
 import { useToast } from '@/components/ui/toast/use-toast'
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
@@ -180,21 +180,18 @@ import {
 import router from "@/router.ts";
 const { toast } = useToast()
 
-interface User {
-  name?: string;
-  email?: string;
-  username?: string;
-  role?: string;
-  profile_picture?: string | null;
-  password?: string;
-}
+// interface User {
+//   name?: string;
+//   email?: string;
+//   username?: string;
+//   role?: string;
+//   profile_picture?: string | null;
+//   password?: string;
+// }
 
 
 // Reactive state
-const user = ref<User>({
-  name: "",
-  email: "",
-  profile_picture: "",
+const user = ref({
 });
 
 const oldPassword = ref("");
@@ -208,13 +205,17 @@ const confirmPassword = ref("");
 
 const updateUserNameAndEmail = async (userId: number, data: UpdateUserData): Promise<void> => {
   try {
+
     console.log("trying to update usern: ",user.value.name);
      if (!user.value.name || !user.value.email) {
-    alert("Name and email fields are required!");
+    toast({title: "Name and email fields are required!",variant:"destructive"});
     return;
   }
 
     await getAPI.put(`api/userprofile/${userId}/`, data);
+           toast({
+        title: 'Profile details updated!',
+      });
   } catch (error) {
     console.error("Error updating name and email:", error);
     throw error;
@@ -253,9 +254,7 @@ const handleFileChange = (event: Event) => {
 const handleSubmit = async () => {
 
   await updateUserNameAndEmail(userId.value,{name: user.value.name, email: user.value.email, username: user.value.username});
-      toast({
-        title: 'Profile details updated!',
-      });
+
   // alert("User details updated!");
 };
 
@@ -310,7 +309,7 @@ const authStore = useAuthStore();
 
 const userId = computed(() => authStore.user?.id);
 
-const getUserById = async (userId: number): Promise<User> => {
+const getUserById = async (userId: number) => {
   try {
     console.log("trying to fetch profile by ID: ",userId);
     const response = await getAPI.get(`/api/userprofile/${userId}/`);
@@ -400,12 +399,9 @@ onMounted(async () => {
 
 <style scoped>
 
-.profile-picture {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.file-input {
+   color: var(--primary);
+
 }
 
 </style>

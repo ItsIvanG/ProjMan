@@ -73,7 +73,6 @@ const allTasksStore = useAllTasksStore();
   const selectedStatus = ref<string | null>(null);
 const projectStore = useProjectStore();
 const projectId = computed(() => projectStore.project_id);
-
 // Automatically fetch tasks when projectId changes
 watchEffect(() => {
   const id = projectId.value;
@@ -189,11 +188,13 @@ const isAssignee = (task: any) => {
 
 // Selected member
 const selectedMember = ref(null);
-
+const selectedMemberName = ref("");
 // Select a member
-const selectMember = (member: any) => {
-  selectedMember.value = member;
-  formData.assignee_id = member.value;
+const selectMember = () => {
+   selectedMember.value = members.value.find(member => member.value === formData.assignee_id);
+  if (selectedMember) {
+    console.log("Selected Member:", selectedMember.label);
+  }
 };
   // Computed task ID
   const selectedTaskId = computed(() => taskStore.task?.task_id);
@@ -227,11 +228,13 @@ const openDialog = () => {
   
   // Function to close the dialog
   const closeDialog = () => {
-    selectedMember.value = null;
     formData.assignee_id = '';
     isDialogOpen.value = false;
   };
-  
+
+  const userId = computed(() => authStore.user?.manager_id);
+
+
   // Function to handle form submission for editing the task
   const handleSubmit = async () => {
   const selectedTask = taskStore.task;
@@ -247,7 +250,30 @@ const openDialog = () => {
   }
 
   try {
+    selectMember();
     const response = await getAPI.put(`/tasks/assign/${selectedTask.task_id}/`, formData);
+    console.log("Creating notif by: ",userId.value);
+    const logResponse = await getAPI.post(
+      "/api/add-log/",
+      {
+              log_user_created: userId.value,
+              log_content: "Assigned " + selectedTask.task_code+  " to " + selectedMember.value.label,
+              log_user_concern: formData.assignee_id,
+              log_project: projectStore?.project_id
+            },
+    );
+        const logNotif = await getAPI.post(
+      "/api/notifications/",
+      {
+              notification_user_created: userId.value,
+              notification_content: "Assigned " + selectedTask.task_code+  " to you.",
+              notification_user_concern: formData.assignee_id,
+              notification_project: projectStore?.project_id
+            },
+    );
+        // selectedMember.value = null;
+
+
     console.log('Task updated:', response.data);
 
     toast({
@@ -469,7 +495,7 @@ setTimeout(() => {
     <!-- Assign Member input -->
     <div class="grid gap-2 md:col-span-2">
       <Label for="assignee_id">Assign Member</Label>
-      <Select v-model="formData.assignee_id" aria-label="Select Member">
+      <Select v-model="formData.assignee_id" aria-label="Select Member" onValueChange="selectMember()">
         <SelectTrigger>
           <SelectValue 
             :placeholder="selectedMember?.label || 'Select Member'" 

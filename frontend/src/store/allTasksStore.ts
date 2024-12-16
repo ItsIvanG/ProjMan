@@ -10,9 +10,19 @@ export const useAllTasksStore = defineStore('allTasksStore', () => {
   const fetchTasks = async (projectId: number, status: string | null, userId:number | null) => {
     try {
       let url = `/tasks/${projectId}/`;
-      if (status) {
-        url += `?status=${status}`;
-      }
+       // Add query parameters conditionally
+    const params: string[] = [];
+    if (status) {
+      params.push(`status=${status}`);
+    }
+    if (userId) {
+      params.push(`userId=${userId}`);
+    }
+
+    // Append query parameters to the URL
+    if (params.length > 0) {
+      url += `?${params.join('&')}`;
+    }
       const response = await getAPI.get(url);
       allTasks.value = response.data; // Update the tasks list in the store
 

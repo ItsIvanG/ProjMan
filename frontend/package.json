@@ -21,6 +21,8 @@
     "date-fns": "^4.1.0",
     "flowbite": "^2.5.2",
     "flowbite-vue": "^0.1.6",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.2",
     "lucide-vue-next": "^0.468.0",
     "pinia": "^2.2.8",
     "radix-vue": "^1.9.11",
@@ -31,6 +33,7 @@
     "vue": "^3.5.13",
     "vue-cal": "^4.10.0",
     "vue-router": "^4.5.0",
+    "vuedraggable": "^4.1.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

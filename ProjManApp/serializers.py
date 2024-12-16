@@ -108,7 +108,20 @@ class UserIsActiveUpdateSerializer(serializers.ModelSerializer):
         instance.is_active = validated_data.get('is_active', instance.is_active)
         instance.save()
         return instance
-    
+
+from .models import Log
+
+class LogSerializer(serializers.ModelSerializer):
+    log_user_created_name = serializers.CharField(source='log_user_created.get_full_name', read_only=True)
+    log_user_concern_name = serializers.CharField(source='log_user_concern.get_full_name', read_only=True)
+
+    class Meta:
+        model = Log
+        fields = '__all__'
+        read_only_fields = ['log_id', 'log_datetime']
+
+
+
 import os
 from django.conf import settings
 from rest_framework import serializers
@@ -144,7 +157,17 @@ class FileSerializer(serializers.ModelSerializer):
         # Update the `filename` field with the relative path to the file
         validated_data['filename'] = os.path.relpath(file_path, settings.MEDIA_ROOT)
         return super().create(validated_data)
-    
 
+from .models import Notification
 
+class NotificationSerializer(serializers.ModelSerializer):
+    # notification_user_created = serializers.StringRelatedField(read_only=True)
+    # notification_user_concern = serializers.StringRelatedField(read_only=True)
+    notification_user_created_name = serializers.CharField(source='notification_user_created.get_full_name', read_only=True)
 
+    notification_user_created_picture = serializers.CharField(source='notification_user_created.get_profile_picture', read_only=True)
+
+    class Meta:
+        model = Notification
+        fields = '__all__'
+        read_only_fields = ['notification_id','notification_datetime']

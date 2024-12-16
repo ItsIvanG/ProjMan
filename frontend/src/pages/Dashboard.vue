@@ -2,7 +2,6 @@
 import { useAuthStore } from '../store/auth'
 import {CardDescription, CardHeader, CardTitle, Card, CardContent, CardFooter} from "@/components/ui/card";
 import {Separator} from "@/components/ui/separator/";
-import {Progress} from "@/components/ui/progress/";
 import {Input} from "@/components/ui/input/";
 import {useProjectStore} from "@/store/project.ts";
 import {computed, onMounted, ref, watch, watchEffect} from "vue";
@@ -14,7 +13,13 @@ import Archiveprojectmodal from "@/components/reusable/modals/archiveprojectmoda
 import router from "@/router";
 import  popupproject  from '@/components/reusable/modals/popupproject.vue'
 import {Table, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-
+import {  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,} from "@/components/ui/select";
 
 const projectStore = useProjectStore();
 
@@ -73,47 +78,107 @@ const fetchTasks = async (projectId: number, assigneeId: number) => {
   }
 };
 
+// Group tasks by sprint
+const groupedTasks = ref({});
 
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { format, differenceInDays, parseISO, eachDayOfInterval } from "date-fns";
-import {Label} from "@/components/ui/label";
-
+import { format, differenceInDays, parseISO, eachDayOfInterval ,differenceInMonths, differenceInYears, } from "date-fns";
+import {toast} from "@/components/ui/toast";
+// Add state for grouping selection
+const groupingLate = ref("day"); // Default is "day"
+const startDateLate = ref("2024-12-01");
+const endDateLate = ref("2024-12-15");
 // State
-const startDate = ref("2024-12-01");
-const endDate = ref("2024-12-15");
-
-
 const days = ref([]);
+const tasks = ref([
+]);
 
-// Generate Days for Timeline
-const generateDays = () => {
-  const parsedStart = parseISO(startDate.value);
-  const parsedEnd = parseISO(endDate.value);
-  days.value = eachDayOfInterval({ start: parsedStart, end: parsedEnd }).map((date) =>
-    format(date, "MMM d")
-  );
+const grouping = ref();
+const startDate = ref();
+const endDate = ref();
+
+
+const groupTasksBySprint = () => {
+  groupedTasks.value = tasks.value.reduce((acc, task) => {
+    if (!acc[task.sprint]) acc[task.sprint] = [];
+    acc[task.sprint].push(task);
+    return acc;
+  }, {});
 };
 
-const tasks = ref([]);
+// Update generateDays to handle different groupings
+const generateDays = () => {
+
+  grouping.value = groupingLate.value;
+  endDate.value = endDateLate.value;
+  startDate.value = startDateLate.value;
+  const parsedStart = parseISO(startDate.value);
+  const parsedEnd = parseISO(endDate.value);
+  if ( endDate.value <= startDate.value) {
+     toast({
+       title: 'Invalid Dates',
+       description: 'Gantt chart start date must be before end date.',
+       variant: 'destructive',
+     });
+     return;
+   }
+  // Clear the previous days array
+  days.value = [];
+
+  if (grouping.value === "day") {
+    // Group by day
+    days.value = eachDayOfInterval({ start: parsedStart, end: parsedEnd }).map((date) =>
+      format(date, "MMM d")
+    );
+  } else if (grouping.value === "month") {
+    // Group by month
+    let currentMonth = parsedStart.getMonth();
+    while (parsedStart <= parsedEnd) {
+      days.value.push(format(parsedStart, "MMM yyyy"));
+      parsedStart.setMonth(parsedStart.getMonth() + 1);
+    }
+  } else if (grouping.value === "year") {
+    // Group by year
+    let currentYear = parsedStart.getFullYear();
+    while (parsedStart <= parsedEnd) {
+      days.value.push(format(parsedStart, "yyyy"));
+      parsedStart.setFullYear(parsedStart.getFullYear() + 1);
+    }
+  }
+};
+
 // Compute Task Bar Styles
 const getTaskBarStyle = (task) => {
- console.log("parsing start date: ",task.start_date);
-    if (!task.start_date || !task.deadline) {
-    return {}; // Return an empty object if any date is missing or invalid
+  if (!task.start_date || !task.deadline) return {};
+
+  let totalIntervals = days.value.length;
+
+  // Calculate the interval difference based on the selected grouping (Day, Month, Year)
+  const taskStart = parseISO(task.start_date);
+  const taskEnd = parseISO(task.deadline);
+
+  // Get the date difference in terms of selected grouping (Days, Months, or Years)
+  let taskStartIndex, taskEndIndex;
+
+  if (grouping.value === "day") {
+    taskStartIndex = differenceInDays(taskStart, parseISO(startDate.value));
+    taskEndIndex = differenceInDays(taskEnd, parseISO(startDate.value));
+  } else if (grouping.value === "month") {
+    taskStartIndex = differenceInMonths(taskStart, parseISO(startDate.value));
+    taskEndIndex = differenceInMonths(taskEnd, parseISO(startDate.value));
+    totalIntervals = Math.ceil(differenceInMonths(parseISO(endDate.value), parseISO(startDate.value))) + 1;
+  } else if (grouping.value === "year") {
+    taskStartIndex = differenceInYears(taskStart, parseISO(startDate.value));
+    taskEndIndex = differenceInYears(taskEnd, parseISO(startDate.value));
+    totalIntervals = Math.ceil(differenceInYears(parseISO(endDate.value), parseISO(startDate.value))) + 1;
   }
-  const totalDays = days.value.length;
 
-  const taskStart = differenceInDays(parseISO(task.start_date), parseISO(startDate.value));
-  const taskEnd = differenceInDays(parseISO(task.deadline), parseISO(startDate.value));
-
-  const left = `${(taskStart / totalDays) * 100}%`;
-  const width = `${((taskEnd - taskStart + 1) / totalDays) * 100}%`;
+  const left = `${(taskStartIndex / totalIntervals) * 100}%`;
+  const width = `${((taskEndIndex - taskStartIndex + 1) / totalIntervals) * 100}%`;
 
   return { left, width };
 };
 
-// Initial Load
-generateDays();
 
 interface TaskData {
   completed_percentage: number;
@@ -163,10 +228,18 @@ const getTaskCompletionPercentage = async () => {
 const fetchTaskChart = async (projectId: number) => {
   try {
     console.log("getting task list for chart via projID: ",projectId);
-    const response = await getAPI.get(`/tasks/${projectId}/`);
+    const response = await getAPI.get(`/tasks/${projectId}/`,
+    {
+      params: {
+        excludeCancelled: "true", // Convert boolean to string for query
+      },
+    });
 
     tasks.value = response.data;
         console.log("Tasks: ",response.data);
+
+        generateDays();
+        groupTasksBySprint();
   } catch (error) {
     errorMessage.value = "An error occurred while fetching the users.";
     console.error(error);
@@ -183,9 +256,43 @@ watchEffect(() => {
   }
 });
 
+
+
+let progress = 0;
+const size = 200;
+const strokeWidth = 10;
+
+// Computed properties
+const radius = computed(() => 50 - strokeWidth / 2); // Radius of the circle
+const circumference = computed(() => 2 * Math.PI * radius.value); // Circumference
+const offset = computed(
+  () => circumference.value - (taskData.value.completed_percentage / 100) * circumference.value
+);
+const circleStyle = computed(() => ({
+  strokeDasharray: `${circumference.value} ${circumference.value}`,
+  strokeDashoffset: offset.value,
+}));
 </script>
 
+<style scoped>
 
+.progress-ring {
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+.progress-ring__background {
+  fill: none;
+  stroke:  theme(colors.secondary.DEFAULT);
+}
+
+.progress-ring__circle {
+  fill: none;
+  stroke: theme(colors.primary.DEFAULT); /* Progress color */
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+</style>
 <template>
   <popupproject v-if="userRole === 'Manager' && !projectStore.project_id" />
 
@@ -230,16 +337,43 @@ watchEffect(() => {
   <div v-if="projectStore.project_name">
 
  <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-4">
-   <Card class="lg:col-span-4 md:col-span-2 col-span-1">
+   <Card class="md:col-span-2 md:row-span-2  col-span-1">
       <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle>
           Project Progress
         </CardTitle>
-        {{Math.round(taskData.completed_percentage)}}%
       </CardHeader>
       <CardContent>
-        <Progress :model-value=taskData.completed_percentage />
-
+<!--        <Progress :model-value=taskData.completed_percentage />-->
+      <div class="justify-center flex">
+        <div class="w-[200px] h-[200px] relative">
+    <svg
+      class="progress-ring"
+      :width="size"
+      :height="size"
+      viewBox="0 0 100 100"
+    >
+      <!-- Background Circle -->
+      <circle
+        class="progress-ring__background"
+        cx="50"
+        cy="50"
+        r="45"
+        :stroke-width="strokeWidth"
+      />
+      <!-- Progress Circle -->
+      <circle
+        class="progress-ring__circle"
+        cx="50"
+        cy="50"
+        r="45"
+        :stroke-width="strokeWidth"
+        :style="circleStyle"
+      />
+    </svg>
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-xl font-bold">{{ Math.round(taskData.completed_percentage) }}%</div>
+  </div>
+      </div>
       </CardContent>
    </Card>
    <Card >
@@ -303,81 +437,120 @@ watchEffect(() => {
        <!--Gantt Chart-->
 
     <Card class="md:col-span-4 col-span-1">
-       <CardHeader>
+       <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle>Gantt Chart</CardTitle>
+          <div class=" flex justify-end">
+          <Button size="sm" variant="outline" class="mr-3" @click="router.push('/gantt')">
+          Expand
+        </Button>
+          </div>
       </CardHeader>
       <CardContent>
-        <!-- Date Range Picker -->
+      <!-- Gantt Chart Options -->
         <div class="mb-4 flex items-end gap-4">
-          <div>
-            <label for="start-date" class="block text-sm font-medium">Start Date</label>
-            <Input
-              id="start-date"
-              type="date"
-              v-model="startDate"
-              class="border rounded px-3 py-2 text-sm w-full"
-            />
+  <div>
+    <label for="grouping" class="block text-sm font-medium">Group By</label>
+    <Select v-model="groupingLate">
+    <SelectTrigger class="w-[180px]">
+      <SelectValue placeholder="Select a fruit" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectGroup>
+        <SelectItem value="day">
+          Day
+        </SelectItem>
+        <SelectItem value="month">
+          Month
+        </SelectItem>
+        <SelectItem value="year">
+          Year
+        </SelectItem>
+      </SelectGroup>
+    </SelectContent>
+  </Select>
+  </div>
+  <div>
+    <label for="start-date" class="block text-sm font-medium">Start Date</label>
+    <Input
+      id="start-date"
+      type="date"
+      v-model="startDateLate"
+      class="border rounded px-3 py-2 text-sm w-full"
+    />
+  </div>
+  <div>
+    <label for="end-date" class="block text-sm font-medium">End Date</label>
+    <Input
+      id="end-date"
+      type="date"
+      v-model="endDateLate"
+      class="border rounded px-3 py-2 text-sm w-full"
+    />
+  </div>
+  <Button
+    @click="generateDays"
+    class="px-4 py-2 mb-1 rounded text-sm"
+  >
+    Update Chart
+  </Button>
+</div>
+        <div class="overflow-x-auto w-full">
+  <div class="min-w-max w-full">
+<!--Chart Header-->
+<div class="flex items-center bg-secondary text-sm font-medium">
+  <div class="w-40 px-4 py-2 border-r">Task</div>
+  <div class="flex-1 grid" :style="{ gridTemplateColumns: `repeat(${days.length}, 1fr)` }">
+    <div
+      v-for="(day, index) in days"
+      :key="index"
+      class="text-center py-2 border-r"
+    >
+      {{ day }}
+    </div>
+  </div>
+</div>
+
+<!-- Update the Grouped Chart Rows -->
+<div v-for="(group, sprint) in groupedTasks" :key="sprint">
+  <div class="bg-secondary text-sm font-semibold px-4 py-1">
+    Sprint {{ sprint }}
+  </div>
+
+  <div v-for="(task, index) in group" :key="index" class="flex items-center text-sm">
+    <!-- Task Name -->
+    <div class="w-40 px-4 py-1 border-r bg-card z-10">
+      {{ task.features }}
+    </div>
+
+    <!-- Timeline -->
+    <div class="relative flex-1 h-12 z-0">
+      <Popover >
+        <PopoverTrigger >
+          <div v-if="task.status == 'Completed'"
+            class="absolute h-5 rounded-md bg-secondary cursor-pointer z-20"
+            :style="getTaskBarStyle(task)"
+          ></div>
+           <div v-else
+            class="absolute h-5 rounded-md bg-primary cursor-pointer z-20"
+            :style="getTaskBarStyle(task)"
+          ></div>
+        </PopoverTrigger>
+        <PopoverContent>
+          <div class="text-sm p-2">
+            <p><strong>Task:</strong> {{ task.task_code }}</p>
+            <p><strong>Start:</strong> {{ task.start_date }}</p>
+            <p><strong>End:</strong> {{ task.deadline }}</p>
+            <p><strong>Assignee:</strong> {{ task.assignee }}</p>
+            <p><strong>Status:</strong> {{ task.status }}</p>
           </div>
-          <div>
-            <label for="end-date" class="block text-sm font-medium">End Date</label>
-            <Input
-              id="end-date"
-              type="date"
-              v-model="endDate"
-              class="border rounded px-3 py-2 text-sm w-full"
-            />
-          </div>
-          <Button
-            @click="generateDays"
-            class=" px-4 py-2 mb-1 rounded text-sm"
-          >
-            Update Chart
-          </Button>
+        </PopoverContent>
+      </Popover>
+    </div>
+  </div>
+</div>
+  </div>
         </div>
 
-        <!-- Gantt Chart -->
-        <div class="overflow-x-auto">
-          <div class="min-w-[800px]">
-            <!-- Chart Header -->
-            <div class="flex items-center bg-secondary text-sm font-medium">
-              <div class="w-40 px-4 py-2 border-r">Task</div>
-              <div class="flex-1 grid" :style="{ gridTemplateColumns: `repeat(${days.length}, 1fr)` }">
-                <div
-                  v-for="(day, index) in days"
-                  :key="index"
-                  class="text-center py-2 border-r"
-                >
-                  {{ day }}
-                </div>
-              </div>
-            </div>
-            <!-- Chart Rows -->
-            <div v-for="(task, index) in tasks" :key="index" class="flex items-center text-sm">
-              <!-- Task Name -->
-              <div class="w-40 px-4 py-2 border-r bg-card z-10">
-                {{ task.features }}
-              </div>
-              <!-- Timeline -->
-              <div class="relative flex-1  h-12 z-0">
-                <Popover>
-                  <PopoverTrigger>
-                    <div
-                      class="absolute h-5 bg-primary rounded-md cursor-pointer z-20"
-                      :style="getTaskBarStyle(task)"
-                    ></div>
-                  </PopoverTrigger>
-                  <PopoverContent>
-                    <div class="text-sm p-2">
-                      <p><strong>Task:</strong> {{ task.task_code }}</p>
-                      <p><strong>Start:</strong> {{ task.start_date }}</p>
-                      <p><strong>End:</strong> {{ task.deadline }}</p>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
-            </div>
-          </div>
-        </div>
       </CardContent>
     </Card>
 <!--       Ongoing tasks-->

@@ -6,17 +6,17 @@
 
       <!-- Right Section for Larger Screens -->
       <div class="hidden md:flex md:flex-1 md:items-center md:justify-end md:space-x-4">
-        <!-- Search Bar -->
-        <form class="hidden md:block">
-          <div class="relative">
-            <Search class="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search..."
-              class="w-[220px] pl-10 md:w-[300px]"
-            />
-          </div>
-        </form>
+<!--        &lt;!&ndash; Search Bar &ndash;&gt;-->
+<!--        <form class="hidden md:block">-->
+<!--          <div class="relative">-->
+<!--            <Search class="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />-->
+<!--            <Input-->
+<!--              type="search"-->
+<!--              placeholder="Search..."-->
+<!--              class="w-[220px] pl-10 md:w-[300px]"-->
+<!--            />-->
+<!--          </div>-->
+<!--        </form>-->
 <!--        Dark/Light mode Toggle-->
       <DropdownMenu>
           <DropdownMenuTrigger as-child>

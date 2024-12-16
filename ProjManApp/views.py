@@ -14,12 +14,13 @@ from .forms import CreateUserForm
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Project, Report
-from .serializers import ProjectSerializer, ReportSerializer
+from .models import Project, Report, Log, Notification
+from .serializers import ProjectSerializer, ReportSerializer, LogSerializer, NotificationSerializer
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 import os
 from django.conf import settings
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
 
 
@@ -78,16 +79,30 @@ def user(request):
 
 @require_http_methods(['POST'])
 def register(request):
-
+    # Parse the incoming data and form from the request
     data = json.loads(request.body.decode('utf-8'))
-    form = CreateUserForm(data)
+
+    # Ensure to handle the files in request.FILES (for profile picture upload)
+    form = CreateUserForm(data, request.FILES)
+
     if form.is_valid():
-        form.save()
+        # Save the user form
+        user = form.save()
+
+        # Check if the profile picture is provided
+        if 'profile_picture' in request.FILES:
+            file = request.FILES['profile_picture']
+            # Save the uploaded file as profile picture for the user
+            user.profile_picture.save(file.name, file)
+
+        user.save()
         return JsonResponse({'success': 'User registered successfully'}, status=201)
     else:
+        # Return errors if the form is not valid
         errors = form.errors.as_json()
         return JsonResponse({'error': errors}, status=400)
-    
+
+
 class ProjectCreateView(APIView):
     def get(self, request, manager_id=None):
         if manager_id:
@@ -191,8 +206,12 @@ class TaskListView(generics.ListAPIView):
     def get_queryset(self):
         # Get the project_id from URL parameters
         project_id = self.kwargs['project_id']
+
         # Get the status from query parameters, if present
         status = self.request.query_params.get('status', None)
+
+        # Get the cancelled filter from query parameters, default to False
+        cancelled = self.request.query_params.get('excludeCancelled', 'false').lower() == 'true'
 
         # Filter tasks by project_id
         queryset = Task.objects.filter(project_id=project_id)
@@ -200,6 +219,10 @@ class TaskListView(generics.ListAPIView):
         # Optionally filter by status
         if status:
             queryset = queryset.filter(status=status)
+
+        # Filter out cancelled tasks if cancelled=false
+        if cancelled:
+            queryset = queryset.exclude(status="Cancelled")
 
         # Sort by sprint (ascending by default)
         queryset = queryset.order_by('sprint')
@@ -297,26 +320,32 @@ class ReportUpdateAPIView(generics.UpdateAPIView):
 class FilterTasksAPIView(APIView):
     """
     API view to retrieve tasks by project_id, assignee_id,
-    and status = 'In Progress' OR 'Not Started'.
+    and status = 'In Progress' OR 'Not Started' OR 'Completed'.
     """
     def get(self, request, *args, **kwargs):
         project_id = self.request.query_params.get('project_id')
         assignee_id = self.request.query_params.get('assignee_id')
+        status_param = self.request.query_params.get('status')  # Get the status filter if provided
 
         # Ensure parameters are provided
         if not project_id or not assignee_id:
             return Response(
-                {"null"},
-               status=status.HTTP_200_OK
+                {"error": "Project ID and Assignee ID are required"},
+                status=status.HTTP_400_BAD_REQUEST
             )
+
+        # Build the filter for the task status
+        status_filter = Q(status="In Progress") | Q(status="Not started")
+        if status_param and status_param.lower() == "completed":
+            status_filter |= Q(status="Completed")
 
         try:
             tasks = Task.objects.filter(
                 project_id=project_id,
                 assignee_id=assignee_id
-            ).filter(
-                Q(status="In Progress") | Q(status="Not started")
-            )
+            ).filter(status_filter)  # Apply the dynamic status filter
+
+            # Serialize the tasks
             serializer = TaskSerializer(tasks, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
@@ -597,6 +626,14 @@ class DeleteUserView(APIView):
         user.delete()
 
         return Response({"detail": "User deleted successfully."}, status=status.HTTP_200_OK)
+
+class AddLogAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = LogSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 from rest_framework import generics
 from .models import File
@@ -619,3 +656,62 @@ class FileListByProjectAPIView(generics.ListAPIView):
         return File.objects.filter(project_id=project_id)
 
 
+class LogAPIView(APIView):
+    """
+    APIView for listing logs and applying filters.
+    """
+
+    def get(self, request, project=None,*args, **kwargs):
+        # Get query parameters
+        user_created = request.query_params.get('log_user_created')
+
+        # Base queryset
+        queryset = Log.objects.all().order_by('-log_datetime')
+
+        # Apply filters
+        if user_created:
+            queryset = queryset.filter(log_user_created=user_created)
+
+        queryset = queryset.filter(log_project=project)
+
+        # Serialize data
+        serializer = LogSerializer(queryset, many=True)
+
+        # Return response
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class NotificationListCreate(APIView):
+
+    # GET method to retrieve all notifications with optional filter by user concerned
+    def get(self, request):
+        # Get the user to filter by from query params
+        user_concerned = request.query_params.get('user', None)
+
+        if user_concerned:
+            # Filter notifications by the concerned user (notification_user_concern)
+            notifications = Notification.objects.filter(notification_user_concern=user_concerned)
+        else:
+            # Retrieve all notifications if no filter is provided
+            notifications = Notification.objects.all()
+
+        serializer = NotificationSerializer(notifications, many=True)
+        return Response(serializer.data)
+
+    # POST method to create a new notification
+    def post(self, request):
+        serializer = NotificationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()  # Optionally associate with logged-in user
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, notification_id=None):
+        try:
+            # Fetch the notification by its ID
+            notification = Notification.objects.get(notification_id=notification_id)
+            notification.delete()  # Delete the notification
+            return Response({"message": "Notification deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        except Notification.DoesNotExist:
+            # Return an error if the notification does not exist
+            return Response({"error": "Notification not found."}, status=status.HTTP_404_NOT_FOUND)

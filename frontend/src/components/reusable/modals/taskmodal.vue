@@ -23,8 +23,8 @@
         <form @submit.prevent="handleSubmit">
           <div class="grid gap-4 py-4 sm:grid-cols-1 md:grid-cols-2">
             <!-- features input -->
-            <div class="grid gap-3 md:col-span-2">
-              <Label for="features">features</Label>
+            <div class="grid gap-3 ">
+              <Label for="features">Features</Label>
               <Input
                 id="features"
                 v-model="formData.features"
@@ -158,6 +158,19 @@ const closeDialog = () => {
 
 // Handle form submission to create a new task
 const handleSubmit = async () => {
+    // Convert the start_date and deadline to Date objects for comparison
+  const startDate = new Date(formData.start_date);
+  const deadlineDate = new Date(formData.deadline);
+
+  // Check if the deadline is after the start date
+  if (deadlineDate <= startDate) {
+    toast({
+      title: 'Invalid Dates',
+      description: 'The deadline must be after the start date.',
+      variant: 'destructive',
+    });
+    return;  // Prevent form submission if validation fails
+  }
   try {
     // Sending the task data to the backend API
     const response = await getAPI.post('/tasks/create/', {

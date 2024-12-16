@@ -4,7 +4,7 @@ from .models import User  # Import your custom User model
 class CreateUserForm(forms.ModelForm):
     class Meta:
         model = User 
-        fields = ['email', 'password', 'username','name']  # Exclude 'role' from the form fields if it's not user-provided
+        fields = ['email', 'password', 'username','name','profile_picture']  # Exclude 'role' from the form fields if it's not user-provided
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -17,6 +17,7 @@ class CreateUserForm(forms.ModelForm):
         # user.name = self.cleaned_data["name"]
 
         user.username = self.cleaned_data["username"]
+
         user.set_password(self.cleaned_data["password"]) 
 
         if commit:

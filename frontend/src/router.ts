@@ -11,11 +11,12 @@ import Task from "./pages/Project Management/Task.vue";
 import OwnTask from "./pages/Project Management/Owntask.vue";
 import Gantt from "./pages/Project Management/Gantt.vue";
 import Kanban from "./pages/Project Management/Kanban.vue";
+import Kanban2 from "./pages/Project Management/Kanban2.vue";
 import Profile from "./pages/Profile.vue";
 
 import Sprint from "./pages/Project Management/Sprint.vue";
 import Sharing from "./pages/Sharing.vue";
-import Notifications from "./pages/Notifications.vue";
+import MemberReport from "./pages/MemberReport.vue";
 
 
 
@@ -49,6 +50,11 @@ const routes = [
         path: '/kanban',
         name: 'kanban',
         component: Kanban
+    },
+    {
+        path: '/kanban2',
+        name: 'kanban2',
+        component: Kanban2
     },
     {
         path: '/gantt',
@@ -89,6 +95,11 @@ const routes = [
         path: '/profile',
         name: 'profile',
         component: Profile
+    },
+        {
+        path: '/memberreport',
+        name: 'memberreport',
+        component: MemberReport
     }
 
 ]

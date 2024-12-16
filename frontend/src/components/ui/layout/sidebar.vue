@@ -109,7 +109,7 @@
                   class="w-full justify-start pl-8 text-sm"
                   @click="navigateTo('/own-task')"
                 >
-                  Assigned Task
+                  Your Tasks
                 </Button>
                 <Button
                   variant="ghost"

@@ -334,6 +334,8 @@ setTimeout(() => {
     <List class="mr-2 h-4 w-4" />Sprint</div></TableHead>
                 <TableHead class="hidden md:table-cell">  <div class="flex items-center">
     <ArrowUpDown class="mr-2 h-4 w-4" />Priority</div></TableHead>
+                 <TableHead class="hidden md:table-cell">  <div class="flex items-center">
+    <CalendarClock  class="mr-2 h-4 w-4" />Start date</div></TableHead>
                 <TableHead class="hidden md:table-cell">  <div class="flex items-center">
     <CalendarClock  class="mr-2 h-4 w-4" />Deadline</div></TableHead>
     <TableHead v-if="allTasksStore.allTasks.some(task => isAssignee(task) || userRole === 'Manager')">
@@ -406,7 +408,9 @@ setTimeout(() => {
   </Badge>
 </TableCell>
 
-                  
+                   <TableCell class="hidden md:table-cell">
+                    {{ task.start_date }}
+                  </TableCell>
                   <TableCell class="hidden md:table-cell">
                     {{ task.deadline }}
                   </TableCell>
