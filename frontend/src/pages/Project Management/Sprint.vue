@@ -320,15 +320,15 @@ setTimeout(() => {
         </div>
       </div>
       <TabsContent value="all" >
-  <div v-if="Object.keys(groupedTasks).length" class="flex flex-wrap gap-6">
+  <div v-if="Object.keys(groupedTasks).length" class="flex flex-wrap gap-6 grid grid-cols-3">
     <!-- Render each sprint as a section -->
     <div
       v-for="(tasks, sprint) in groupedTasks"
       :key="sprint"
-      class="flex-1 min-w-[300px] max-w-[calc(33%-1rem)] bg-background shadow-lg rounded-lg overflow-hidden"
+      class="flex-1 min-w-[300px]  bg-background shadow-lg rounded-lg overflow-hidden"
     >
       <!-- Sprint Card -->
-      <Card class="h-full">
+      <Card class="h-full col-span-1">
         <!-- Sprint Header -->
         <CardHeader class="py-4 px-6">
   <Badge 

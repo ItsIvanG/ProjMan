@@ -83,8 +83,10 @@ import {User, X} from "lucide-vue-next";
 import { MdRoundMarkEmailUnread } from "@kalimahapps/vue-icons";
 import {getAPI} from "@/axios.ts";
 import { useAuthStore } from '@/store/auth'
+import {useProjectStore} from "@/store/project.ts";
 
 const authStore = useAuthStore();
+const projectStore = useProjectStore();
 // Props
 const props = defineProps({
   isVisible: {
@@ -127,6 +129,7 @@ const fetchNotifications = async () => {
     const response = await getAPI.get('/api/notifications/', {
       params: {
         user: userId.value, // Query parameter to filter by user ID
+        project_id: projectStore?.project_id
       },
     });
     notifications.value = response.data;

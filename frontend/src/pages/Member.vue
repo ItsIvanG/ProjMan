@@ -94,23 +94,23 @@ const getStatusVariant = (status: string) => {
               </CardHeader>
       <div class="ml-auto flex items-center gap-2">
         
-        <DropdownMenu>
-          <DropdownMenuTrigger as-child>
-            <Button variant="outline" size="sm" class="h-7 gap-1">
-              <ListFilter class="h-3.5 w-3.5" />
-              <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                Filter
-              </span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem @click="filterStatus = 'All'">All</DropdownMenuItem> 
-            <DropdownMenuItem @click="filterStatus = 'Active'">Active</DropdownMenuItem>
-            <DropdownMenuItem @click="filterStatus = 'Archived'">Archived</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+<!--        <DropdownMenu>-->
+<!--          <DropdownMenuTrigger as-child>-->
+<!--            <Button variant="outline" size="sm" class="h-7 gap-1">-->
+<!--              <ListFilter class="h-3.5 w-3.5" />-->
+<!--              <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">-->
+<!--                Filter-->
+<!--              </span>-->
+<!--            </Button>-->
+<!--          </DropdownMenuTrigger>-->
+<!--          <DropdownMenuContent align="end">-->
+<!--            <DropdownMenuLabel>Filter by</DropdownMenuLabel>-->
+<!--            <DropdownMenuSeparator />-->
+<!--            <DropdownMenuItem @click="filterStatus = 'All'">All</DropdownMenuItem> -->
+<!--            <DropdownMenuItem @click="filterStatus = 'Active'">Active</DropdownMenuItem>-->
+<!--            <DropdownMenuItem @click="filterStatus = 'Archived'">Archived</DropdownMenuItem>-->
+<!--          </DropdownMenuContent>-->
+<!--        </DropdownMenu>-->
         <Usermodal v-if="userRole !== 'Member'"/>
       </div>
     </div>
@@ -125,7 +125,7 @@ const getStatusVariant = (status: string) => {
                 <TableHead>Username</TableHead>
                 <TableHead class="hidden md:table-cell">Role</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead class="hidden md:table-cell">Status</TableHead>
+<!--                <TableHead class="hidden md:table-cell">Status</TableHead>-->
                 <TableHead v-if="userRole !== 'Member'">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -140,11 +140,11 @@ const getStatusVariant = (status: string) => {
                     </Badge>
                   </TableCell>
                   <TableCell>{{ user.email }}</TableCell>
-                  <TableCell>
-  <Badge :variant="getStatusVariant(user.is_active ? 'Active' : 'Archived')">
-    {{ user.is_active ? 'Active' : 'Archived' }}
-  </Badge>
-</TableCell>
+<!--                  <TableCell>-->
+<!--  <Badge :variant="getStatusVariant(user.is_active ? 'Active' : 'Archived')">-->
+<!--    {{ user.is_active ? 'Active' : 'Archived' }}-->
+<!--  </Badge>-->
+<!--</TableCell>-->
 
 
                   <TableCell v-if="userRole !== 'Member'">

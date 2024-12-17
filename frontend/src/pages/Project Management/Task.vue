@@ -221,6 +221,7 @@ const openDialog = () => {
   }
   
   isDialogOpen.value = true; // Open the dialog
+          selectedMember.value = null;
 };
 
 
@@ -271,7 +272,7 @@ const openDialog = () => {
               notification_project: projectStore?.project_id
             },
     );
-        // selectedMember.value = null;
+
 
 
     console.log('Task updated:', response.data);

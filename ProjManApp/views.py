@@ -687,13 +687,21 @@ class NotificationListCreate(APIView):
     def get(self, request):
         # Get the user to filter by from query params
         user_concerned = request.query_params.get('user', None)
+        project_id = request.query_params.get('project_id', None)
 
         if user_concerned:
             # Filter notifications by the concerned user (notification_user_concern)
             notifications = Notification.objects.filter(notification_user_concern=user_concerned)
         else:
             # Retrieve all notifications if no filter is provided
-            notifications = Notification.objects.all()
+            notifications = Notification.objects.all().order_by('-notification_datetime')
+
+        if project_id:
+            notifications = notifications.filter(notification_project=project_id)
+
+        notifications = notifications.order_by('-notification_datetime')
+
+
 
         serializer = NotificationSerializer(notifications, many=True)
         return Response(serializer.data)
